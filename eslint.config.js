@@ -1,6 +1,6 @@
-import js from "@eslint/js";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import globals from "globals";
+import js from '@eslint/js';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import globals from 'globals';
 
 export default [
   js.configs.recommended,
@@ -8,16 +8,16 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node
+        ...globals.node,
       },
     },
     plugins: {
-      "@typescript-eslint": tsPlugin,
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      "semi": ["error", "always"],
-      "quotes": ["error", "single"]
+      semi: ['error', 'always'],
+      quotes: ['error', 'single'],
     },
   },
 ];

@@ -2,11 +2,18 @@
   "name": "topdown-tactix",
   "version": "1.0.0",
   "type": "module",
+  "version": "1.0.0",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "npm run lint --workspaces --if-present && eslint .",
     "test": "echo 'No tests yet' && exit 0",
+    "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "keywords": [],
