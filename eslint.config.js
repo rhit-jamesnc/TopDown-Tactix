@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 import globals from "globals";
 
 export default [
