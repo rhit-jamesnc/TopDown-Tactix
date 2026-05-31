@@ -3,22 +3,18 @@ import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 
 export default [
-  {
-    ignores: ["node_modules/", "dist/"],
-  },
+  js.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: tsParser,
-      ecmaVersion: "latest",
       sourceType: "module",
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
     },
     rules: {
-      ...js.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": "warn",
+      ...tsPlugin.configs.recommended.rules,
       "semi": ["error", "always"],
       "quotes": ["error", "single"]
     },
