@@ -8,12 +8,22 @@
     "paths": {
       "#shared/*": ["../shared/*"]
     },
+    "rootDir": "./",
     "outDir": "./dist",
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "checkJs": false
+    "checkJs": false,
+    "noEmit": true 
   },
-  "include": ["index.js", "../shared/**/*"]
+  "include": [
+    "index.js",
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../shared"
+  ]
 }

@@ -1,11 +1,14 @@
 {
   "name": "topdown-tactix-server",
   "version": "1.0.0",
-  "type": "module", 
+  "type": "module",
   "scripts": {
+    "lint": "eslint .",
     "dev": "node --watch index.js"
   },
-  "imports": {
-    "#shared/*": "../shared/*"
+  "dependencies": {
+    "express": "^5.2.1",
+    "shared": "*",
+    "socket.io": "^4.8.3"
   }
 }
