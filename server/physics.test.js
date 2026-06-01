@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Engine, World, Bodies, Body } from 'matter-js';
-import { GamePhysicsEngine } from './physicsEngine.js'; 
+import { GamePhysicsEngine } from './physicsEngine.js';  
 
 describe('Game Physics Engine - Boundary Collisions', () => {
   let gamePhysics;
