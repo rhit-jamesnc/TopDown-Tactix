@@ -1,17 +1,15 @@
 {
-  "name": "server",
+  "name": "topdown-tactix-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --watch index.js",
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "express": "^5.2.1",
+    "shared": "*",
     "socket.io": "^4.8.3"
   }
 }
