@@ -117,8 +117,9 @@ describe('Game Physics Engine - Kinetic Interactivity', () => {
 
     expect(physics.ball.velocity.x).toBeGreaterThan(0);
   });
+});
 
-  describe('Game Physics Engine - Kicking Mechanics', () => {
+describe('Game Physics Engine - Kicking Mechanics', () => {
     test('should apply impulse vector to ball when player executes a kick', () => {
         const engine = new GamePhysicsEngine(800, 600);
         
@@ -129,6 +130,5 @@ describe('Game Physics Engine - Kinetic Interactivity', () => {
         Engine.update(engine.engine, 16.66);
         
         expect(engine.ball.velocity.x).toBeGreaterThan(0);
-    });
     });
 });

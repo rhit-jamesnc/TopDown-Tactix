@@ -82,4 +82,11 @@ export class GamePhysicsEngine {
       Body.setAngularVelocity(playerBody, 0);
     });
   }
+
+  kickBall(playerId, forceVector) {
+    const player = this.players[playerId];
+    if (!player || !this.ball) return;
+
+    Body.applyForce(this.ball, this.ball.position, forceVector);
+    }
 }
