@@ -1,4 +1,4 @@
-import { Engine, World, Bodies } from 'matter-js';
+import { Engine, World, Bodies, Body } from 'matter-js';
 
 export class GamePhysicsEngine {
   constructor(width = 800, height = 600) {
@@ -70,5 +70,16 @@ export class GamePhysicsEngine {
 
   update(deltaTime) {
     Engine.update(this.engine, deltaTime);
+  }
+
+  resetPitch() {
+    Body.setPosition(this.ball, { x: this.width / 2, y: this.height / 2 });
+    Body.setVelocity(this.ball, { x: 0, y: 0 });
+    Body.setAngularVelocity(this.ball, 0);
+    
+    Object.values(this.players).forEach(playerBody => {
+      Body.setVelocity(playerBody, { x: 0, y: 0 });
+      Body.setAngularVelocity(playerBody, 0);
+    });
   }
 }
