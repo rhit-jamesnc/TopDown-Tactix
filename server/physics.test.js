@@ -132,3 +132,26 @@ describe('Game Physics Engine - Kicking Mechanics', () => {
         expect(engine.ball.velocity.x).toBeGreaterThan(0);
     });
 });
+
+describe('Game Physics Engine - Goal Detection', () => {
+  test('should trigger goal event and not bounce when ball hits left goal sensor', () => {
+    const engine = new GamePhysicsEngine(800, 600);
+    let goalScored = false;
+    let scoringTeam = '';
+
+    engine.onGoal((team) => {
+      goalScored = true;
+      scoringTeam = team;
+    });
+
+    Body.setPosition(engine.ball, { x: 10, y: 300 });
+    Body.setVelocity(engine.ball, { x: -10, y: 0 });
+
+    for (let i = 0; i < 10; i++) {
+      Engine.update(engine.engine, 16.66);
+    }
+
+    expect(goalScored).toBe(true);
+    expect(scoringTeam).toBe('away'); 
+  });
+});
