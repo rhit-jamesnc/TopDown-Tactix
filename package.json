@@ -12,7 +12,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "npm run lint --workspaces --if-present && eslint .",
-    "test": "echo 'No tests yet' && exit 0",
+    "test": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -34,6 +34,8 @@
     "eslint": "^10.4.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.6.0",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "socket.io-client": "^4.8.3",
+    "vitest": "^4.1.8"
   }
 }
