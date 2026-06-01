@@ -6,39 +6,24 @@ let clientSocket;
 const TEST_PORT = 9999;
 
 beforeAll(() => {
-  return new Promise((resolve) => {
-    httpServer.listen(TEST_PORT, () => {
-      resolve();
-    });
-  });
+  return new Promise((resolve) => httpServer.listen(TEST_PORT, resolve));
 });
 
 afterAll(() => {
-  if (clientSocket && clientSocket.connected) {
-    clientSocket.disconnect();
-  }
-  return new Promise((resolve) => {
-    httpServer.close(() => {
-      resolve();
-    });
-  });
+  if (clientSocket?.connected) clientSocket.disconnect();
+  return new Promise((resolve) => httpServer.close(resolve));
 });
 
-test('should establish a real-time websocket connection', () => {
-  clientSocket = clientIO(`http://localhost:${TEST_PORT}`);
-  
+const createClientConnection = (port) => {
+  const socket = clientIO(`http://localhost:${port}`);
   return new Promise((resolve, reject) => {
-    clientSocket.on('connect', () => {
-      expect(clientSocket.connected).toBe(true);
-      resolve();
-    });
-    
-    clientSocket.on('connect_error', (err) => {
-      reject(err);
-    });
-    
-    setTimeout(() => {
-      reject(new Error('Connection timed out!'));
-    }, 1000);
+    socket.on('connect', () => resolve(socket));
+    socket.on('connect_error', (err) => reject(err));
+    setTimeout(() => reject(new Error('Socket connection timed out.')), 1500);
   });
+};
+
+test('should establish a real-time websocket connection', async () => {
+  clientSocket = await createClientConnection(TEST_PORT);
+  expect(clientSocket.connected).toBe(true);
 });
