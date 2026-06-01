@@ -5,11 +5,16 @@
   "scripts": {
     "lint": "eslint .",
     "dev": "node --watch index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "vitest"
   },
   "dependencies": {
     "express": "^5.2.1",
     "shared": "*",
     "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3",
+    "vitest": "^4.1.8"
   }
 }
