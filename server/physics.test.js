@@ -1,7 +1,23 @@
 import { describe, test, expect, beforeEach } from 'vitest';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Engine, World, Bodies, Body } from 'matter-js';
+import { Body } from 'matter-js';
 import { GamePhysicsEngine } from './physicsEngine.js';  
+
+describe('Game Physics Engine - State Reset', () => {
+  test('should cleanly reset positions and wipe velocities during pitch reset', () => {
+    const engine = new GamePhysicsEngine(800, 600);
+    
+    Body.setPosition(engine.ball, { x: 150, y: 200 });
+    Body.setVelocity(engine.ball, { x: 5, y: -3 });
+    
+    engine.resetPitch();
+    
+    expect(engine.ball.position.x).toBe(400);
+    expect(engine.ball.position.y).toBe(300);
+    expect(engine.ball.velocity.x).toBe(0);
+    expect(engine.ball.velocity.y).toBe(0);
+    expect(engine.ball.angularVelocity).toBe(0);
+  });
+});
 
 describe('Game Physics Engine - Boundary Collisions', () => {
   let gamePhysics;
