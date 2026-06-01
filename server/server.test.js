@@ -27,3 +27,12 @@ test('should establish a real-time websocket connection', async () => {
   clientSocket = await createClientConnection(TEST_PORT);
   expect(clientSocket.connected).toBe(true);
 });
+
+test('should handle client disconnections cleanly on the server', async () => {
+  const socket = await createClientConnection(TEST_PORT);
+  
+  expect(socket.connected).toBe(true);
+  
+  socket.disconnect();
+  expect(socket.connected).toBe(false);
+});
