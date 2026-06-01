@@ -30,3 +30,21 @@ describe('Game Physics Engine - Boundary Collisions', () => {
     expect(ballBody.position.x).toBeLessThan(800);
   });
 });
+
+describe('Game Physics Engine - Phase 1 High-Velocity Edge Cases', () => {
+  test('should accurately reflect ball velocity and invert x-vector upon bouncing off the right wall', () => {
+    const physics = new GamePhysicsEngine(800, 600);
+    
+    expect(physics.ball.position.x).toBe(400);
+    expect(physics.ball.position.y).toBe(300);
+
+    Body.setVelocity(physics.ball, { x: 25, y: 0 });
+
+    for (let i = 0; i < 20; i++) {
+      physics.update(16.66);
+    }
+
+    expect(physics.ball.position.x).toBeLessThan(800);
+    expect(physics.ball.velocity.x).toBeLessThan(0);
+  });
+});

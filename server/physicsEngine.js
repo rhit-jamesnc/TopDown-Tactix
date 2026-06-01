@@ -57,7 +57,8 @@ export class GamePhysicsEngine {
       restitution: 1,
       friction: 0,
       frictionAir: 0,
-      inertia: Infinity
+      inertia: Infinity,
+      continuousUpdates: true
     };
 
     // Default spawn point at center-pitch
