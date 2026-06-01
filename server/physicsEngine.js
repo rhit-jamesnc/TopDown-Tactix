@@ -100,10 +100,13 @@ export class GamePhysicsEngine {
         World.add(this.world, playerBody);
     }
 
-    update(deltaTime) {
+    update() {
+        const FIXED_DELTA = 1000 / 60; 
         const subSteps = 6;
-        const stepSize = deltaTime / subSteps;
+        const stepSize = FIXED_DELTA / subSteps;
+
         for (let i = 0; i < subSteps; i++) {
+            this._clampVelocities();
             Engine.update(this.engine, stepSize);
             this._enforceBoundaries();
         }
@@ -130,6 +133,33 @@ export class GamePhysicsEngine {
                 Body.setVelocity(player, { x: 0, y: player.velocity.y });
             }
         });
+    }
+
+    _clampVelocities() {
+        const MAX_BALL_SPEED = 25;
+        const MAX_PLAYER_SPEED = 12;
+
+        if (this.ball) {
+            const speed = Math.hypot(this.ball.velocity.x, this.ball.velocity.y);
+            if (speed > MAX_BALL_SPEED) {
+                const scale = MAX_BALL_SPEED / speed;
+                Body.setVelocity(this.ball, {
+                    x: this.ball.velocity.x * scale,
+                    y: this.ball.velocity.y * scale
+                });
+            }
+        }
+
+        Object.values(this.players).forEach(player => {
+                const speed = Math.hypot(player.velocity.x, player.velocity.y);
+                if (speed > MAX_PLAYER_SPEED) {
+                    const scale = MAX_PLAYER_SPEED / speed;
+                    Body.setVelocity(player, {
+                        x: player.velocity.x * scale,
+                        y: player.velocity.y * scale
+                    });
+                }
+            });
     }
 
     resetPitch() {
