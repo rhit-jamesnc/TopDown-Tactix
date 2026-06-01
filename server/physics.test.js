@@ -81,3 +81,24 @@ describe('Game Physics Engine - Player Integration & Borders', () => {
     expect(playerBody.velocity.x).toBe(0);
   });
 });
+
+describe('Game Physics Engine - Kinetic Interactivity', () => {
+  test('should transfer velocity from player to ball during a tackle collision', () => {
+    const physics = new GamePhysicsEngine(800, 600);
+    const playerId = 'striker';
+
+    physics.addPlayer(playerId, { x: 350, y: 300 });
+    const playerBody = physics.players[playerId];
+
+    expect(physics.ball.position.x).toBe(400);
+    expect(physics.ball.velocity.x).toBe(0);
+
+    Body.setVelocity(playerBody, { x: 10, y: 0 });
+
+    for (let i = 0; i < 15; i++) {
+      physics.update(16.66);
+    }
+
+    expect(physics.ball.velocity.x).toBeGreaterThan(0);
+  });
+});
