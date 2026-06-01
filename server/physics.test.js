@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from 'vitest';
-import { Body } from 'matter-js';
+import { Engine, Body } from 'matter-js';
 import { GamePhysicsEngine } from './physicsEngine.js';  
 
 describe('Game Physics Engine - State Reset', () => {
@@ -117,4 +117,18 @@ describe('Game Physics Engine - Kinetic Interactivity', () => {
 
     expect(physics.ball.velocity.x).toBeGreaterThan(0);
   });
+
+  describe('Game Physics Engine - Kicking Mechanics', () => {
+    test('should apply impulse vector to ball when player executes a kick', () => {
+        const engine = new GamePhysicsEngine(800, 600);
+        
+        engine.addPlayer('player1', 350, 300); 
+        
+        engine.kickBall('player1', { x: 0.05, y: 0 });
+        
+        Engine.update(engine.engine, 16.66);
+        
+        expect(engine.ball.velocity.x).toBeGreaterThan(0);
+    });
+    });
 });
