@@ -31,7 +31,7 @@ describe('Game Physics Engine - Boundary Collisions', () => {
   });
 });
 
-describe('Game Physics Engine - Phase 1 High-Velocity Edge Cases', () => {
+describe('Game Physics Engine - High-Velocity Edge Cases', () => {
   test('should accurately reflect ball velocity and invert x-vector upon bouncing off the right wall', () => {
     const physics = new GamePhysicsEngine(800, 600);
     
@@ -46,5 +46,38 @@ describe('Game Physics Engine - Phase 1 High-Velocity Edge Cases', () => {
 
     expect(physics.ball.position.x).toBeLessThan(800);
     expect(physics.ball.velocity.x).toBeLessThan(0);
+  });
+});
+
+describe('Game Physics Engine - Player Integration & Borders', () => {
+  let gamePhysics;
+
+  beforeEach(() => {
+    gamePhysics = new GamePhysicsEngine(800, 600);
+  });
+
+  test('should handle spawning a dynamic player entity inside the canvas limits', () => {
+    const playerId = 'player_one';
+    gamePhysics.addPlayer(playerId, { x: 200, y: 300 });
+
+    const p = gamePhysics.players[playerId];
+    expect(p).toBeDefined();
+    expect(p.position.x).toBe(200);
+    expect(p.position.y).toBe(300);
+  });
+
+  test('should restrict player movement past the left boundary wall on structural impact', () => {
+    const playerId = 'player_left_edge';
+    gamePhysics.addPlayer(playerId, { x: 20, y: 300 });
+    const playerBody = gamePhysics.players[playerId];
+
+    Body.setVelocity(playerBody, { x: -15, y: 0 });
+
+    for (let i = 0; i < 20; i++) {
+      gamePhysics.update(16.66);
+    }
+
+    expect(playerBody.position.x).toBeGreaterThan(0);
+    expect(playerBody.velocity.x).toBe(0);
   });
 });
