@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
+    "matter-js": "^0.20.0",
     "shared": "*",
     "socket.io": "^4.8.3"
   },
