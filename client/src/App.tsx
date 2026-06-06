@@ -9,8 +9,9 @@ function App() {
     <div className="app-viewport">
       {gameState === 'home' ? (
         <div className="home-screen">
+          <div className="status-banner">IN DEVELOPMENT</div>
           <h1>TopDown Tactix</h1>
-          <p className="status">In Development</p>
+          <p className="creator">Created By Noah James</p>
           <button className="preview-btn" onClick={() => setGameState('playing')}>
             Preview Game
           </button>
