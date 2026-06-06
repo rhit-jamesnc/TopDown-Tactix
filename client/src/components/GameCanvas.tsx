@@ -12,15 +12,15 @@ export const GameCanvas = () => {
     const engine = engineRef.current
     const world = engine.world
 
-    const PITCH_WIDTH = 800
-    const PITCH_HEIGHT = 600
+    const PITCH_WIDTH = window.innerWidth
+    const PITCH_HEIGHT = window.innerHeight
     const WALL_THICKNESS = 100
     const GOAL_WIDTH = 160
     const WALL_HALF_HEIGHT = (PITCH_HEIGHT - GOAL_WIDTH) / 2
 
-    const PLAYER_RADIUS = 20
-    const BALL_RADIUS = 12
-    const FORCE_MAGNITUDE = 0.004
+    const PLAYER_RADIUS = 24
+    const BALL_RADIUS = 14
+    const FORCE_MAGNITUDE = 0.005
     const MAX_VELOCITY = 15
 
     const PLAYER1_START_POS = { x: 200, y: PITCH_HEIGHT / 2 }
@@ -124,10 +124,8 @@ export const GameCanvas = () => {
 
     Matter.Events.on(engine, 'collisionStart', (event) => {
       const pairs = event.pairs
-
       for (let i = 0; i < pairs.length; i++) {
         const pair = pairs[i]
-
         const isLeftGoal = pair.bodyA === leftGoalBackground || pair.bodyB === leftGoalBackground
         const isRightGoal = pair.bodyA === rightGoalBackground || pair.bodyB === rightGoalBackground
         const isBall = pair.bodyA === ball || pair.bodyB === ball

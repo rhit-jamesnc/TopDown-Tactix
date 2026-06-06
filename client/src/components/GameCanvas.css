@@ -1,25 +1,18 @@
 :root {
   --pitch-bg: #15803d;
-  --border-color: #4b5563;
   --line-white: rgba(255, 255, 255, 0.4);
   --line-white-bright: rgba(255, 255, 255, 0.8);
   --goal-left-bg: rgba(239, 68, 68, 0.2);
   --goal-right-bg: rgba(34, 197, 94, 0.2);
-  --shadow-color: rgba(0, 0, 0, 0.5);
-  --pitch-width: 800px;
-  --pitch-height: 600px;
-  --crease-height: 160px;
-  --crease-width: 20px;
+  --crease-height: 200px;
+  --crease-width: 30px;
 }
 
 .game-container {
   position: relative;
-  width: var(--pitch-width);
-  height: var(--pitch-height);
+  width: 100vw;
+  height: 100vh;
   background-color: var(--pitch-bg);
-  border: 4px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 10px 15px -3px var(--shadow-color);
   overflow: hidden;
 }
 
@@ -27,6 +20,8 @@
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 3;
 }
 
@@ -46,7 +41,7 @@
   left: 50%;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 4px;
   background-color: var(--line-white);
   transform: translateX(-50%);
 }
@@ -55,9 +50,9 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 120px;
-  height: 120px;
-  border: 2px solid var(--line-white);
+  width: 220px;
+  height: 220px;
+  border: 4px solid var(--line-white);
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
@@ -65,23 +60,25 @@
 .left-goal-crease {
   position: absolute;
   left: 0;
-  top: calc((var(--pitch-height) - var(--crease-height)) / 2);
+  top: 50%;
   width: var(--crease-width);
   height: var(--crease-height);
-  border-top: 2px solid var(--line-white-bright);
-  border-bottom: 2px solid var(--line-white-bright);
-  border-right: 2px solid var(--line-white-bright);
+  border-top: 4px solid var(--line-white-bright);
+  border-bottom: 4px solid var(--line-white-bright);
+  border-right: 4px solid var(--line-white-bright);
   background-color: var(--goal-left-bg);
+  transform: translateY(-50%);
 }
 
 .right-goal-crease {
   position: absolute;
   right: 0;
-  top: calc((var(--pitch-height) - var(--crease-height)) / 2);
+  top: 50%;
   width: var(--crease-width);
   height: var(--crease-height);
-  border-top: 2px solid var(--line-white-bright);
-  border-bottom: 2px solid var(--line-white-bright);
-  border-left: 2px solid var(--line-white-bright);
+  border-top: 4px solid var(--line-white-bright);
+  border-bottom: 4px solid var(--line-white-bright);
+  border-left: 4px solid var(--line-white-bright);
   background-color: var(--goal-right-bg);
+  transform: translateY(-50%);
 }
