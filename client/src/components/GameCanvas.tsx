@@ -77,7 +77,7 @@ export const GameCanvas = () => {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
 
-    Matter.Events.on(runner, 'beforeUpdate', () => {
+    Matter.Events.on(engine, 'beforeUpdate', () => {
       const forceMagnitude = 0.004
       const impulse = { x: 0, y: 0 }
 
@@ -89,9 +89,19 @@ export const GameCanvas = () => {
       if (impulse.x !== 0 || impulse.y !== 0) {
         Matter.Body.applyForce(player, player.position, impulse)
       }
+
+      const maxVelocity = 15
+      const clampVelocity = (body: Matter.Body) => {
+        let { x, y } = body.velocity
+        if (Math.abs(x) > maxVelocity) x = Math.sign(x) * maxVelocity
+        if (Math.abs(y) > maxVelocity) y = Math.sign(y) * maxVelocity
+        Matter.Body.setVelocity(body, { x, y })
+      }
+
+      clampVelocity(player)
+      clampVelocity(ball)
     })
 
-    // Clean up loop environments when component unmounts
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
