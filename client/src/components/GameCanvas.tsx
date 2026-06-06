@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import Matter from 'matter-js'
+import './GameCanvas.css'
 
 export const GameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
@@ -44,6 +45,18 @@ export const GameCanvas = () => {
       Matter.Bodies.rectangle(pitchWidth + wallThickness / 2, pitchHeight - wallHalfHeight / 2, wallThickness, wallHalfHeight, wallOptions)
     ]
 
+    const leftGoalBackground = Matter.Bodies.rectangle(-20, pitchHeight / 2, 40, goalWidth, {
+      isStatic: true,
+      isSensor: true,
+      render: { fillStyle: '#ef4444' }
+    })
+
+    const rightGoalBackground = Matter.Bodies.rectangle(pitchWidth + 20, pitchHeight / 2, 40, goalWidth, {
+      isStatic: true,
+      isSensor: true,
+      render: { fillStyle: '#22c55e' }
+    })
+
     const player = Matter.Bodies.circle(200, pitchHeight / 2, 20, {
       label: 'Player1',
       render: { fillStyle: '#3b82f6' },
@@ -58,7 +71,7 @@ export const GameCanvas = () => {
       restitution: 0.8 
     })
 
-    Matter.Composite.add(world, [...walls, player, ball])
+    Matter.Composite.add(world, [...walls, leftGoalBackground, rightGoalBackground, player, ball])
 
     const runner = Matter.Runner.create()
     Matter.Render.run(render)
@@ -113,15 +126,14 @@ export const GameCanvas = () => {
   }, [])
 
   return (
-    <div style={{ position: 'relative' }}>
-      <div 
-        ref={sceneRef} 
-        style={{ 
-          border: '4px solid #4b5563', 
-          borderRadius: '8px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
-        }} 
-      />
+    <div className="game-container">
+      <div ref={sceneRef} className="game-canvas" />
+      <div className="pitch-overlay">
+        <div className="center-line" />
+        <div className="center-circle" />
+        <div className="left-goal-crease" />
+        <div className="right-goal-crease" />
+      </div>
     </div>
   )
 }
