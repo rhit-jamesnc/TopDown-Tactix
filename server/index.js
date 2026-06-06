@@ -1,8 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { GAME_TITLE } from 'shared/constants.js'; 
-
 const app = express();
 const httpServer = createServer(app);
 
@@ -14,7 +12,7 @@ const io = new Server(httpServer, {
 });
 
 app.get('/', (req, res) => {
-  res.send(`${GAME_TITLE} Server is running smoothly.`);
+  res.send('TopDown Tactix Server is running smoothly.');
 });
 
 io.on('connection', (socket) => {
