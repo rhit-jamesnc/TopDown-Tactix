@@ -11,11 +11,13 @@
     "test": "vitest"
   },
   "dependencies": {
+    "matter-js": "^0.19.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/matter-js": "^0.20.2",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
