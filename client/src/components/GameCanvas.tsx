@@ -18,6 +18,10 @@ export const GameCanvas = () => {
     const goalWidth = 160
     const wallHalfHeight = (pitchHeight - goalWidth) / 2
 
+    // Starting positions for resets
+    const playerStartPos = { x: 200, y: pitchHeight / 2 }
+    const ballStartPos = { x: pitchWidth / 2, y: pitchHeight / 2 }
+
     const render = Matter.Render.create({
       element: sceneRef.current,
       engine: engine,
@@ -46,25 +50,27 @@ export const GameCanvas = () => {
     ]
 
     const leftGoalBackground = Matter.Bodies.rectangle(-20, pitchHeight / 2, 40, goalWidth, {
+      label: 'LeftGoal',
       isStatic: true,
       isSensor: true,
       render: { fillStyle: '#ef4444' }
     })
 
     const rightGoalBackground = Matter.Bodies.rectangle(pitchWidth + 20, pitchHeight / 2, 40, goalWidth, {
+      label: 'RightGoal',
       isStatic: true,
       isSensor: true,
       render: { fillStyle: '#22c55e' }
     })
 
-    const player = Matter.Bodies.circle(200, pitchHeight / 2, 20, {
+    const player = Matter.Bodies.circle(playerStartPos.x, playerStartPos.y, 20, {
       label: 'Player1',
       render: { fillStyle: '#3b82f6' },
       frictionAir: 0.06,
       restitution: 0.2
     })
 
-    const ball = Matter.Bodies.circle(pitchWidth / 2, pitchHeight / 2, 12, {
+    const ball = Matter.Bodies.circle(ballStartPos.x, ballStartPos.y, 12, {
       label: 'Ball',
       render: { fillStyle: '#ffffff' },
       frictionAir: 0.02,
@@ -89,6 +95,38 @@ export const GameCanvas = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
+
+    // Reset helper function
+    const resetPitch = () => {
+      // Reset player position and completely kill momentum
+      Matter.Body.setPosition(player, playerStartPos)
+      Matter.Body.setVelocity(player, { x: 0, y: 0 })
+      Matter.Body.setAngularVelocity(player, 0)
+
+      // Reset ball position and completely kill momentum
+      Matter.Body.setPosition(ball, ballStartPos)
+      Matter.Body.setVelocity(ball, { x: 0, y: 0 })
+      Matter.Body.setAngularVelocity(ball, 0)
+    }
+
+    // Collision listener for goals
+    Matter.Events.on(engine, 'collisionStart', (event) => {
+      const pairs = event.pairs
+
+      for (let i = 0; i < pairs.length; i++) {
+        const pair = pairs[i]
+
+        const isLeftGoal = pair.bodyA === leftGoalBackground || pair.bodyB === leftGoalBackground
+        const isRightGoal = pair.bodyA === rightGoalBackground || pair.bodyB === rightGoalBackground
+        const isBall = pair.bodyA === ball || pair.bodyB === ball
+
+        if ((isLeftGoal && isBall) || (isRightGoal && isBall)) {
+          // Optional: You could trigger score-tracking logic here!
+          resetPitch()
+          break // Exit loop since reset is handled
+        }
+      }
+    })
 
     Matter.Events.on(engine, 'beforeUpdate', () => {
       const forceMagnitude = 0.004
