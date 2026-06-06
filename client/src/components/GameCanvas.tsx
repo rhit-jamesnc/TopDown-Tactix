@@ -18,7 +18,6 @@ export const GameCanvas = () => {
     const goalWidth = 160
     const wallHalfHeight = (pitchHeight - goalWidth) / 2
 
-    // Starting positions for resets
     const playerStartPos = { x: 200, y: pitchHeight / 2 }
     const ballStartPos = { x: pitchWidth / 2, y: pitchHeight / 2 }
 
@@ -29,7 +28,7 @@ export const GameCanvas = () => {
         width: pitchWidth,
         height: pitchHeight,
         wireframes: false,
-        background: '#15803d',
+        background: 'transparent',
       }
     })
 
