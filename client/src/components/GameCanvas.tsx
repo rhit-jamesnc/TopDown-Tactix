@@ -12,21 +12,27 @@ export const GameCanvas = () => {
     const engine = engineRef.current
     const world = engine.world
 
-    const pitchWidth = 800
-    const pitchHeight = 600
-    const wallThickness = 100
-    const goalWidth = 160
-    const wallHalfHeight = (pitchHeight - goalWidth) / 2
+    const PITCH_WIDTH = 800
+    const PITCH_HEIGHT = 600
+    const WALL_THICKNESS = 100
+    const GOAL_WIDTH = 160
+    const WALL_HALF_HEIGHT = (PITCH_HEIGHT - GOAL_WIDTH) / 2
 
-    const playerStartPos = { x: 200, y: pitchHeight / 2 }
-    const ballStartPos = { x: pitchWidth / 2, y: pitchHeight / 2 }
+    const PLAYER_RADIUS = 20
+    const BALL_RADIUS = 12
+    const FORCE_MAGNITUDE = 0.004
+    const MAX_VELOCITY = 15
+
+    const PLAYER1_START_POS = { x: 200, y: PITCH_HEIGHT / 2 }
+    const PLAYER2_START_POS = { x: PITCH_WIDTH - 200, y: PITCH_HEIGHT / 2 }
+    const BALL_START_POS = { x: PITCH_WIDTH / 2, y: PITCH_HEIGHT / 2 }
 
     const render = Matter.Render.create({
       element: sceneRef.current,
       engine: engine,
       options: {
-        width: pitchWidth,
-        height: pitchHeight,
+        width: PITCH_WIDTH,
+        height: PITCH_HEIGHT,
         wireframes: false,
         background: 'transparent',
       }
@@ -40,43 +46,50 @@ export const GameCanvas = () => {
     }
 
     const walls = [
-      Matter.Bodies.rectangle(pitchWidth / 2, -wallThickness / 2, pitchWidth, wallThickness, wallOptions),
-      Matter.Bodies.rectangle(pitchWidth / 2, pitchHeight + wallThickness / 2, pitchWidth, wallThickness, wallOptions),
-      Matter.Bodies.rectangle(-wallThickness / 2, wallHalfHeight / 2, wallThickness, wallHalfHeight, wallOptions),
-      Matter.Bodies.rectangle(-wallThickness / 2, pitchHeight - wallHalfHeight / 2, wallThickness, wallHalfHeight, wallOptions),
-      Matter.Bodies.rectangle(pitchWidth + wallThickness / 2, wallHalfHeight / 2, wallThickness, wallHalfHeight, wallOptions),
-      Matter.Bodies.rectangle(pitchWidth + wallThickness / 2, pitchHeight - wallHalfHeight / 2, wallThickness, wallHalfHeight, wallOptions)
+      Matter.Bodies.rectangle(PITCH_WIDTH / 2, -WALL_THICKNESS / 2, PITCH_WIDTH, WALL_THICKNESS, wallOptions),
+      Matter.Bodies.rectangle(PITCH_WIDTH / 2, PITCH_HEIGHT + WALL_THICKNESS / 2, PITCH_WIDTH, WALL_THICKNESS, wallOptions),
+      Matter.Bodies.rectangle(-WALL_THICKNESS / 2, WALL_HALF_HEIGHT / 2, WALL_THICKNESS, WALL_HALF_HEIGHT, wallOptions),
+      Matter.Bodies.rectangle(-WALL_THICKNESS / 2, PITCH_HEIGHT - WALL_HALF_HEIGHT / 2, WALL_THICKNESS, WALL_HALF_HEIGHT, wallOptions),
+      Matter.Bodies.rectangle(PITCH_WIDTH + WALL_THICKNESS / 2, WALL_HALF_HEIGHT / 2, WALL_THICKNESS, WALL_HALF_HEIGHT, wallOptions),
+      Matter.Bodies.rectangle(PITCH_WIDTH + WALL_THICKNESS / 2, PITCH_HEIGHT - WALL_HALF_HEIGHT / 2, WALL_THICKNESS, WALL_HALF_HEIGHT, wallOptions)
     ]
 
-    const leftGoalBackground = Matter.Bodies.rectangle(-20, pitchHeight / 2, 40, goalWidth, {
+    const leftGoalBackground = Matter.Bodies.rectangle(-20, PITCH_HEIGHT / 2, 40, GOAL_WIDTH, {
       label: 'LeftGoal',
       isStatic: true,
       isSensor: true,
       render: { fillStyle: '#ef4444' }
     })
 
-    const rightGoalBackground = Matter.Bodies.rectangle(pitchWidth + 20, pitchHeight / 2, 40, goalWidth, {
+    const rightGoalBackground = Matter.Bodies.rectangle(PITCH_WIDTH + 20, PITCH_HEIGHT / 2, 40, GOAL_WIDTH, {
       label: 'RightGoal',
       isStatic: true,
       isSensor: true,
       render: { fillStyle: '#22c55e' }
     })
 
-    const player = Matter.Bodies.circle(playerStartPos.x, playerStartPos.y, 20, {
+    const player1 = Matter.Bodies.circle(PLAYER1_START_POS.x, PLAYER1_START_POS.y, PLAYER_RADIUS, {
       label: 'Player1',
+      render: { fillStyle: '#ef4444' },
+      frictionAir: 0.06,
+      restitution: 0.2
+    })
+
+    const player2 = Matter.Bodies.circle(PLAYER2_START_POS.x, PLAYER2_START_POS.y, PLAYER_RADIUS, {
+      label: 'Player2',
       render: { fillStyle: '#3b82f6' },
       frictionAir: 0.06,
       restitution: 0.2
     })
 
-    const ball = Matter.Bodies.circle(ballStartPos.x, ballStartPos.y, 12, {
+    const ball = Matter.Bodies.circle(BALL_START_POS.x, BALL_START_POS.y, BALL_RADIUS, {
       label: 'Ball',
       render: { fillStyle: '#ffffff' },
       frictionAir: 0.02,
       restitution: 0.8 
     })
 
-    Matter.Composite.add(world, [...walls, leftGoalBackground, rightGoalBackground, player, ball])
+    Matter.Composite.add(world, [...walls, leftGoalBackground, rightGoalBackground, player1, player2, ball])
 
     const runner = Matter.Runner.create()
     Matter.Render.run(render)
@@ -95,20 +108,20 @@ export const GameCanvas = () => {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
 
-    // Reset helper function
     const resetPitch = () => {
-      // Reset player position and completely kill momentum
-      Matter.Body.setPosition(player, playerStartPos)
-      Matter.Body.setVelocity(player, { x: 0, y: 0 })
-      Matter.Body.setAngularVelocity(player, 0)
+      Matter.Body.setPosition(player1, PLAYER1_START_POS)
+      Matter.Body.setVelocity(player1, { x: 0, y: 0 })
+      Matter.Body.setAngularVelocity(player1, 0)
 
-      // Reset ball position and completely kill momentum
-      Matter.Body.setPosition(ball, ballStartPos)
+      Matter.Body.setPosition(player2, PLAYER2_START_POS)
+      Matter.Body.setVelocity(player2, { x: 0, y: 0 })
+      Matter.Body.setAngularVelocity(player2, 0)
+
+      Matter.Body.setPosition(ball, BALL_START_POS)
       Matter.Body.setVelocity(ball, { x: 0, y: 0 })
       Matter.Body.setAngularVelocity(ball, 0)
     }
 
-    // Collision listener for goals
     Matter.Events.on(engine, 'collisionStart', (event) => {
       const pairs = event.pairs
 
@@ -120,35 +133,42 @@ export const GameCanvas = () => {
         const isBall = pair.bodyA === ball || pair.bodyB === ball
 
         if ((isLeftGoal && isBall) || (isRightGoal && isBall)) {
-          // Optional: You could trigger score-tracking logic here!
           resetPitch()
-          break // Exit loop since reset is handled
+          break 
         }
       }
     })
 
     Matter.Events.on(engine, 'beforeUpdate', () => {
-      const forceMagnitude = 0.004
-      const impulse = { x: 0, y: 0 }
+      const p1Impulse = { x: 0, y: 0 }
+      const p2Impulse = { x: 0, y: 0 }
 
-      if (activeKeys['w'] || activeKeys['arrowup']) impulse.y -= forceMagnitude
-      if (activeKeys['s'] || activeKeys['arrowdown']) impulse.y += forceMagnitude
-      if (activeKeys['a'] || activeKeys['arrowleft']) impulse.x -= forceMagnitude
-      if (activeKeys['d'] || activeKeys['arrowright']) impulse.x += forceMagnitude
+      if (activeKeys['w']) p1Impulse.y -= FORCE_MAGNITUDE
+      if (activeKeys['s']) p1Impulse.y += FORCE_MAGNITUDE
+      if (activeKeys['a']) p1Impulse.x -= FORCE_MAGNITUDE
+      if (activeKeys['d']) p1Impulse.x += FORCE_MAGNITUDE
 
-      if (impulse.x !== 0 || impulse.y !== 0) {
-        Matter.Body.applyForce(player, player.position, impulse)
+      if (activeKeys['arrowup']) p2Impulse.y -= FORCE_MAGNITUDE
+      if (activeKeys['arrowdown']) p2Impulse.y += FORCE_MAGNITUDE
+      if (activeKeys['arrowleft']) p2Impulse.x -= FORCE_MAGNITUDE
+      if (activeKeys['arrowright']) p2Impulse.x += FORCE_MAGNITUDE
+
+      if (p1Impulse.x !== 0 || p1Impulse.y !== 0) {
+        Matter.Body.applyForce(player1, player1.position, p1Impulse)
+      }
+      if (p2Impulse.x !== 0 || p2Impulse.y !== 0) {
+        Matter.Body.applyForce(player2, player2.position, p2Impulse)
       }
 
-      const maxVelocity = 15
       const clampVelocity = (body: Matter.Body) => {
         let { x, y } = body.velocity
-        if (Math.abs(x) > maxVelocity) x = Math.sign(x) * maxVelocity
-        if (Math.abs(y) > maxVelocity) y = Math.sign(y) * maxVelocity
+        if (Math.abs(x) > MAX_VELOCITY) x = Math.sign(x) * MAX_VELOCITY
+        if (Math.abs(y) > MAX_VELOCITY) y = Math.sign(y) * MAX_VELOCITY
         Matter.Body.setVelocity(body, { x, y })
       }
 
-      clampVelocity(player)
+      clampVelocity(player1)
+      clampVelocity(player2)
       clampVelocity(ball)
     })
 
