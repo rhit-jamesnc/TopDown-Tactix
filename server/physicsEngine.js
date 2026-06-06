@@ -131,6 +131,7 @@ export class GamePhysicsEngine {
                 currentX = radius;
                 normalHit = true;
             }
+            
             if (currentX > this.width - radius) {
                 currentX = this.width - radius;
                 normalHit = true;
