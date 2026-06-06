@@ -75,10 +75,16 @@ export class GamePhysicsEngine {
                 const labels = [pair.bodyA.label, pair.bodyB.label];
                 
                 if (labels.includes('ball')) {
-                    if (labels.includes('leftGoal') && this.goalCallback) {
-                        this.goalCallback('away');
-                    } else if (labels.includes('rightGoal') && this.goalCallback) {
-                        this.goalCallback('home');
+                    if (labels.includes('leftGoal')) {
+                        this.resetPitch();
+                        if (this.goalCallback) {
+                            this.goalCallback('away');
+                        }
+                    } else if (labels.includes('rightGoal')) {
+                        this.resetPitch();
+                        if (this.goalCallback) {
+                            this.goalCallback('home');
+                        }
                     }
                 }
             });
@@ -96,6 +102,8 @@ export class GamePhysicsEngine {
         };
 
         const playerBody = Bodies.circle(position.x, position.y, radius, playerOptions);
+        playerBody.startingPosition = { x: position.x, y: position.y };
+
         this.players[id] = playerBody;
         World.add(this.world, playerBody);
     }
@@ -123,6 +131,7 @@ export class GamePhysicsEngine {
                 currentX = radius;
                 normalHit = true;
             }
+            
             if (currentX > this.width - radius) {
                 currentX = this.width - radius;
                 normalHit = true;
@@ -167,9 +176,16 @@ export class GamePhysicsEngine {
         Body.setVelocity(this.ball, { x: 0, y: 0 });
         Body.setAngularVelocity(this.ball, 0);
 
-        Object.values(this.players).forEach(playerBody => {
+        Object.values(this.players).forEach((playerBody) => {
+            if (playerBody.startingPosition) {
+                Body.setPosition(playerBody, { 
+                    x: playerBody.startingPosition.x, 
+                    y: playerBody.startingPosition.y 
+                });
+            }
             Body.setVelocity(playerBody, { x: 0, y: 0 });
             Body.setAngularVelocity(playerBody, 0);
+            playerBody.force = { x: 0, y: 0 };
         });
     }
 
