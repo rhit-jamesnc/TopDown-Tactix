@@ -28,3 +28,38 @@ html, body, #root {
   z-index: 2;
   pointer-events: none;
 }
+
+.home-screen {
+  text-align: center;
+}
+
+.home-screen h1 {
+  color: white;
+}
+
+.home-screen a {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 20px;
+  cursor: pointer;
+  background-color: #1f9f48;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.preview-btn {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 20px;
+  cursor: pointer;
+  background-color: #1f9f48;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.status {
+  color: #9CA3AF;
+}
