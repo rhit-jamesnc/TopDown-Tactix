@@ -144,11 +144,11 @@ export class GamePhysicsEngine {
         const radius = 15;
         const x = this.ball.position.x;
 
-        if (x + radius < 0) {
+        if (x + radius - 1 < 0) {
             this.isGoalTriggered = true;
             if (this.goalCallback) this.goalCallback('away');
             this.resetPitch();
-        } else if (x - radius > this.width) {
+        } else if (x - radius + 1 > this.width) {
             this.isGoalTriggered = true;
             if (this.goalCallback) this.goalCallback('home');
             this.resetPitch();
