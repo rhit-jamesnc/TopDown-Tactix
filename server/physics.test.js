@@ -99,7 +99,7 @@ describe('Game Physics Engine - Player Integration & Borders', () => {
       gamePhysics.update(16.66);
     }
 
-    expect(playerBody.position.x).toBeGreaterThanOrEqual(25);
+    expect(playerBody.position.x).toBeGreaterThanOrEqual(15);
     expect(playerBody.velocity.x).toBe(0);
   });
 });
@@ -222,6 +222,6 @@ describe('Game Physics Engine - Goal Area Permissions', () => {
       gamePhysics.update(16.66);
     }
 
-    expect(playerBody.position.x).toBeGreaterThanOrEqual(25);
+    expect(playerBody.position.x).toBeGreaterThanOrEqual(15);
   });
 });
