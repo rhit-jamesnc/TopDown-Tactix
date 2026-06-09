@@ -1,5 +1,9 @@
 import { Engine, World, Bodies, Body, Events } from 'matter-js';
 
+const CATEGORY_DEFAULT = 0x0001;
+const CATEGORY_PLAYER = 0x0002;
+const CATEGORY_BLOCKER = 0x0004;
+
 export class GamePhysicsEngine {
     constructor(width = 800, height = 600) {
         this.width = width;
@@ -31,7 +35,17 @@ export class GamePhysicsEngine {
         const goalWidth = 160; 
         const wallHalfHeight = (h - goalWidth) / 2;
 
-        const wallOptions = { isStatic: true, restitution: 1, friction: 0, frictionStatic: 0 };
+        const wallOptions = { 
+            isStatic: true,
+            restitution: 1, 
+            friction: 0, 
+            frictionStatic: 0,
+            collisionFilter: {
+                category: CATEGORY_DEFAULT,
+                mask: CATEGORY_DEFAULT | CATEGORY_PLAYER
+            }
+        
+        };
         const sensorOptions = { isStatic: true, isSensor: true };
 
         this.walls = [
@@ -51,7 +65,26 @@ export class GamePhysicsEngine {
         this.leftGoalSensor = Bodies.rectangle(-20, h / 2, 40, goalWidth, { ...sensorOptions, label: 'leftGoal' });
         this.rightGoalSensor = Bodies.rectangle(w + 20, h / 2, 40, goalWidth, { ...sensorOptions, label: 'rightGoal' });
 
-        World.add(this.world, [...this.walls, this.leftGoalSensor, this.rightGoalSensor]);
+        const blockerOptions = {
+            isStatic: true,
+            restitution: 0,
+            friction: 0,
+            collisionFilter: {
+                category: CATEGORY_BLOCKER,
+                mask: CATEGORY_PLAYER
+            }
+        };
+
+        this.leftGoalBlocker = Bodies.rectangle(0, h / 2, 20, goalWidth, blockerOptions);
+        this.rightGoalBlocker = Bodies.rectangle(w, h / 2, 20, goalWidth, blockerOptions);
+
+        World.add(this.world, [
+            ...this.walls, 
+            this.leftGoalSensor, 
+            this.rightGoalSensor,
+            this.leftGoalBlocker,
+            this.rightGoalBlocker
+        ]);
     }
 
     _createBall() {
@@ -62,7 +95,11 @@ export class GamePhysicsEngine {
             frictionAir: 0,
             inertia: Infinity,
             slop: 0,
-            label: 'ball'
+            label: 'ball',
+            collisionFilter: {
+                category: CATEGORY_DEFAULT,
+                mask: CATEGORY_DEFAULT | CATEGORY_PLAYER
+            }
         };
 
         this.ball = Bodies.circle(this.width / 2, this.height / 2, radius, ballOptions);
@@ -98,7 +135,11 @@ export class GamePhysicsEngine {
             friction: 0,
             frictionAir: 0.1,
             inertia: Infinity,
-            slop: 0
+            slop: 0,
+            collisionFilter: {
+                category: CATEGORY_PLAYER,
+                mask: CATEGORY_DEFAULT | CATEGORY_PLAYER | CATEGORY_BLOCKER
+            }
         };
 
         const playerBody = Bodies.circle(position.x, position.y, radius, playerOptions);

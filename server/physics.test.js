@@ -167,3 +167,37 @@ describe('Game Physics Engine - Goal Detection', () => {
     expect(scoringTeam).toBe('away'); 
   });
 });
+
+describe('Game Physics Engine - Goal Area Permissions', () => {
+  let gamePhysics;
+  beforeEach(() => {
+    gamePhysics = new GamePhysicsEngine(800, 600);
+  });
+
+  test('should allow the ball to pass through the left goal opening', () => {
+    const ballBody = gamePhysics.ball;
+    
+    Body.setPosition(ballBody, { x: 50, y: 300 });
+    Body.setVelocity(ballBody, { x: -20, y: 0 });
+
+    for (let i = 0; i < 20; i++) {
+      gamePhysics.update(16.66);
+    }
+
+    expect(ballBody.position.x).toBeLessThan(0);
+  });
+
+  test('should block a player from passing through the left goal opening', () => {
+    const playerId = 'test_player_goal_block';
+    gamePhysics.addPlayer(playerId, { x: 50, y: 300 });
+    const playerBody = gamePhysics.players[playerId];
+
+    Body.setVelocity(playerBody, { x: -20, y: 0 });
+
+    for (let i = 0; i < 20; i++) {
+      gamePhysics.update(16.66);
+    }
+
+    expect(playerBody.position.x).toBeGreaterThanOrEqual(25);
+  });
+});
