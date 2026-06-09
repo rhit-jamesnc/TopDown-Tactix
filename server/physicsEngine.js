@@ -1,4 +1,4 @@
-import { Engine, World, Bodies, Body, Events } from 'matter-js';
+import { Engine, World, Bodies, Body } from 'matter-js';
 
 const CATEGORY_DEFAULT = 0x0001;
 const CATEGORY_PLAYER = 0x0002;
@@ -22,10 +22,10 @@ export class GamePhysicsEngine {
         this.ball = null;
         this.players = {};
         this.goalCallback = null;
+        this.isGoalTriggered = false;
 
         this._createBoundaries();
         this._createBall();
-        this._setupCollisionListeners();
     }
 
     _createBoundaries() {
@@ -46,7 +46,6 @@ export class GamePhysicsEngine {
             }
         
         };
-        const sensorOptions = { isStatic: true, isSensor: true };
 
         this.walls = [
             Bodies.rectangle(w / 2, -thickness / 2, w, thickness, wallOptions),
@@ -62,9 +61,6 @@ export class GamePhysicsEngine {
             Bodies.rectangle(w + thickness + 10, h / 2, thickness, goalWidth, wallOptions)
         ];
 
-        this.leftGoalSensor = Bodies.rectangle(-20, h / 2, 40, goalWidth, { ...sensorOptions, label: 'leftGoal' });
-        this.rightGoalSensor = Bodies.rectangle(w + 20, h / 2, 40, goalWidth, { ...sensorOptions, label: 'rightGoal' });
-
         const blockerOptions = {
             isStatic: true,
             restitution: 0,
@@ -79,9 +75,7 @@ export class GamePhysicsEngine {
         this.rightGoalBlocker = Bodies.rectangle(w, h / 2, 20, goalWidth, blockerOptions);
 
         World.add(this.world, [
-            ...this.walls, 
-            this.leftGoalSensor, 
-            this.rightGoalSensor,
+            ...this.walls,
             this.leftGoalBlocker,
             this.rightGoalBlocker
         ]);
@@ -104,26 +98,6 @@ export class GamePhysicsEngine {
 
         this.ball = Bodies.circle(this.width / 2, this.height / 2, radius, ballOptions);
         World.add(this.world, this.ball);
-    }
-
-    _setupCollisionListeners() {
-        Events.on(this.engine, 'collisionStart', (event) => {
-            event.pairs.forEach((pair) => {
-                const bodyA = pair.bodyA;
-                const bodyB = pair.bodyB;
-
-                const isBall = bodyA.label === 'ball' || bodyB.label === 'ball';
-                const isLeftGoal = bodyA.label === 'leftGoal' || bodyB.label === 'leftGoal';
-                const isRightGoal = bodyA.label === 'rightGoal' || bodyB.label === 'rightGoal';
-                
-                if (isBall && (isLeftGoal || isRightGoal)) {
-                    if (this.goalCallback) {
-                        this.goalCallback(isLeftGoal ? 'away' : 'home');
-                        this.resetPitch();
-                    }
-                }
-            });
-        });
     }
 
     addPlayer(id, position) {
@@ -152,10 +126,30 @@ export class GamePhysicsEngine {
         const subSteps = 6;
         const stepSize = FIXED_DELTA / subSteps;
 
+        this.isGoalTriggered = false;
+
         for (let i = 0; i < subSteps; i++) {
             this._clampVelocities();
             Engine.update(this.engine, stepSize);
             this._enforceBoundaries();
+            this._checkGoals();
+        }
+    }
+
+    _checkGoals() {
+        if (!this.ball || !this.goalCallback || this.isGoalTriggered) return;
+
+        const radius = 15;
+        const x = this.ball.position.x;
+
+        if (x + radius < 0) {
+            this.isGoalTriggered = true;
+            if (this.goalCallback) this.goalCallback('away');
+            this.resetPitch();
+        } else if (x - radius > this.width) {
+            this.isGoalTriggered = true;
+            if (this.goalCallback) this.goalCallback('home');
+            this.resetPitch();
         }
     }
 
@@ -211,9 +205,9 @@ export class GamePhysicsEngine {
     }
 
     resetPitch() {
-        Body.setPosition(this.ball, { x: this.width / 2, y: this.height / 2 });
         Body.setVelocity(this.ball, { x: 0, y: 0 });
         Body.setAngularVelocity(this.ball, 0);
+        Body.setPosition(this.ball, { x: this.width / 2, y: this.height / 2 });
 
         Object.values(this.players).forEach((playerBody) => {
             if (playerBody.startingPosition) {
