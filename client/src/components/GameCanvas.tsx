@@ -66,7 +66,7 @@ export const GameCanvas = () => {
     window.addEventListener('keyup', handleKeyUp)
 
     let animationFrameId: number
-    const FORCE_MAGNITUDE = 0.005
+    const FORCE_MAGNITUDE = 0.012
 
     const tick = () => {
         const p1Impulse = { x: 0, y: 0 }

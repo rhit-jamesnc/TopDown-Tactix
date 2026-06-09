@@ -89,7 +89,7 @@ export class GamePhysicsEngine {
         const ballOptions = {
             restitution: 1,
             friction: 0,
-            frictionAir: 0,
+            frictionAir: 0.015,
             inertia: Infinity,
             slop: 0,
             label: 'ball',
