@@ -2,19 +2,32 @@ import { useState } from 'react';
 import './HomePage.css';
 
 export const HomePage = ({ onStartGame }: { onStartGame: () => void }) => {
-  const [showHelp, setShowHelp] = useState(false);
+  const [helpView, setHelpView] = useState<'closed' | 'main' | 'offline'>('closed');
   
   return (
     <div className="home-screen">
-      <button className="help-btn" onClick={() => setShowHelp(true)}>?</button>
-
-      {showHelp && (
-        <div className="help-modal">
-          <div className="help-content">
-            <h2>How to Play</h2>
-            <p>Use <b>WASD</b> or <b>Arrow Keys</b> to control your player.</p>
-            <p>Navigate to the ball and drive it into the opponent's goal to score.</p>
-            <button onClick={() => setShowHelp(false)}>Close</button>
+      <button className="help-btn" onClick={() => setHelpView('main')}>?</button>
+      
+      {helpView !== 'closed' && (
+        <div className="help-modal" onClick={() => setHelpView('closed')}>
+          <div className="help-content" onClick={e => e.stopPropagation()}>
+            <button className="close-x" onClick={() => setHelpView('closed')}>X</button>
+            {helpView === 'main' && (
+              <>
+                <h2>How to Play</h2>
+                <p>Select a game mode to see specific controls and rules.</p>
+                <button onClick={() => setHelpView('offline')}>1v1 Offline</button>
+              </>
+            )}
+            {helpView === 'offline' && (
+              <>
+                <h2>1v1 Mode</h2>
+                <p><b>Player 1:</b> WASD to move.</p>
+                <p><b>Player 2:</b> Arrow Keys to move.</p>
+                <p>Whoever has the highest score at the end of the time wins!</p>
+                <button onClick={() => setHelpView('main')}>Back</button>
+              </>
+            )}
           </div>
         </div>
       )}
