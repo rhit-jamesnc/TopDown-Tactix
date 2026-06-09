@@ -5,6 +5,7 @@ const CATEGORY_PLAYER = 0x0002;
 const CATEGORY_BLOCKER = 0x0004;
 
 export class GamePhysicsEngine {
+
     constructor(width = 800, height = 600) {
         this.width = width;
         this.height = height;
@@ -20,7 +21,8 @@ export class GamePhysicsEngine {
 
         this.walls = [];
         this.ball = null;
-        this.players = {};
+        this.players = {};this.leftGoalBlocker = null;
+        this.rightGoalBlocker = null;
         this.goalCallback = null;
         this.isGoalTriggered = false;
 
