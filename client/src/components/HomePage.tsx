@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { InDevelopmentModal } from './InDevelopmentModal';
 import './HomePage.css';
 
 export const HomePage = ({ onStartGame }: { onStartGame: () => void }) => {
   const [helpView, setHelpView] = useState<'closed' | 'main' | 'offline'>('closed');
+  const [showDevModal, setShowDevModal] = useState(true);
   
   return (
     <div className="home-screen">
+      {showDevModal && <InDevelopmentModal onClose={() => setShowDevModal(false)} />}
+
       <button className="help-btn" onClick={() => setHelpView('main')}>?</button>
       
       {helpView !== 'closed' && (
@@ -32,7 +36,6 @@ export const HomePage = ({ onStartGame }: { onStartGame: () => void }) => {
         </div>
       )}
 
-      {/* <div className="status-banner">IN DEVELOPMENT</div> */}
       <h1>TopDown Tactix</h1>
       <p className="creator">Created By Noah James</p>
       <button className="preview-btn" onClick={onStartGame}>
