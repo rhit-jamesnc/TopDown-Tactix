@@ -98,7 +98,7 @@ export class GamePhysicsEngine {
             label: 'ball',
             collisionFilter: {
                 category: CATEGORY_DEFAULT,
-                mask: CATEGORY_DEFAULT | CATEGORY_PLAYER
+                mask: (CATEGORY_DEFAULT | CATEGORY_PLAYER) & ~CATEGORY_BLOCKER
             }
         };
 
@@ -109,19 +109,17 @@ export class GamePhysicsEngine {
     _setupCollisionListeners() {
         Events.on(this.engine, 'collisionStart', (event) => {
             event.pairs.forEach((pair) => {
-                const labels = [pair.bodyA.label, pair.bodyB.label];
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+
+                const isBall = bodyA.label === 'ball' || bodyB.label === 'ball';
+                const isLeftGoal = bodyA.label === 'leftGoal' || bodyB.label === 'leftGoal';
+                const isRightGoal = bodyA.label === 'rightGoal' || bodyB.label === 'rightGoal';
                 
-                if (labels.includes('ball')) {
-                    if (labels.includes('leftGoal')) {
+                if (isBall && (isLeftGoal || isRightGoal)) {
+                    if (this.goalCallback) {
+                        this.goalCallback(isLeftGoal ? 'away' : 'home');
                         this.resetPitch();
-                        if (this.goalCallback) {
-                            this.goalCallback('away');
-                        }
-                    } else if (labels.includes('rightGoal')) {
-                        this.resetPitch();
-                        if (this.goalCallback) {
-                            this.goalCallback('home');
-                        }
                     }
                 }
             });

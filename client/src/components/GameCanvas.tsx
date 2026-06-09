@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
 import './GameCanvas.css'
 
+const CATEGORY_DEFAULT = 0x0001;
+const CATEGORY_PLAYER = 0x0002;
+const CATEGORY_BLOCKER = 0x0004;
+
 export const GameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef(Matter.Engine.create({ gravity: { x: 0, y: 0 } }))
@@ -43,7 +47,11 @@ export const GameCanvas = () => {
         isStatic: true,
         restitution: 1,
         friction: 0,
-        frictionStatic: 0
+        frictionStatic: 0,
+        collisionFilter: {
+            category: CATEGORY_DEFAULT,
+            mask: CATEGORY_DEFAULT | CATEGORY_PLAYER
+        }
     }
 
     const walls = [
@@ -58,14 +66,12 @@ export const GameCanvas = () => {
     const leftGoalBackground = Matter.Bodies.rectangle(-20, PITCH_HEIGHT / 2, 40, GOAL_WIDTH, {
         label: 'LeftGoal',
         isStatic: true,
-        isSensor: true,
         render: { fillStyle: '#ef4444' }
     })
 
     const rightGoalBackground = Matter.Bodies.rectangle(PITCH_WIDTH + 20, PITCH_HEIGHT / 2, 40, GOAL_WIDTH, {
         label: 'RightGoal',
         isStatic: true,
-        isSensor: true,
         render: { fillStyle: '#22c55e' }
     })
 
@@ -73,21 +79,33 @@ export const GameCanvas = () => {
         label: 'Player1',
         render: { fillStyle: '#ef4444' },
         frictionAir: 0.06,
-        restitution: 0.2
+        restitution: 0.2,
+        collisionFilter: {
+            category: CATEGORY_PLAYER,
+            mask: CATEGORY_DEFAULT | CATEGORY_PLAYER | CATEGORY_BLOCKER
+        }
     })
 
     const player2 = Matter.Bodies.circle(PLAYER2_START_POS.x, PLAYER2_START_POS.y, PLAYER_RADIUS, {
         label: 'Player2',
         render: { fillStyle: '#3b82f6' },
         frictionAir: 0.06,
-        restitution: 0.2
+        restitution: 0.2,
+        collisionFilter: {
+            category: CATEGORY_PLAYER,
+            mask: CATEGORY_DEFAULT | CATEGORY_PLAYER | CATEGORY_BLOCKER
+        }
     })
 
     const ball = Matter.Bodies.circle(BALL_START_POS.x, BALL_START_POS.y, BALL_RADIUS, {
         label: 'Ball',
         render: { fillStyle: '#ffffff' },
         frictionAir: 0.02,
-        restitution: 0.8 
+        restitution: 0.8,
+        collisionFilter: {
+            category: CATEGORY_DEFAULT,
+            mask: CATEGORY_DEFAULT | CATEGORY_PLAYER
+        }
     })
 
     Matter.Composite.add(world, [...walls, leftGoalBackground, rightGoalBackground, player1, player2, ball])
