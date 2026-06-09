@@ -14,7 +14,10 @@
     "lint": "npm run lint --workspaces --if-present && eslint .",
     "test": "vitest",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "dev": "vite",
+    "build": "tsc -b --verbose && vite build --debug",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
