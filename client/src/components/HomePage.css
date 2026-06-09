@@ -1,52 +1,57 @@
 .home-screen {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #111827;
+  gap: 20px;
 }
 
 .home-screen h1 {
+  font-size: 5rem;
   color: white;
+  margin: 0;
 }
 
-.home-screen a {
-  padding: 10px 20px;
-  font-size: 18px;
-  margin: 20px;
+.preview-btn, .home-screen a {
+  padding: 15px 40px;
+  font-size: 1.5rem;
+  margin: 10px;
   cursor: pointer;
   background-color: #1f9f48;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   text-decoration: none;
+  transition: transform 0.2s;
 }
 
-.preview-btn {
-  padding: 10px 20px;
-  font-size: 18px;
-  margin: 20px;
-  cursor: pointer;
-  background-color: #1f9f48;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.preview-btn:hover, .home-screen a:hover {
+  transform: scale(1.05);
 }
 
 .creator {
   color: #9CA3AF;
+  font-size: 1.25rem;
 }
 
 .status-banner {
   background: repeating-linear-gradient(
     45deg,
     #fbbf24,
-    #fbbf24 10px,
-    #000 10px,
-    #000 20px
+    #fbbf24 20px,
+    #000 20px,
+    #000 40px
   );
-  padding: 10px;
+  padding: 15px;
   width: 100%;
   text-align: center;
+  font-size: 1.5rem;
   font-weight: bold;
-  
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
-  border-bottom: 3px solid #000;
+  border-bottom: 5px solid #000;
+  position: absolute;
+  top: 0;
 }
