@@ -1,0 +1,73 @@
+.dev-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.dev-modal-content {
+  background: #1f2937;
+  padding: 30px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  border: 4px solid #fbbf24;
+  
+  background-image: repeating-linear-gradient(
+    45deg,
+    #fbbf24,
+    #fbbf24 15px,
+    #000000 15px,
+    #000000 30px
+  );
+  
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  max-width: 300px;
+}
+
+.dev-modal-content h2,
+.dev-modal-content p {
+  background: rgba(31, 41, 55, 0.85);
+  padding: 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.dev-modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #fbbf24;
+}
+
+.dev-modal-content p {
+  margin: 0;
+  color: #ffffff;
+}
+
+.dev-modal-content p b {
+    color: #fbbf24;
+}
+
+.dev-modal-content button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #fbbf24;
+  color: #000000;
+  border: 2px solid #000000;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dev-modal-content button:hover {
+  background: #000000;
+  color: #fbbf24;
+}
