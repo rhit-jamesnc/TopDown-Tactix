@@ -200,13 +200,6 @@ export class GamePhysicsEngine {
         });
     }
 
-    kickBall(playerId, forceVector) {
-        const player = this.players[playerId];
-        if (!player || !this.ball) return;
-
-        Body.applyForce(this.ball, this.ball.position, forceVector);
-    }
-
     onGoal(callback) {
         this.goalCallback = callback;
     }

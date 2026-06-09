@@ -129,21 +129,6 @@ describe('Game Physics Engine - Kinetic Interactivity', () => {
   });
 });
 
-describe('Game Physics Engine - Kicking Mechanics', () => {
-  let engine;
-
-  beforeEach(() => {
-    engine = new GamePhysicsEngine(800, 600);
-  });
-
-  test('should apply impulse vector to ball when player executes a kick', () => { 
-    engine.addPlayer('player1', { x: 350, y: 300 });        
-    engine.kickBall('player1', { x: 0.05, y: 0 });
-    engine.update(16.66);
-    expect(engine.ball.velocity.x).toBeGreaterThan(0);
-  });
-});
-
 describe('Game Physics Engine - Goal Detection', () => {
   test('should trigger goal event when ball fully crosses left goal line', () => {
     const engine = new GamePhysicsEngine(800, 600);
