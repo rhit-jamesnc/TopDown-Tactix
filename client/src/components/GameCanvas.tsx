@@ -21,7 +21,7 @@ export const GameCanvas = () => {
 
   useEffect(() => {
     if (!sceneRef.current) return
-
+ 
     const PITCH_WIDTH = window.innerWidth
     const PITCH_HEIGHT = window.innerHeight
 

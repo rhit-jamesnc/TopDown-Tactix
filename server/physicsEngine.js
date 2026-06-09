@@ -21,7 +21,8 @@ export class GamePhysicsEngine {
 
         this.walls = [];
         this.ball = null;
-        this.players = {};this.leftGoalBlocker = null;
+        this.players = {};
+        this.leftGoalBlocker = null;
         this.rightGoalBlocker = null;
         this.goalCallback = null;
         this.isGoalTriggered = false;
@@ -73,8 +74,8 @@ export class GamePhysicsEngine {
             }
         };
 
-        this.leftGoalBlocker = Bodies.rectangle(0, h / 2, 20, goalWidth, blockerOptions);
-        this.rightGoalBlocker = Bodies.rectangle(w, h / 2, 20, goalWidth, blockerOptions);
+        this.leftGoalBlocker = Bodies.rectangle(-10, h / 2, 20, goalWidth, blockerOptions);
+        this.rightGoalBlocker = Bodies.rectangle(w + 10, h / 2, 20, goalWidth, blockerOptions);
 
         World.add(this.world, [
             ...this.walls,
@@ -133,7 +134,6 @@ export class GamePhysicsEngine {
         for (let i = 0; i < subSteps; i++) {
             this._clampVelocities();
             Engine.update(this.engine, stepSize);
-            this._enforceBoundaries();
             this._checkGoals();
         }
     }
@@ -153,30 +153,6 @@ export class GamePhysicsEngine {
             if (this.goalCallback) this.goalCallback('home');
             this.resetPitch();
         }
-    }
-
-    _enforceBoundaries() {
-        Object.values(this.players).forEach(player => {
-            const radius = 25;
-            let currentX = player.position.x;
-            let currentY = player.position.y;
-            let normalHit = false;
-
-            if (currentX < radius) {
-                currentX = radius;
-                normalHit = true;
-            }
-            
-            if (currentX > this.width - radius) {
-                currentX = this.width - radius;
-                normalHit = true;
-            }
-
-            if (normalHit) {
-                Body.setPosition(player, { x: currentX, y: currentY });
-                Body.setVelocity(player, { x: 0, y: player.velocity.y });
-            }
-        });
     }
 
     _clampVelocities() {
