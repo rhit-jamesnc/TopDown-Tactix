@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { GameCanvas } from './components/GameCanvas.tsx'
+import { HomePage } from './components/HomePage.tsx';
 import './App.css'
 
 function App() {
@@ -8,17 +9,7 @@ function App() {
   return (
     <div className="app-viewport">
       {gameState === 'home' ? (
-        <div className="home-screen">
-          <div className="status-banner">IN DEVELOPMENT</div>
-          <h1>TopDown Tactix</h1>
-          <p className="creator">Created By Noah James</p>
-          <button className="preview-btn" onClick={() => setGameState('playing')}>
-            Preview Game
-          </button>
-          <a href="https://github.com/rhit-jamesnc/TopDown-Tactix" target="_blank" rel="noreferrer">
-            GitHub Repository
-          </a>
-        </div>
+        <HomePage onStartGame={() => setGameState('playing')} />
       ) : (
         <>
           <div className="title-overlay">TopDown Tactix</div>

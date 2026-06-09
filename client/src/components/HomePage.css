@@ -1,0 +1,52 @@
+.home-screen {
+  text-align: center;
+}
+
+.home-screen h1 {
+  color: white;
+}
+
+.home-screen a {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 20px;
+  cursor: pointer;
+  background-color: #1f9f48;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.preview-btn {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 20px;
+  cursor: pointer;
+  background-color: #1f9f48;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.creator {
+  color: #9CA3AF;
+}
+
+.status-banner {
+  background: repeating-linear-gradient(
+    45deg,
+    #fbbf24,
+    #fbbf24 10px,
+    #000 10px,
+    #000 20px
+  );
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+  border-bottom: 3px solid #000;
+}
