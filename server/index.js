@@ -1,6 +1,7 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { Body } from 'matter-js';
 import { GamePhysicsEngine } from './physicsEngine.js';
 
 const app = express();
@@ -36,10 +37,11 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
+  socket.on('player-input', (data) => {
+    const player = game.players[data.id];
+    if (player) {
+      Body.applyForce(player, player.position, data.move);
+    }
   });
 });
 
