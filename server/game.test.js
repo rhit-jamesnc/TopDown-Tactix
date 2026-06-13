@@ -18,7 +18,8 @@ test('should broadcast game-state event', (done) => {
   clientSocket = clientIO(`http://localhost:${TEST_PORT}`);
   
   clientSocket.on('game-state', (data) => {
-    expect(data).toBeDefined();
+    expect(data).toHaveProperty('ball');
+    expect(data).toHaveProperty('players');
     done();
   });
 });
