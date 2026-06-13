@@ -41,6 +41,13 @@ io.on('connection', (socket) => {
   game.addPlayer(socket.id, { x: 400, y: 300 });
 
   socket.on('player-input', (data) => {
+    if (!data || !data.move || !data.id) return;
+
+    if (!GamePhysicsEngine.isValidMove(data.move)) {
+        console.warn(`Invalid move attempt from ${socket.id}`);
+        return;
+    }
+
     const player = game.players[data.id];
     if (player) {
       Body.applyForce(player, player.position, data.move);

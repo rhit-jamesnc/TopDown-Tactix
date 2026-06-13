@@ -225,4 +225,15 @@ export class GamePhysicsEngine {
         }
         return { ball: this.ball.position, players: playersData };
     }
+
+    static isValidMove(move) {
+        const MAX_FORCE = 0.05;
+        if (!move || typeof move.x !== 'number' || typeof move.y !== 'number') {
+            return false;
+        }
+        
+        // Check if the force magnitude exceeds our limit
+        const magnitude = Math.hypot(move.x, move.y);
+        return magnitude <= MAX_FORCE;
+    }
 }

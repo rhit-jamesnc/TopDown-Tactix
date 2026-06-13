@@ -1,6 +1,6 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll, beforeEach } from 'vitest';
-import { httpServer, game } from './index.js';
+import { httpServer, game, io } from './index.js';
 
 const TEST_PORT = 9998;
 
@@ -13,7 +13,11 @@ beforeEach(() => {
 });
 
 afterAll(() => {
-  return new Promise((resolve) => httpServer.close(resolve));
+  io.close(); 
+  
+  return new Promise((resolve) => {
+    httpServer.close(resolve);
+  });
 });
 
 const createClientConnection = (port) => {
@@ -42,7 +46,7 @@ test('should update player position on input', async () => {
   
   game.addPlayer('test-player', { x: 100, y: 100 });
   
-  socket.emit('player-input', { id: 'test-player', move: { x: 10, y: 0 } });
+  socket.emit('player-input', { id: 'test-player', move: { x: 0.02, y: 0 } });
   
   await new Promise((resolve) => setTimeout(resolve, 50));
   
@@ -68,4 +72,21 @@ test('should remove player from game engine on disconnection', async () => {
   await new Promise((resolve) => setTimeout(resolve, 50));
   
   expect(Object.keys(game.players).length).toBe(0);
+});
+
+test('should ignore malicious input with excessive force', async () => {
+    const socket = await createClientConnection(TEST_PORT);
+    game.addPlayer('malicious-player', { x: 100, y: 100 });
+    
+    socket.emit('player-input', { 
+        id: 'malicious-player', 
+        move: { x: 10, y: 0 } 
+    });
+    
+    await new Promise(r => setTimeout(r, 50));
+    
+    const player = game.players['malicious-player'];
+    expect(player.position.x).toBe(100); 
+    
+    socket.disconnect();
 });
