@@ -1,14 +1,11 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll } from 'vitest';
-import { httpServer } from './index.js';
-import { GamePhysicsEngine } from './physicsEngine.js';
+import { httpServer, game } from './index.js';
 
 let clientSocket;
-let game;
 const TEST_PORT = 9998;
 
 beforeAll(() => {
-  game = new GamePhysicsEngine();
   return new Promise((resolve) => httpServer.listen(TEST_PORT, resolve));
 });
 
