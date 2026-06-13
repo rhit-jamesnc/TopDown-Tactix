@@ -107,6 +107,7 @@ export class GamePhysicsEngine {
         const radius = 25;
         const playerOptions = {
             restitution: 0,
+            isStatic: false,
             friction: 0,
             frictionAir: 0.1,
             inertia: Infinity,
@@ -198,6 +199,8 @@ export class GamePhysicsEngine {
             Body.setAngularVelocity(playerBody, 0);
             playerBody.force = { x: 0, y: 0 };
         });
+
+        this.isGoalTriggered = false;
     }
 
     onGoal(callback) {

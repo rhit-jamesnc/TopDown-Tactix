@@ -14,31 +14,34 @@ const io = new Server(httpServer, {
   }
 });
 
-const game = new GamePhysicsEngine();
+export const game = new GamePhysicsEngine();
+const scores = { home: 0, away: 0 };
 
 game.onGoal((side) => {
   console.log(`Goal scored on the ${side} side!`);
   
-  io.emit('goal-scored', { side });
-  
+  if (side === 'left') {
+    scores.left += 1;
+  } else if (side === 'right') {
+    scores.right += 1;
+  }
+
+  io.emit('goal-scored', { side, scores });
   game.resetPitch();
 });
 
-setInterval(() => {
+export const runGameTick = (io) => {
   game.update();
-  
   const playersData = {};
   for (const id in game.players) {
-    playersData[id] = {
-      position: game.players[id].position
-    };
+    playersData[id] = { position: game.players[id].position };
   }
+  io.emit('game-state', { ball: game.ball.position, players: playersData });
+};
 
-  io.emit('game-state', { 
-    ball: game.ball.position, 
-    players: playersData 
-  });
-}, 1000 / 60);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => runGameTick(io), 1000 / 60);
+}
 
 app.get('/', (req, res) => {
   res.send('TopDown Tactix Server is running smoothly.');
@@ -75,4 +78,4 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-export { app, httpServer, io, game };
+export { app, httpServer, io };
