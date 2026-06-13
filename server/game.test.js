@@ -1,11 +1,14 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll } from 'vitest';
 import { httpServer } from './index.js';
+import { GamePhysicsEngine } from './physicsEngine.js';
 
 let clientSocket;
+let game;
 const TEST_PORT = 9998;
 
 beforeAll(() => {
+  game = new GamePhysicsEngine();
   return new Promise((resolve) => httpServer.listen(TEST_PORT, resolve));
 });
 
@@ -22,4 +25,18 @@ test('should broadcast game-state event', (done) => {
     expect(data).toHaveProperty('players');
     done();
   });
+});
+
+test('should update player position on input', (done) => {
+  const socket = clientIO(`http://localhost:${TEST_PORT}`);
+  
+  game.addPlayer('test-player', { x: 100, y: 100 });
+  
+  socket.emit('player-input', { id: 'test-player', move: { x: 10, y: 0 } });
+  
+  setTimeout(() => {
+    const player = game.players['test-player'];
+    expect(player.position.x).toBeGreaterThan(100);
+    done();
+  }, 50);
 });
