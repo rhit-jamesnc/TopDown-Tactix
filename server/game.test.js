@@ -1,6 +1,7 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll, beforeEach } from 'vitest';
 import { httpServer, game, io } from './index.js';
+import { Body } from 'matter-js';
 
 const TEST_PORT = 9998;
 
@@ -89,4 +90,20 @@ test('should ignore malicious input with excessive force', async () => {
     expect(player.position.x).toBe(100); 
     
     socket.disconnect();
+});
+
+test('should emit a goal event when the ball crosses the goal line', async () => {
+  const socket = await createClientConnection(TEST_PORT);
+  
+  const goalEmitted = new Promise((resolve) => {
+    socket.on('goal-scored', resolve);
+  });
+
+  Body.setPosition(game.ball, { x: -20, y: 300 });
+
+  const eventData = await goalEmitted;
+  expect(eventData).toHaveProperty('side');
+  expect(['home', 'away']).toContain(eventData.side);
+  
+  socket.disconnect();
 });

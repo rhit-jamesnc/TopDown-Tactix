@@ -16,6 +16,14 @@ const io = new Server(httpServer, {
 
 const game = new GamePhysicsEngine();
 
+game.onGoal((side) => {
+  console.log(`Goal scored on the ${side} side!`);
+  
+  io.emit('goal-scored', { side });
+  
+  game.resetPitch();
+});
+
 setInterval(() => {
   game.update();
   
