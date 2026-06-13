@@ -37,11 +37,19 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
+  game.addPlayer(socket.id, { x: 400, y: 300 });
+
   socket.on('player-input', (data) => {
     const player = game.players[data.id];
     if (player) {
       Body.applyForce(player, player.position, data.move);
     }
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+    game.removePlayer(socket.id);
   });
 });
 

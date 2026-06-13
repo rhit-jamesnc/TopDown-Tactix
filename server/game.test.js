@@ -14,6 +14,15 @@ afterAll(() => {
   return new Promise((resolve) => httpServer.close(resolve));
 });
 
+const createClientConnection = (port) => {
+  const socket = clientIO(`http://localhost:${port}`);
+  return new Promise((resolve, reject) => {
+    socket.on('connect', () => resolve(socket));
+    socket.on('connect_error', (err) => reject(err));
+    setTimeout(() => reject(new Error('Socket connection timed out.')), 1500);
+  });
+};
+
 test('should broadcast game-state event', (done) => {
   clientSocket = clientIO(`http://localhost:${TEST_PORT}`);
   
@@ -36,4 +45,23 @@ test('should update player position on input', (done) => {
     expect(player.position.x).toBeGreaterThan(100);
     done();
   }, 50);
+});
+
+test('should add player to game engine on connection', async () => {
+  const socket = await createClientConnection(TEST_PORT);
+  
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  
+  expect(Object.keys(game.players).length).toBe(1);
+  socket.disconnect();
+});
+
+test('should remove player from game engine on disconnection', async () => {
+  const socket = await createClientConnection(TEST_PORT);
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  
+  socket.disconnect();
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  
+  expect(Object.keys(game.players).length).toBe(0);
 });
