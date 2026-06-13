@@ -203,4 +203,11 @@ export class GamePhysicsEngine {
     onGoal(callback) {
         this.goalCallback = callback;
     }
+
+    removePlayer(id) {
+        if (this.players[id]) {
+            World.remove(this.world, this.players[id]);
+            delete this.players[id];
+        }
+    }
 }
