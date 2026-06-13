@@ -210,4 +210,19 @@ export class GamePhysicsEngine {
             delete this.players[id];
         }
     }
+
+    startLoop(broadcastCallback) {
+        this.loop = setInterval(() => {
+            this.update();
+            broadcastCallback(this.getState());
+        }, 1000 / 60);
+    }
+
+    getState() {
+        const playersData = {};
+        for (const id in this.players) {
+            playersData[id] = { position: this.players[id].position };
+        }
+        return { ball: this.ball.position, players: playersData };
+    }
 }
