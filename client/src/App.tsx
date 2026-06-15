@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GameCanvas } from './components/GameCanvas.tsx'
+import { OfflineGameCanvas } from './components/OfflineGameCanvas.tsx'
 import { HomePage } from './components/HomePage.tsx';
 import './App.css'
 
@@ -13,7 +13,7 @@ function App() {
       ) : (
         <>
           <div className="title-overlay">TopDown Tactix</div>
-          <GameCanvas />
+          <OfflineGameCanvas />
         </>
       )}
     </div>

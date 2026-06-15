@@ -15,7 +15,7 @@ interface PhysicsEngineInstance {
     update: () => void;
 }
 
-export const GameCanvas = () => {
+export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
   const [scores, setScores] = useState({ p1: 0, p2: 0 })
 
