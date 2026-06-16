@@ -1,21 +1,17 @@
 import { useState } from 'react';
-import { OfflineGameCanvas } from './components/OfflineGameCanvas.tsx'
 import { HomePage } from './components/HomePage.tsx';
+import { OfflineGameCanvas } from './components/OfflineGameCanvas.tsx'
+import { OnlineGameCanvas } from './components/OnlineGameCanvas.tsx';
 import './App.css'
 
 function App() {
-  const [gameState, setGameState] = useState<'home' | 'playing'>('home');
+  const [mode, setMode] = useState<'home' | 'offline' | 'online'>('home');
 
   return (
     <div className="app-viewport">
-      {gameState === 'home' ? (
-        <HomePage onStartGame={() => setGameState('playing')} />
-      ) : (
-        <>
-          <div className="title-overlay">TopDown Tactix</div>
-          <OfflineGameCanvas />
-        </>
-      )}
+      {mode === 'home' && <HomePage onStartOffline={() => setMode('offline')} onStartOnline={() => setMode('online')} />}
+      {mode === 'offline' && <OfflineGameCanvas />}
+      {mode === 'online' && <OnlineGameCanvas />}
     </div>
   );
 }

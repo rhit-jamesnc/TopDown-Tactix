@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { InDevelopmentModal } from './InDevelopmentModal';
 import './HomePage.css';
 
-export const HomePage = ({ onStartGame }: { onStartGame: () => void }) => {
+interface HomePageProps {
+  onStartOffline: () => void;
+  onStartOnline: () => void;
+}
+
+export const HomePage = ({ onStartOffline, onStartOnline }: HomePageProps) => {
   const [helpView, setHelpView] = useState<'closed' | 'main' | 'offline'>('closed');
   const [showDevModal, setShowDevModal] = useState(true);
   
@@ -38,8 +43,11 @@ export const HomePage = ({ onStartGame }: { onStartGame: () => void }) => {
 
       <h1>TopDown Tactix</h1>
       <p className="creator">Created By Noah James</p>
-      <button className="preview-btn" onClick={onStartGame}>
-          Preview Game
+      <button className="preview-btn" onClick={onStartOffline}>
+          Offline
+      </button>
+      <button className="preview-btn" onClick={onStartOnline}>
+          Online
       </button>
       <a href="https://github.com/rhit-jamesnc/TopDown-Tactix" target="_blank" rel="noreferrer">
           GitHub Repository
