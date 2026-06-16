@@ -1,4 +1,5 @@
-import { Engine, World, Bodies, Body } from 'matter-js';
+import Matter from 'matter-js';
+const { Engine, World, Bodies, Body } = Matter;
 
 const CATEGORY_DEFAULT = 0x0001;
 const CATEGORY_PLAYER = 0x0002;

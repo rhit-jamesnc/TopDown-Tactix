@@ -1,7 +1,8 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { Body } from 'matter-js';
+import Matter from 'matter-js';
+const { Body } = Matter;
 import { GamePhysicsEngine } from './physicsEngine.js';
 
 const app = express();
