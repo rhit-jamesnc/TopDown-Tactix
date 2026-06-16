@@ -15,7 +15,7 @@ const io = new Server(httpServer, {
   }
 });
 
-export const game = new GamePhysicsEngine();
+export const game = new GamePhysicsEngine(1600, 900);
 const scores = { home: 0, away: 0 };
 
 game.onGoal((side) => {
@@ -43,7 +43,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
-  game.addPlayer(socket.id, { x: 400, y: 300 });
+  game.addPlayer(socket.id, { x: 600, y: 450 });
 
   socket.on('player-input', (data) => {
     if (!data || !data.move || !data.id) return;

@@ -14,17 +14,29 @@ interface GoalData {
   scores: { home: number; away: number };
 }
 
+const PITCH_WIDTH = window.innerWidth;
+const PITCH_HEIGHT = window.innerHeight;
+
 export const OnlineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [scores, setScores] = useState({ p1: 0, p2: 0 });
+  const [scale, setScale] = useState(1);
+
+  // 2. Auto-scaling logic to fit any monitor
+  useEffect(() => {
+    const updateScale = () => {
+      const scaleX = window.innerWidth / PITCH_WIDTH;
+      const scaleY = window.innerHeight / PITCH_HEIGHT;
+      setScale(Math.min(scaleX, scaleY));
+    };
+    window.addEventListener('resize', updateScale);
+    updateScale();
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
 
   useEffect(() => {
     if (!sceneRef.current) return;
 
-    const PITCH_WIDTH = window.innerWidth;
-    const PITCH_HEIGHT = window.innerHeight;
-    
-    // 1. Setup Engine & Renderer
     const engine = Matter.Engine.create({ gravity: { x: 0, y: 0 } });
     const render = Matter.Render.create({
       element: sceneRef.current,
@@ -37,7 +49,6 @@ export const OnlineGameCanvas = () => {
       }
     });
 
-    // 2. Camera Focus: Ensure we see the whole pitch
     Matter.Render.lookAt(render, {
         min: { x: 0, y: 0 },
         max: { x: PITCH_WIDTH, y: PITCH_HEIGHT }
@@ -54,12 +65,10 @@ export const OnlineGameCanvas = () => {
 
     createVisual('ball', '#ffffff', 15);
 
-    // 3. Start Render and Runner Loops
     Matter.Render.run(render);
     const runner = Matter.Runner.create();
     Matter.Runner.run(runner, engine);
 
-    // 4. Listen for Server State
     socket.on('game-state', (state: GameState) => {
         if (state.ball && visualBodies['ball']) {
             Matter.Body.setPosition(visualBodies['ball'], state.ball);
@@ -68,6 +77,7 @@ export const OnlineGameCanvas = () => {
         if (state.players) {
             Object.entries(state.players).forEach(([id, data]) => {
                 if (!visualBodies[id]) {
+                    // All new players default to blue for now
                     createVisual(id, '#3b82f6', 25);
                 }
                 if (visualBodies[id]) {
@@ -81,7 +91,6 @@ export const OnlineGameCanvas = () => {
       setScores({ p1: data.scores.home, p2: data.scores.away });
     });
 
-    // 5. Input Handling
     const activeKeys: { [key: string]: boolean } = {};
     const handleKeyDown = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = true; };
     const handleKeyUp = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = false; };
@@ -108,23 +117,41 @@ export const OnlineGameCanvas = () => {
       socket.off('game-state');
       socket.off('goal-scored');
       
-      // Proper Cleanup
       Matter.Runner.stop(runner);
       Matter.Render.stop(render);
       Matter.Engine.clear(engine);
+      if (render.canvas) render.canvas.remove();
     };
   }, []);
 
   return (
-    <div className="game-container">
-      <div ref={sceneRef} className="game-canvas" />
-      <div className="pitch-overlay">
-        <div className="center-line" />
-        <div className="center-circle" />
-        <div className="scoreboard">
-            <span className="score-value">{scores.p1}</span>
-            <span className="score-value">{scores.p2}</span>
-        </div>
+    // 1. Change backgroundColor to match the pitch
+    <div className="game-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh', backgroundColor: 'var(--pitch-bg)' }}>
+      
+      <div style={{
+        width: PITCH_WIDTH,
+        height: PITCH_HEIGHT,
+        position: 'relative',
+        transform: `scale(${scale})`,
+        transformOrigin: 'center center',
+        backgroundColor: 'var(--pitch-bg)',
+        // 2. Add a boundary line so players know where the walls are
+        borderTop: '2px solid var(--line-white)',
+        borderBottom: '2px solid var(--line-white)',
+      }}>
+          <div ref={sceneRef} className="game-canvas" />
+          <div className="pitch-overlay">
+            <div className="center-line" />
+            <div className="center-circle" />
+            
+            <div className="left-goal-crease" />
+            <div className="right-goal-crease" />
+
+            <div className="scoreboard">
+                <span className="score-value">{scores.p1}</span>
+                <span className="score-value">{scores.p2}</span>
+            </div>
+          </div>
       </div>
     </div>
   );
