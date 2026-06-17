@@ -7,6 +7,9 @@ import { GamePhysicsEngine } from './physicsEngine.js';
 const app = express();
 const httpServer = createServer(app);
 
+const waitingQueue = [];
+const games = new Map();
+
 const PHYSICS_WIDTH = 1600;
 const PHYSICS_HEIGHT = 900;
 
@@ -43,10 +46,26 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
-  game.addPlayer(socket.id, { x: 400, y: 450 });
-
+  
   socket.on('request-score', () => {
     socket.emit('current-score', scores);
+  });
+
+  socket.on('request-lobby-status', () => {
+    socket.emit('lobby-status', {
+      totalOnline: io.engine.clientsCount,
+      inQueue: waitingQueue.length
+    });
+  });
+
+  socket.on('find-match', () => {
+    if (waitingQueue.length > 0) {
+      const opponentId = waitingQueue.shift();
+      io.to(socket.id).emit('match-found', { opponentId });
+      io.to(opponentId).emit('match-found', { opponentId: socket.id });
+    } else {
+      waitingQueue.push(socket.id);
+    }
   });
 
   socket.on('player-input', (data) => {
@@ -57,7 +76,15 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('cancel-match', () => {
+    const index = waitingQueue.indexOf(socket.id);
+    if (index !== -1) waitingQueue.splice(index, 1);
+  });
+
   socket.on('disconnect', () => {
+    const index = waitingQueue.indexOf(socket.id);
+    if (index !== -1) waitingQueue.splice(index, 1);
+    
     game.removePlayer(socket.id);
     io.emit('player-disconnected', socket.id);
   });
