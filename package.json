@@ -18,7 +18,8 @@
     "dev": "vite",
     "build": "npm install --include=dev",
     "preview": "vite preview",
-    "start": "node ./server/index.js"
+    "start": "node ./server/index.js",
+    "start:all": "concurrently \"npm start\" \"npm run dev --workspace=client\""
   },
   "keywords": [],
   "author": "",

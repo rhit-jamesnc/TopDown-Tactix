@@ -42,7 +42,12 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
   game.addPlayer(socket.id, { x: 400, y: 450 });
+
+  socket.on('request-score', () => {
+    socket.emit('current-score', scores);
+  });
 
   socket.on('player-input', (data) => {
     if (!data?.move || !data?.id) return;
@@ -52,7 +57,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', () => game.removePlayer(socket.id));
+  socket.on('disconnect', () => {
+    game.removePlayer(socket.id);
+    io.emit('player-disconnected', socket.id);
+  });
 });
 
 if (process.env.NODE_ENV !== 'test') {

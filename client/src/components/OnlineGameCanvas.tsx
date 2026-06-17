@@ -18,7 +18,7 @@ interface GoalData {
 
 export const OnlineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const [scores, setScores] = useState({ p1: 0, p2: 0 });
+  const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
@@ -63,25 +63,46 @@ export const OnlineGameCanvas = () => {
       Matter.World.add(engine.world, body);
     };
 
+    socket.on('player-disconnected', (id: string) => {
+      if (visualBodies[id]) {
+        Matter.World.remove(engine.world, visualBodies[id]);
+        delete visualBodies[id];
+      }
+    });
+
     socket.on('game-state', (state: GameState) => {
         if (state.ball && visualBodies['ball']) {
             Matter.Body.setPosition(visualBodies['ball'], state.ball);
         }
 
         if (state.players) {
-            Object.entries(state.players).forEach(([id, data]) => {
-                if (!visualBodies[id]) {
-                    createVisual(id, '#3b82f6', 25);
-                }
-                if (visualBodies[id]) {
-                    Matter.Body.setPosition(visualBodies[id], data.position);
-                }
-            });
+          const serverPlayerIds = Object.keys(state.players);
+
+          Object.keys(visualBodies).forEach(id => {
+            if (id !== 'ball' && !serverPlayerIds.includes(id)) {
+              Matter.World.remove(engine.world, visualBodies[id]);
+              delete visualBodies[id];
+            }
+          });
+          
+          Object.entries(state.players).forEach(([id, data]) => {
+              if (!visualBodies[id]) {
+                  createVisual(id, '#3b82f6', 25);
+              }
+              if (visualBodies[id]) {
+                  Matter.Body.setPosition(visualBodies[id], data.position);
+              }
+          });
         }
     });
 
+    socket.emit('request-score');
+    socket.on('current-score', (data: { home: number, away: number }) => {
+      setScores({ home: data.home, away: data.away });
+    });
+
     socket.on('goal-scored', (data: GoalData) => {
-      setScores({ p1: data.scores.home, p2: data.scores.away });
+      setScores({ home: data.scores.home, away: data.scores.away });
     });
 
     const activeKeys: Record<string, boolean> = {};
@@ -93,11 +114,17 @@ export const OnlineGameCanvas = () => {
     const interval = setInterval(() => {
       const move = { x: 0, y: 0 };
       const FORCE = 0.012;
-      if (activeKeys['w']) move.y -= FORCE;
-      if (activeKeys['s']) move.y += FORCE;
-      if (activeKeys['a']) move.x -= FORCE;
-      if (activeKeys['d']) move.x += FORCE;
 
+      const up = activeKeys['w'] || activeKeys['arrowup'];
+      const down = activeKeys['s'] || activeKeys['arrowdown'];
+      const left = activeKeys['a'] || activeKeys['arrowleft'];
+      const right = activeKeys['d'] || activeKeys['arrowright'];
+
+      if (up && !down) move.y -= FORCE;
+      if (down && !up) move.y += FORCE;
+      if (left && !right) move.x -= FORCE;
+      if (right && !left) move.x += FORCE;
+      
       if (move.x !== 0 || move.y !== 0) {
         socket.emit('player-input', { move, id: socket.id });
       }
@@ -108,6 +135,7 @@ export const OnlineGameCanvas = () => {
       window.removeEventListener('keyup', handleKeyUp);
       clearInterval(interval);
       socket.off('game-state');
+      socket.off('current-score');
       socket.off('goal-scored');
       
       Matter.Render.stop(render);
@@ -121,6 +149,7 @@ export const OnlineGameCanvas = () => {
       <div className="game-container-online" style={{ 
         transform: `scale(${scale})`
       }}>
+        <div className="title-overlay-internal">TopDown Tactix</div>
         <div ref={sceneRef} className="game-canvas" />
         <div className="pitch-overlay">
           <div className="center-line" />
@@ -128,8 +157,8 @@ export const OnlineGameCanvas = () => {
           <div className="left-goal-crease" />
           <div className="right-goal-crease" />
           <div className="scoreboard">
-              <span className="score-value">{scores.p1}</span>
-              <span className="score-value">{scores.p2}</span>
+              <span className="score-value">{scores.home}</span>
+              <span className="score-value">{scores.away}</span>
           </div>
         </div>
         </div>

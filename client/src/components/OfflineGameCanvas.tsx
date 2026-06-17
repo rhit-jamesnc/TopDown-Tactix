@@ -110,6 +110,7 @@ export const OfflineGameCanvas = () => {
 
   return (
     <div className="game-container-offline">
+      <div className="title-overlay-internal">TopDown Tactix</div>
       <div ref={sceneRef} className="game-canvas" />
       <div className="pitch-overlay">
         <div className="center-line" />
