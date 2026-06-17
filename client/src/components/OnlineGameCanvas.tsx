@@ -4,6 +4,8 @@ import Matter from 'matter-js';
 import './GameCanvas.css';
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
+const TARGET_WIDTH = 1600;
+const TARGET_HEIGHT = 900;
 
 interface GameState {
   ball: { x: number; y: number };
@@ -14,19 +16,15 @@ interface GoalData {
   scores: { home: number; away: number };
 }
 
-const PITCH_WIDTH = window.innerWidth;
-const PITCH_HEIGHT = window.innerHeight;
-
 export const OnlineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [scores, setScores] = useState({ p1: 0, p2: 0 });
   const [scale, setScale] = useState(1);
 
-  // 2. Auto-scaling logic to fit any monitor
   useEffect(() => {
     const updateScale = () => {
-      const scaleX = window.innerWidth / PITCH_WIDTH;
-      const scaleY = window.innerHeight / PITCH_HEIGHT;
+      const scaleX = window.innerWidth / TARGET_WIDTH;
+      const scaleY = window.innerHeight / TARGET_HEIGHT;
       setScale(Math.min(scaleX, scaleY));
     };
     window.addEventListener('resize', updateScale);
@@ -42,32 +40,28 @@ export const OnlineGameCanvas = () => {
       element: sceneRef.current,
       engine: engine,
       options: {
-        width: PITCH_WIDTH,
-        height: PITCH_HEIGHT,
+        width: TARGET_WIDTH,
+        height: TARGET_HEIGHT,
         wireframes: false,
         background: 'transparent',
       }
     });
 
-    Matter.Render.lookAt(render, {
-        min: { x: 0, y: 0 },
-        max: { x: PITCH_WIDTH, y: PITCH_HEIGHT }
-    });
+    const visualBodies: Record<string, Matter.Body> = { 
+      ball: Matter.Bodies.circle(TARGET_WIDTH / 2, TARGET_HEIGHT / 2, 15, { 
+        isStatic: true,
+        render: { fillStyle: '#ffffff' }
+      }) 
+    };
+    Matter.World.add(engine.world, visualBodies.ball);
+    Matter.Render.run(render);
 
-    const visualBodies: { [key: string]: Matter.Body } = {};
-    
     const createVisual = (id: string, color: string, radius: number) => {
-      const body = Matter.Bodies.circle(PITCH_WIDTH/2, PITCH_HEIGHT/2, radius, { isStatic: true });
+      const body = Matter.Bodies.circle(TARGET_WIDTH / 2, TARGET_HEIGHT / 2, radius, { isStatic: true });
       body.render.fillStyle = color;
       visualBodies[id] = body;
       Matter.World.add(engine.world, body);
     };
-
-    createVisual('ball', '#ffffff', 15);
-
-    Matter.Render.run(render);
-    const runner = Matter.Runner.create();
-    Matter.Runner.run(runner, engine);
 
     socket.on('game-state', (state: GameState) => {
         if (state.ball && visualBodies['ball']) {
@@ -77,7 +71,6 @@ export const OnlineGameCanvas = () => {
         if (state.players) {
             Object.entries(state.players).forEach(([id, data]) => {
                 if (!visualBodies[id]) {
-                    // All new players default to blue for now
                     createVisual(id, '#3b82f6', 25);
                 }
                 if (visualBodies[id]) {
@@ -91,7 +84,7 @@ export const OnlineGameCanvas = () => {
       setScores({ p1: data.scores.home, p2: data.scores.away });
     });
 
-    const activeKeys: { [key: string]: boolean } = {};
+    const activeKeys: Record<string, boolean> = {};
     const handleKeyDown = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = true; };
     const handleKeyUp = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = false; };
     window.addEventListener('keydown', handleKeyDown);
@@ -117,7 +110,6 @@ export const OnlineGameCanvas = () => {
       socket.off('game-state');
       socket.off('goal-scored');
       
-      Matter.Runner.stop(runner);
       Matter.Render.stop(render);
       Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
@@ -125,34 +117,24 @@ export const OnlineGameCanvas = () => {
   }, []);
 
   return (
-    // 1. Change backgroundColor to match the pitch
-    <div className="game-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh', backgroundColor: 'var(--pitch-bg)' }}>
-      
-      <div style={{
-        width: PITCH_WIDTH,
-        height: PITCH_HEIGHT,
-        position: 'relative',
-        transform: `scale(${scale})`,
-        transformOrigin: 'center center',
-        backgroundColor: 'var(--pitch-bg)',
-        // 2. Add a boundary line so players know where the walls are
-        borderTop: '2px solid var(--line-white)',
-        borderBottom: '2px solid var(--line-white)',
+    <div className="scaling-wrapper">
+      <div className="game-container" style={{ 
+        width: TARGET_WIDTH, 
+        height: TARGET_HEIGHT, 
+        transform: `scale(${scale})`
       }}>
-          <div ref={sceneRef} className="game-canvas" />
-          <div className="pitch-overlay">
-            <div className="center-line" />
-            <div className="center-circle" />
-            
-            <div className="left-goal-crease" />
-            <div className="right-goal-crease" />
-
-            <div className="scoreboard">
-                <span className="score-value">{scores.p1}</span>
-                <span className="score-value">{scores.p2}</span>
-            </div>
+        <div ref={sceneRef} className="game-canvas" />
+        <div className="pitch-overlay">
+          <div className="center-line" />
+          <div className="center-circle" />
+          <div className="left-goal-crease" />
+          <div className="right-goal-crease" />
+          <div className="scoreboard">
+              <span className="score-value">{scores.p1}</span>
+              <span className="score-value">{scores.p2}</span>
           </div>
-      </div>
+        </div>
+        </div>
     </div>
   );
 };

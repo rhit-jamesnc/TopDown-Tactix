@@ -1,12 +1,14 @@
 import express from 'express';
+import Matter from 'matter-js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import Matter from 'matter-js';
-const { Body } = Matter;
 import { GamePhysicsEngine } from './physicsEngine.js';
 
 const app = express();
 const httpServer = createServer(app);
+
+const PHYSICS_WIDTH = 1600;
+const PHYSICS_HEIGHT = 900;
 
 const io = new Server(httpServer, {
   cors: {
@@ -15,16 +17,14 @@ const io = new Server(httpServer, {
   }
 });
 
-export const game = new GamePhysicsEngine(1600, 900);
+export const game = new GamePhysicsEngine(PHYSICS_WIDTH, PHYSICS_HEIGHT);
 const scores = { home: 0, away: 0 };
 
 game.onGoal((side) => {
   console.log(`Goal scored for ${side}!`);
-
   if (scores[side] !== undefined) {
     scores[side] += 1;
   }
-
   io.emit('goal-scored', { side, scores });
 });
 
@@ -42,34 +42,18 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
-  game.addPlayer(socket.id, { x: 600, y: 450 });
+  game.addPlayer(socket.id, { x: 400, y: 450 });
 
   socket.on('player-input', (data) => {
-    if (!data || !data.move || !data.id) return;
-
-    if (!GamePhysicsEngine.isValidMove(data.move)) {
-        console.warn(`Invalid move attempt from ${socket.id}`);
-        return;
-    }
-
-    const player = game.players[data.id];
-    if (player) {
-      Body.applyForce(player, player.position, data.move);
+    if (!data?.move || !data?.id) return;
+    if (GamePhysicsEngine.isValidMove(data.move)) {
+      const player = game.players[data.id];
+      if (player) Matter.Body.applyForce(player, player.position, data.move);
     }
   });
 
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
-    game.removePlayer(socket.id);
-  });
+  socket.on('disconnect', () => game.removePlayer(socket.id));
 });
 
-const PORT = process.env.PORT || 4000;
-if (process.env.NODE_ENV !== 'test') {
-  httpServer.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-  });
-}
-
+httpServer.listen(4000, () => console.log('Server running on 4000'));
 export { app, httpServer, io };
