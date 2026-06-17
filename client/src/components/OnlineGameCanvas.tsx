@@ -18,7 +18,7 @@ interface GoalData {
 
 export const OnlineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const [scores, setScores] = useState({ p1: 0, p2: 0 });
+  const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
@@ -96,8 +96,13 @@ export const OnlineGameCanvas = () => {
         }
     });
 
+    socket.emit('request-score');
+    socket.on('current-score', (data: { home: number, away: number }) => {
+      setScores({ home: data.home, away: data.away });
+    });
+
     socket.on('goal-scored', (data: GoalData) => {
-      setScores({ p1: data.scores.home, p2: data.scores.away });
+      setScores({ home: data.scores.home, away: data.scores.away });
     });
 
     const activeKeys: Record<string, boolean> = {};
@@ -130,6 +135,7 @@ export const OnlineGameCanvas = () => {
       window.removeEventListener('keyup', handleKeyUp);
       clearInterval(interval);
       socket.off('game-state');
+      socket.off('current-score');
       socket.off('goal-scored');
       
       Matter.Render.stop(render);
@@ -151,8 +157,8 @@ export const OnlineGameCanvas = () => {
           <div className="left-goal-crease" />
           <div className="right-goal-crease" />
           <div className="scoreboard">
-              <span className="score-value">{scores.p1}</span>
-              <span className="score-value">{scores.p2}</span>
+              <span className="score-value">{scores.home}</span>
+              <span className="score-value">{scores.away}</span>
           </div>
         </div>
         </div>
