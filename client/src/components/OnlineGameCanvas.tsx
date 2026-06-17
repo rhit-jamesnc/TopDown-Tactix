@@ -137,6 +137,7 @@ export const OnlineGameCanvas = () => {
       <div className="game-container-online" style={{ 
         transform: `scale(${scale})`
       }}>
+        <div className="title-overlay-internal">TopDown Tactix</div>
         <div ref={sceneRef} className="game-canvas" />
         <div className="pitch-overlay">
           <div className="center-line" />
