@@ -118,9 +118,7 @@ export const OnlineGameCanvas = () => {
 
   return (
     <div className="scaling-wrapper">
-      <div className="game-container" style={{ 
-        width: TARGET_WIDTH, 
-        height: TARGET_HEIGHT, 
+      <div className="game-container-online" style={{ 
         transform: `scale(${scale})`
       }}>
         <div ref={sceneRef} className="game-canvas" />

@@ -1,20 +1,32 @@
 :root {
   --pitch-bg: #15803d;
   --line-white: rgba(255, 255, 255, 0.4);
-  --line-white-bright: rgba(255, 255, 255, 0.8);
+  --line-white-bright: rgba(255, 255, 255, 1);
   --goal-left-bg: rgba(239, 68, 68, 0.2);
   --goal-right-bg: rgba(34, 197, 94, 0.2);
   --crease-height: 200px;
   --crease-width: 30px;
 }
 
-.game-container {
+.game-container-online {
+  position: relative;
+  width: 1600px;
+  height: 900px;
+  background-color: var(--pitch-bg);
+  overflow: hidden;
+  border: 4px solid var(--line-white-bright);
+  box-sizing: border-box;
+  transform-origin: center center;
+}
+
+.game-container-offline {
   position: relative;
   width: 100vw;
   height: 100vh;
   background-color: var(--pitch-bg);
   overflow: hidden;
   border: 4px solid var(--line-white-bright);
+  box-sizing: border-box;
   transform-origin: center center;
 }
 

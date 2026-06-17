@@ -109,7 +109,7 @@ export const OfflineGameCanvas = () => {
   }, [])
 
   return (
-    <div className="game-container">
+    <div className="game-container-offline">
       <div ref={sceneRef} className="game-canvas" />
       <div className="pitch-overlay">
         <div className="center-line" />
