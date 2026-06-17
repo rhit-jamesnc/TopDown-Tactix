@@ -1,4 +1,5 @@
-import { Engine, World, Bodies, Body } from 'matter-js';
+import Matter from 'matter-js';
+const { Engine, World, Bodies, Body } = Matter;
 
 const CATEGORY_DEFAULT = 0x0001;
 const CATEGORY_PLAYER = 0x0002;
@@ -107,6 +108,7 @@ export class GamePhysicsEngine {
         const radius = 25;
         const playerOptions = {
             restitution: 0,
+            isStatic: false,
             friction: 0,
             frictionAir: 0.1,
             inertia: Infinity,
@@ -198,9 +200,43 @@ export class GamePhysicsEngine {
             Body.setAngularVelocity(playerBody, 0);
             playerBody.force = { x: 0, y: 0 };
         });
+
+        this.isGoalTriggered = false;
     }
 
     onGoal(callback) {
         this.goalCallback = callback;
+    }
+
+    removePlayer(id) {
+        if (this.players[id]) {
+            World.remove(this.world, this.players[id]);
+            delete this.players[id];
+        }
+    }
+
+    startLoop(broadcastCallback) {
+        this.loop = setInterval(() => {
+            this.update();
+            broadcastCallback(this.getState());
+        }, 1000 / 60);
+    }
+
+    getState() {
+        const playersData = {};
+        for (const id in this.players) {
+            playersData[id] = { position: this.players[id].position };
+        }
+        return { ball: this.ball.position, players: playersData };
+    }
+
+    static isValidMove(move) {
+        const MAX_FORCE = 0.05;
+        if (!move || typeof move.x !== 'number' || typeof move.y !== 'number') {
+            return false;
+        }
+        
+        const magnitude = Math.hypot(move.x, move.y);
+        return magnitude <= MAX_FORCE;
     }
 }

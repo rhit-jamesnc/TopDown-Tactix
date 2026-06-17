@@ -17,7 +17,8 @@
     "format:check": "prettier --check .",
     "dev": "vite",
     "build": "tsc -b --verbose && vite build --debug",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",

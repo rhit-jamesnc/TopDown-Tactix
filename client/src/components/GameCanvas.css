@@ -1,19 +1,33 @@
 :root {
   --pitch-bg: #15803d;
   --line-white: rgba(255, 255, 255, 0.4);
-  --line-white-bright: rgba(255, 255, 255, 0.8);
+  --line-white-bright: rgba(255, 255, 255, 1);
   --goal-left-bg: rgba(239, 68, 68, 0.2);
   --goal-right-bg: rgba(34, 197, 94, 0.2);
   --crease-height: 200px;
   --crease-width: 30px;
 }
 
-.game-container {
+.game-container-online {
+  position: relative;
+  width: 1600px;
+  height: 900px;
+  background-color: var(--pitch-bg);
+  overflow: hidden;
+  border: 4px solid var(--line-white-bright);
+  box-sizing: border-box;
+  transform-origin: center center;
+}
+
+.game-container-offline {
   position: relative;
   width: 100vw;
   height: 100vh;
   background-color: var(--pitch-bg);
   overflow: hidden;
+  border: 4px solid var(--line-white-bright);
+  box-sizing: border-box;
+  transform-origin: center center;
 }
 
 .game-canvas {
@@ -23,6 +37,12 @@
   width: 100%;
   height: 100%;
   z-index: 3;
+}
+
+.game-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .pitch-overlay {
@@ -105,4 +125,13 @@
   color: #1f9f486f;
   min-width: 1ch;
   text-align: center;
+}
+
+.scaling-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0f172a;
 }
