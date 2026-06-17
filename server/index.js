@@ -52,7 +52,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', () => game.removePlayer(socket.id));
+  socket.on('disconnect', () => {
+    game.removePlayer(socket.id);
+    io.emit('player-disconnected', socket.id);
+  });
 });
 
 if (process.env.NODE_ENV !== 'test') {

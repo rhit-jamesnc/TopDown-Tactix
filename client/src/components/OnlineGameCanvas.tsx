@@ -63,20 +63,36 @@ export const OnlineGameCanvas = () => {
       Matter.World.add(engine.world, body);
     };
 
+    socket.on('player-disconnected', (id: string) => {
+      if (visualBodies[id]) {
+        Matter.World.remove(engine.world, visualBodies[id]);
+        delete visualBodies[id];
+      }
+    });
+
     socket.on('game-state', (state: GameState) => {
         if (state.ball && visualBodies['ball']) {
             Matter.Body.setPosition(visualBodies['ball'], state.ball);
         }
 
         if (state.players) {
-            Object.entries(state.players).forEach(([id, data]) => {
-                if (!visualBodies[id]) {
-                    createVisual(id, '#3b82f6', 25);
-                }
-                if (visualBodies[id]) {
-                    Matter.Body.setPosition(visualBodies[id], data.position);
-                }
-            });
+          const serverPlayerIds = Object.keys(state.players);
+
+          Object.keys(visualBodies).forEach(id => {
+            if (id !== 'ball' && !serverPlayerIds.includes(id)) {
+              Matter.World.remove(engine.world, visualBodies[id]);
+              delete visualBodies[id];
+            }
+          });
+          
+          Object.entries(state.players).forEach(([id, data]) => {
+              if (!visualBodies[id]) {
+                  createVisual(id, '#3b82f6', 25);
+              }
+              if (visualBodies[id]) {
+                  Matter.Body.setPosition(visualBodies[id], data.position);
+              }
+          });
         }
     });
 
