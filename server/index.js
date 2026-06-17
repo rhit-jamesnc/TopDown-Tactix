@@ -55,6 +55,8 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => game.removePlayer(socket.id));
 });
 
-const PORT = process.env.PORT || 4000;
-httpServer.listen(PORT, () => console.log(`Server running on ${PORT}`));
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 4000;
+  httpServer.listen(PORT, () => console.log(`Server running on ${PORT}`));
+}
 export { app, httpServer, io };

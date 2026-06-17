@@ -102,10 +102,10 @@ test('should emit a goal event when the ball crosses the goal line', async () =>
   const socket = await createClientConnection(TEST_PORT);
   
   const goalEmitted = new Promise((resolve) => {
-    socket.on('goal-scored', resolve);
+    socket.on('goal-scored', (data) => resolve(data));
   });
 
-  Body.setPosition(game.ball, { x: -20, y: 300 });
+  Body.setPosition(game.ball, { x: -20, y: 450 });
   game.update();
 
   const eventData = await goalEmitted;
@@ -116,10 +116,10 @@ test('should emit a goal event when the ball crosses the goal line', async () =>
 });
 
 test('should reset ball and player positions after a goal', async () => {
-  Body.setPosition(game.ball, { x: -20, y: 300 });
+  Body.setPosition(game.ball, { x: -20, y: 450 });
 
   game.resetPitch();
 
-  expect(game.ball.position.x).toBeCloseTo(400, 0);
-  expect(game.ball.position.y).toBeCloseTo(300, 0);
+  expect(game.ball.position.x).toBeCloseTo(800, 0);
+  expect(game.ball.position.y).toBeCloseTo(450, 0);
 });

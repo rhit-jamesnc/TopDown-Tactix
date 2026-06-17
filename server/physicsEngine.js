@@ -236,7 +236,6 @@ export class GamePhysicsEngine {
             return false;
         }
         
-        // Check if the force magnitude exceeds our limit
         const magnitude = Math.hypot(move.x, move.y);
         return magnitude <= MAX_FORCE;
     }
