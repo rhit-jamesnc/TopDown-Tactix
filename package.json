@@ -16,9 +16,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "dev": "vite",
-    "build": "tsc -b --verbose && vite build --debug",
+    "build": "npm install --include=dev",
     "preview": "vite preview",
-    "start": "node index.js"
+    "start": "node ./server/index.js"
   },
   "keywords": [],
   "author": "",
