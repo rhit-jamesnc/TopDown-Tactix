@@ -10,8 +10,18 @@ function App() {
   return (
     <div className="app-viewport">
       {mode === 'home' && <HomePage onStartOffline={() => setMode('offline')} onStartOnline={() => setMode('online')} />}
-      {mode === 'offline' && <OfflineGameCanvas />}
-      {mode === 'online' && <OnlineGameCanvas />}
+      {mode === 'offline' && 
+        <>
+          <div className="title-overlay">TopDown Tactix</div>
+          <OfflineGameCanvas />
+        </>
+      }
+      {mode === 'online' && 
+        <>
+          <div className="title-overlay">TopDown Tactix</div>
+          <OnlineGameCanvas />
+        </>
+      }
     </div>
   );
 }
