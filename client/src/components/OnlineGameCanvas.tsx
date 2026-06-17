@@ -109,11 +109,17 @@ export const OnlineGameCanvas = () => {
     const interval = setInterval(() => {
       const move = { x: 0, y: 0 };
       const FORCE = 0.012;
-      if (activeKeys['w']) move.y -= FORCE;
-      if (activeKeys['s']) move.y += FORCE;
-      if (activeKeys['a']) move.x -= FORCE;
-      if (activeKeys['d']) move.x += FORCE;
 
+      const up = activeKeys['w'] || activeKeys['arrowup'];
+      const down = activeKeys['s'] || activeKeys['arrowdown'];
+      const left = activeKeys['a'] || activeKeys['arrowleft'];
+      const right = activeKeys['d'] || activeKeys['arrowright'];
+
+      if (up && !down) move.y -= FORCE;
+      if (down && !up) move.y += FORCE;
+      if (left && !right) move.x -= FORCE;
+      if (right && !left) move.x += FORCE;
+      
       if (move.x !== 0 || move.y !== 0) {
         socket.emit('player-input', { move, id: socket.id });
       }
