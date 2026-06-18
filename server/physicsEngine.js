@@ -28,6 +28,8 @@ export class GamePhysicsEngine {
         this.goalCallback = null;
         this.isGoalTriggered = false;
 
+        this.scores = { home: 0, away: 0 };
+
         this._createBoundaries();
         this._createBall();
     }
@@ -149,12 +151,12 @@ export class GamePhysicsEngine {
         if (x + radius - 1 < 0) {
             this.isGoalTriggered = true;
             this.scores.away += 1;
-            if (this.goalCallback) this.goalCallback('away');
+            if (this.goalCallback) this.goalCallback('away', this.scores);
             this.resetPitch();
         } else if (x - radius + 1 > this.width) {
             this.isGoalTriggered = true;
             this.scores.home += 1;
-            if (this.goalCallback) this.goalCallback('home');
+            if (this.goalCallback) this.goalCallback('home', this.scores);
             this.resetPitch();
         }
     }

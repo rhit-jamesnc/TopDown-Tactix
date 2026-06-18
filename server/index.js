@@ -21,8 +21,6 @@ const io = new Server(httpServer, {
   }
 });
 
-const scores = { home: 0, away: 0 };
-
 app.get('/', (req, res) => {
   res.send('TopDown Tactix Server is running smoothly.');
 });
@@ -31,7 +29,14 @@ io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
   
   socket.on('request-score', () => {
-    socket.emit('current-score', scores);
+    const roomId = playerToRoom.get(socket.id);
+    const gameData = games.get(roomId);
+    
+    if (gameData) {
+      socket.emit('current-score', gameData.instance.scores);
+    } else {
+      socket.emit('current-score', { home: 0, away: 0 });
+    }
   });
 
   socket.on('request-lobby-status', () => {
@@ -107,8 +112,8 @@ const startNewGame = (player1Id, player2Id) => {
   newGame.addPlayer(player1Id, { x: 1200, y: 450 });
   newGame.addPlayer(player2Id, { x: 400, y: 450 });
   
-  newGame.onGoal((side) => {
-    io.to(roomId).emit('goal-scored', { side, scores: newGame.scores });
+  newGame.onGoal((side, scores) => {
+    io.to(roomId).emit('goal-scored', { side, scores: scores });
   });
 
   const loop = setInterval(() => {
