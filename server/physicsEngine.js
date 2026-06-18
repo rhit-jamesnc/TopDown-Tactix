@@ -148,10 +148,12 @@ export class GamePhysicsEngine {
 
         if (x + radius - 1 < 0) {
             this.isGoalTriggered = true;
+            this.scores.away += 1;
             if (this.goalCallback) this.goalCallback('away');
             this.resetPitch();
         } else if (x - radius + 1 > this.width) {
             this.isGoalTriggered = true;
+            this.scores.home += 1;
             if (this.goalCallback) this.goalCallback('home');
             this.resetPitch();
         }
