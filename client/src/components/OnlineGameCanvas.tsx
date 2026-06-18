@@ -28,13 +28,9 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
-  const playerColorRef = useRef<string>('');
-  const [playerColor, setPlayerColor] = useState<string>('');
 
   useEffect(() => {
-    socket.on('match-found', (data: { color: string }) => {
-      playerColorRef.current = data.color;
-      setPlayerColor(data.color);
+    socket.on('match-found', () => {
       setIsSearching(false);
     });
 
@@ -108,14 +104,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           });
           
           Object.entries(state.players).forEach(([id, data]) => {
-              if (!visualBodies[id]) {
-                const myColor = playerColorRef.current;
-                const color = (id === socket.id) ? playerColor : (myColor === 'blue' ? 'red' : 'blue');
+            const localBody = visualBodies[id];
+          
+            if (!localBody) {
+                const color = (id === socket.id) ? 'blue' : 'red';
                 createVisual(id, color, 25);
-              }
-              if (visualBodies[id]) {
-                Matter.Body.setPosition(visualBodies[id], data.position);
-              }
+            }
+
+            if (localBody) {
+              Matter.Body.setPosition(localBody, data.position);
+              localBody.render.fillStyle = id === socket.id ? 'blue' : 'red';
+            }
           });
         }
     });

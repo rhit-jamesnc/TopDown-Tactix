@@ -71,11 +71,10 @@ io.on('connection', (socket) => {
       game.addPlayer(socket.id, { x: 1200, y: 450 });
       game.addPlayer(opponentId, { x: 400, y: 450 });
       
-      io.to(socket.id).emit('match-found', { color: 'blue' });
-      io.to(opponentId).emit('match-found', { color: 'red' });
+      io.to(socket.id).emit('match-found');
+      io.to(opponentId).emit('match-found');
     } else {
       waitingQueue.push(socket.id);
-      console.log('Queue:', waitingQueue);
     }
   });
 
