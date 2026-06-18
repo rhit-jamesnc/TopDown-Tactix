@@ -7,9 +7,9 @@ import { GamePhysicsEngine } from './physicsEngine.js';
 const app = express();
 const httpServer = createServer(app);
 
-const waitingQueue = [];
-const games = new Map();
-const playerToRoom = new Map();
+export const waitingQueue = [];
+export const games = new Map();
+export const playerToRoom = new Map();
 
 const PHYSICS_WIDTH = 1600;
 const PHYSICS_HEIGHT = 900;
@@ -105,7 +105,7 @@ if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(PORT, () => console.log(`Server running on ${PORT}`));
 }
 
-const startNewGame = (player1Id, player2Id) => {
+export const startNewGame = (player1Id, player2Id) => {
   const roomId = `game_${player1Id}_${player2Id}`;
   const newGame = new GamePhysicsEngine(PHYSICS_WIDTH, PHYSICS_HEIGHT);
   
