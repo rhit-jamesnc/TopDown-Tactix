@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
+import { MatchmakingModal } from './MatchmakingModal';
 import './GameCanvas.css';
+import './MatchmakingModal.css';
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
+
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;
 
@@ -16,10 +19,29 @@ interface GoalData {
   scores: { home: number; away: number };
 }
 
-export const OnlineGameCanvas = () => {
+interface OnlineGameCanvasProps {
+  onExit: () => void;
+}
+
+export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
+  const [isSearching, setIsSearching] = useState(true);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
+  const playerColorRef = useRef<string>('');
+  const [playerColor, setPlayerColor] = useState<string>('');
+
+  useEffect(() => {
+    socket.on('match-found', (data: { color: string }) => {
+      playerColorRef.current = data.color;
+      setPlayerColor(data.color);
+      setIsSearching(false);
+    });
+
+    return () => {
+      socket.off('match-found');
+    };
+  }, []);
 
   useEffect(() => {
     const updateScale = () => {
@@ -33,7 +55,7 @@ export const OnlineGameCanvas = () => {
   }, []);
 
   useEffect(() => {
-    if (!sceneRef.current) return;
+    if (isSearching || !sceneRef.current) return;
 
     const engine = Matter.Engine.create({ gravity: { x: 0, y: 0 } });
     const render = Matter.Render.create({
@@ -87,10 +109,12 @@ export const OnlineGameCanvas = () => {
           
           Object.entries(state.players).forEach(([id, data]) => {
               if (!visualBodies[id]) {
-                  createVisual(id, '#3b82f6', 25);
+                const myColor = playerColorRef.current;
+                const color = (id === socket.id) ? playerColor : (myColor === 'blue' ? 'red' : 'blue');
+                createVisual(id, color, 25);
               }
               if (visualBodies[id]) {
-                  Matter.Body.setPosition(visualBodies[id], data.position);
+                Matter.Body.setPosition(visualBodies[id], data.position);
               }
           });
         }
@@ -142,26 +166,36 @@ export const OnlineGameCanvas = () => {
       Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
     };
-  }, []);
+  }, [isSearching]);
 
   return (
     <div className="scaling-wrapper">
-      <div className="game-container-online" style={{ 
-        transform: `scale(${scale})`
-      }}>
-        <div className="title-overlay-internal">TopDown Tactix</div>
-        <div ref={sceneRef} className="game-canvas" />
-        <div className="pitch-overlay">
-          <div className="center-line" />
-          <div className="center-circle" />
-          <div className="left-goal-crease" />
-          <div className="right-goal-crease" />
-          <div className="scoreboard">
-              <span className="score-value">{scores.home}</span>
-              <span className="score-value">{scores.away}</span>
+      {isSearching ? (
+        <MatchmakingModal 
+          socket={socket} 
+          onCancel={() => {
+            socket.emit('cancel-match');
+            onExit();
+          }} 
+        />
+      ) : (
+        <div className="game-container-online" style={{ 
+          transform: `scale(${scale})`
+        }}>
+          <div className="title-overlay-internal">TopDown Tactix</div>
+          <div ref={sceneRef} className="game-canvas" />
+          <div className="pitch-overlay">
+            <div className="center-line" />
+            <div className="center-circle" />
+            <div className="left-goal-crease" />
+            <div className="right-goal-crease" />
+            <div className="scoreboard">
+                <span className="score-value">{scores.home}</span>
+                <span className="score-value">{scores.away}</span>
+            </div>
           </div>
         </div>
-        </div>
+        )}
     </div>
   );
 };

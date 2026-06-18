@@ -11,7 +11,9 @@ function App() {
     <div className="app-viewport">
       {mode === 'home' && <HomePage onStartOffline={() => setMode('offline')} onStartOnline={() => setMode('online')} />}
       {mode === 'offline' && <OfflineGameCanvas />}
-      {mode === 'online' && <OnlineGameCanvas />}
+      {mode === 'online' && (
+        <OnlineGameCanvas onExit={() => setMode('home')} />
+      )}
     </div>
   );
 }

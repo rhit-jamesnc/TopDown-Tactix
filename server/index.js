@@ -59,12 +59,23 @@ io.on('connection', (socket) => {
   });
 
   socket.on('find-match', () => {
+
+    if (waitingQueue.includes(socket.id)) {
+      console.log(`User ${socket.id} is already in the queue. Ignoring.`);
+      return; 
+    }
+
     if (waitingQueue.length > 0) {
       const opponentId = waitingQueue.shift();
-      io.to(socket.id).emit('match-found', { opponentId });
-      io.to(opponentId).emit('match-found', { opponentId: socket.id });
+
+      game.addPlayer(socket.id, { x: 1200, y: 450 });
+      game.addPlayer(opponentId, { x: 400, y: 450 });
+      
+      io.to(socket.id).emit('match-found', { color: 'blue' });
+      io.to(opponentId).emit('match-found', { color: 'red' });
     } else {
       waitingQueue.push(socket.id);
+      console.log('Queue:', waitingQueue);
     }
   });
 
@@ -84,7 +95,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     const index = waitingQueue.indexOf(socket.id);
     if (index !== -1) waitingQueue.splice(index, 1);
-    
+
     game.removePlayer(socket.id);
     io.emit('player-disconnected', socket.id);
   });
