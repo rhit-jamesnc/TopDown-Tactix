@@ -35,7 +35,7 @@ export const OfflineGameCanvas = () => {
     physics.rightGoalBlocker.render.visible = false
 
     physics.ball.render.fillStyle = '#ffffff'
-    physics.players['p1'].render.fillStyle = '#ef4444'
+    physics.players['p1'].render.fillStyle = 'red'
     physics.players['p2'].render.fillStyle = 'blue'
 
     physics.onGoal((team: string) => {
