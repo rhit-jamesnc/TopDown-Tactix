@@ -1,6 +1,6 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll } from 'vitest';
-import { httpServer } from './index.js';
+import { httpServer } from '../index.js';
 
 let clientSocket;
 const TEST_PORT = 9999;

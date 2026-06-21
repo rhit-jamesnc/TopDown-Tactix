@@ -1,6 +1,6 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll, beforeEach } from 'vitest';
-import { httpServer, io, games, startNewGame } from './index.js';
+import { httpServer, io, games, startNewGame } from '../index.js';
 import { Body } from 'matter-js';
 
 const TEST_PORT = 9998;

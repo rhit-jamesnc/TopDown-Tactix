@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { Body } from 'matter-js';
-import { GamePhysicsEngine } from './physicsEngine.js';  
+import { GamePhysicsEngine } from '../physicsEngine.js';  
 
 describe('Game Physics Engine - State Reset', () => {
   test('should cleanly reset positions and wipe velocities during pitch reset', () => {
