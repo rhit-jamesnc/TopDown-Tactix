@@ -36,7 +36,7 @@ export const OfflineGameCanvas = () => {
 
     physics.ball.render.fillStyle = '#ffffff'
     physics.players['p1'].render.fillStyle = '#ef4444'
-    physics.players['p2'].render.fillStyle = '#3b82f6'
+    physics.players['p2'].render.fillStyle = 'blue'
 
     physics.onGoal((team: string) => {
         if (team === 'away') {
