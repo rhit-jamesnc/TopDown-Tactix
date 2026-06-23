@@ -1,19 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
-import { GamePhysicsEngine } from '../../../server/physicsEngine'
-import './GameCanvas.css'
+import { GameManager } from '../../../server/gameManager'
 
-interface PhysicsEngineInstance {
-    engine: Matter.Engine;
-    walls: Matter.Body[];
-    ball: Matter.Body;
-    players: { [key: string]: Matter.Body };
-    leftGoalBlocker: Matter.Body;
-    rightGoalBlocker: Matter.Body;
-    addPlayer: (id: string, pos: { x: number, y: number }) => void;
-    onGoal: (callback: (team: string) => void) => void;
-    update: () => void;
-}
+import './GameCanvas.css'
 
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
@@ -25,20 +14,30 @@ export const OfflineGameCanvas = () => {
     const PITCH_WIDTH = window.innerWidth
     const PITCH_HEIGHT = window.innerHeight
 
-    const physics = new GamePhysicsEngine(PITCH_WIDTH, PITCH_HEIGHT) as PhysicsEngineInstance
+    const manager = new GameManager(PITCH_WIDTH, PITCH_HEIGHT)
+    const physics = manager.physics;
 
     physics.addPlayer('p1', { x: 200, y: PITCH_HEIGHT / 2 })
     physics.addPlayer('p2', { x: PITCH_WIDTH - 200, y: PITCH_HEIGHT / 2 })
 
     physics.walls.forEach(w => w.render.visible = false)
-    physics.leftGoalBlocker.render.visible = false
-    physics.rightGoalBlocker.render.visible = false
+    
+    if (physics.leftGoalBlocker && physics.leftGoalBlocker.render) {
+        physics.leftGoalBlocker.render.visible = false;
+    }
+    if (physics.rightGoalBlocker && physics.rightGoalBlocker.render) {
+        physics.rightGoalBlocker.render.visible = false;
+}
 
-    physics.ball.render.fillStyle = '#ffffff'
-    physics.players['p1'].render.fillStyle = 'red'
-    physics.players['p2'].render.fillStyle = 'blue'
+    if (physics.ball) {
+        physics.ball.render.fillStyle = '#ffffff';
+    }
 
-    physics.onGoal((team: string) => {
+    const players = physics.players as { [key: string]: Matter.Body };
+    if (players['p1']) players['p1'].render.fillStyle = 'red';
+    if (players['p2']) players['p2'].render.fillStyle = 'blue';
+
+    manager.onGoal((team: string) => {
         if (team === 'away') {
             setScores(prev => ({ ...prev, p2: prev.p2 + 1 }))
         } else {
@@ -91,7 +90,7 @@ export const OfflineGameCanvas = () => {
             Matter.Body.applyForce(players['p2'], players['p2'].position, p2Impulse)
         }
 
-        physics.update()
+        manager.update(1/60);
 
         animationFrameId = requestAnimationFrame(tick)
     }

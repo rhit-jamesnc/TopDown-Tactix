@@ -3,6 +3,7 @@ import Matter from 'matter-js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GamePhysicsEngine } from './physicsEngine.js';
+import { GameManager } from './GameManager.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -107,7 +108,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 export const startNewGame = (player1Id, player2Id) => {
   const roomId = `game_${player1Id}_${player2Id}`;
-  const newGame = new GamePhysicsEngine(PHYSICS_WIDTH, PHYSICS_HEIGHT);
+  const newGame = new GameManager(PHYSICS_WIDTH, PHYSICS_HEIGHT);
   
   newGame.addPlayer(player1Id, { x: 1200, y: 450 });
   newGame.addPlayer(player2Id, { x: 400, y: 450 });
@@ -117,7 +118,7 @@ export const startNewGame = (player1Id, player2Id) => {
   });
 
   const loop = setInterval(() => {
-    newGame.update();
+    newGame.update(1/60);
     io.to(roomId).emit('game-state', newGame.getState());
   }, 1000 / 60);
 
