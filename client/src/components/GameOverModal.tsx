@@ -1,10 +1,4 @@
-interface GameOverModalProps {
-  winner: string;
-  reason: string;
-  scores: { home: number; away: number };
-  onPlayAgain: () => void;
-  onHome: () => void;
-}
+import type { GameOverModalProps } from "../../../shared/types/game"
 
 export const GameOverModal = ({ winner, reason, scores, onPlayAgain, onHome }: GameOverModalProps) => {
   const getDisplayName = (val: string) => {

@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { InDevelopmentModal } from './InDevelopmentModal';
+import type { HomePageProps } from "../../../shared/types/props"
 import './HomePage.css';
-
-interface HomePageProps {
-  onStartOffline: () => void;
-  onStartOnline: () => void;
-}
 
 export const HomePage = ({ onStartOffline, onStartOnline }: HomePageProps) => {
   const [helpView, setHelpView] = useState<'closed' | 'main' | 'offline'>('closed');

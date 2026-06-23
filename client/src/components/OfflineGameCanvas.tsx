@@ -2,13 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
 import { GameManager } from '../../../server/gameManager'
 import { GameOverModal } from './GameOverModal'
+import type { GameResult } from "../../../shared/types/game"
 
 import './GameCanvas.css'
-
-interface GameResult {
-  winner: string;
-  reason: string;
-}
 
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)

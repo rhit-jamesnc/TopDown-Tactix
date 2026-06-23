@@ -2,28 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
 import { MatchmakingModal } from './MatchmakingModal';
+import { GameOverModal } from './GameOverModal';
+import type { GameState, GameResult } from "../../../shared/types/game"
+import type { OnlineGameCanvasProps} from "../../../shared/types/props"
 import './GameCanvas.css';
 import './MatchmakingModal.css';
-import { GameOverModal } from './GameOverModal';
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;
-
-interface GameState {
-  ball: { x: number; y: number };
-  players: { [key: string]: { position: { x: number; y: number } } };
-}
-
-interface GameResult {
-  winner: string;
-  reason: string;
-}
-
-interface OnlineGameCanvasProps {
-  onExit: () => void;
-}
 
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);

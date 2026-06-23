@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
+import type { MatchmakingModalProps } from '../../../shared/types/props';
 import './MatchmakingModal.css';
-
-interface MatchmakingModalProps {
-  socket: Socket;
-  onCancel: () => void;
-}
 
 export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) => {
   const [status, setStatus] = useState({ totalOnline: 0, inQueue: 0 });
