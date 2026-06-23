@@ -58,8 +58,8 @@ export class GameManager {
     }
 
     getGameStatus() {
-        if (checkGoalWin(this.scores.home, this.winLimit)) return { winner: 'home', reason: 'Goal Limit Reached' };
-        if (checkGoalWin(this.scores.away, this.winLimit)) return { winner: 'away', reason: 'Goal Limit Reached' };
+        if (checkGoalWin(this.scores.home, this.winLimit)) return { winner: 'home', reason: 'goal' };
+        if (checkGoalWin(this.scores.away, this.winLimit)) return { winner: 'away', reason: 'goal' };
         
         if (this.timer <= 0) {
             const result = checkTimeExpiry(this.scores.home, this.scores.away);
