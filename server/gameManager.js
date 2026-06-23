@@ -6,7 +6,7 @@ export class GameManager {
         this.physics = new GamePhysicsEngine(width, height);
         this.scores = { home: 0, away: 0 };
         this.timer = 180;
-        this.winLimit = 5;
+        this.winLimit = 1;
         this.goalCallback = null;
         this.isGoalTriggered = false;
     }
@@ -58,11 +58,12 @@ export class GameManager {
     }
 
     getGameStatus() {
-        if (checkGoalWin(this.scores.home, this.winLimit)) return { winner: 'home', reason: 'goal' };
-        if (checkGoalWin(this.scores.away, this.winLimit)) return { winner: 'away', reason: 'goal' };
+        if (checkGoalWin(this.scores.home, this.winLimit)) return { winner: 'home', reason: 'Goal Limit Reached' };
+        if (checkGoalWin(this.scores.away, this.winLimit)) return { winner: 'away', reason: 'Goal Limit Reached' };
         
         if (this.timer <= 0) {
-            return { result: checkTimeExpiry(this.scores.home, this.scores.away), reason: 'time' };
+            const result = checkTimeExpiry(this.scores.home, this.scores.away);
+            return { winner: result, reason: 'Time expired' };
         }
         
         return 'ongoing';

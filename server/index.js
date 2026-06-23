@@ -119,6 +119,18 @@ export const startNewGame = (player1Id, player2Id) => {
 
   const loop = setInterval(() => {
     newGame.update(1/60);
+
+    const status = newGame.getGameStatus();
+    if (status !== 'ongoing') {
+        clearInterval(loop);
+        io.to(roomId).emit('game-over', status);
+        
+        games.delete(roomId);
+        playerToRoom.delete(player1Id);
+        playerToRoom.delete(player2Id);
+        return; 
+    }
+
     io.to(roomId).emit('game-state', newGame.getState());
   }, 1000 / 60);
 

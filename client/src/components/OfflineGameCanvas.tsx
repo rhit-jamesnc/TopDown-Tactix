@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
 import { GameManager } from '../../../server/gameManager'
+import { GameOverModal } from './GameOverModal'
 
 import './GameCanvas.css'
 
+interface GameResult {
+  winner: string;
+  reason: string;
+}
+
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
+  const [gameKey, setGameKey] = useState(0);
   const [scores, setScores] = useState({ p1: 0, p2: 0 })
+  const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
     if (!sceneRef.current) return
@@ -38,7 +46,7 @@ export const OfflineGameCanvas = () => {
     if (players['p2']) players['p2'].render.fillStyle = 'blue';
 
     manager.onGoal((team: string) => {
-        if (team === 'away') {
+        if (team === 'away' || team === 'p2') {
             setScores(prev => ({ ...prev, p2: prev.p2 + 1 }))
         } else {
             setScores(prev => ({ ...prev, p1: prev.p1 + 1 }))
@@ -92,6 +100,19 @@ export const OfflineGameCanvas = () => {
 
         manager.update(1/60);
 
+        const status = manager.getGameStatus();
+        if (status !== 'ongoing') {
+            cancelAnimationFrame(animationFrameId);
+
+            const gameStatus = status as { winner: string, reason: string };
+
+            setGameOver({
+                winner: gameStatus.winner,
+                reason: gameStatus.reason
+            });
+            return;
+        }
+
         animationFrameId = requestAnimationFrame(tick)
     }
 
@@ -105,10 +126,25 @@ export const OfflineGameCanvas = () => {
       Matter.Engine.clear(physics.engine)
       render.canvas.remove()
     }
-  }, [])
+  }, [gameKey])
+
+  const handlePlayAgain = () => {
+    setGameOver(null);
+    setScores({ p1: 0, p2: 0 });
+    setGameKey(prev => prev + 1);
+  };
 
   return (
-    <div className="game-container-offline">
+    <div className="game-container-offline" key={gameKey}>
+      {gameOver && (
+        <GameOverModal 
+            winner={gameOver.winner || "Draw"}
+            reason={gameOver.reason}
+            scores={scores}
+            onPlayAgain={handlePlayAgain}
+            onHome={() => window.location.href = '/'}
+        />
+      )}
       <div className="title-overlay-internal">TopDown Tactix</div>
       <div ref={sceneRef} className="game-canvas" />
       <div className="pitch-overlay">
