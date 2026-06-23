@@ -4,6 +4,7 @@ import Matter from 'matter-js';
 import { MatchmakingModal } from './MatchmakingModal';
 import './GameCanvas.css';
 import './MatchmakingModal.css';
+import { GameOverModal } from './GameOverModal';
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 
@@ -15,6 +16,11 @@ interface GameState {
   players: { [key: string]: { position: { x: number; y: number } } };
 }
 
+interface GameResult {
+  winner: string;
+  reason: string;
+}
+
 interface OnlineGameCanvasProps {
   onExit: () => void;
 }
@@ -24,6 +30,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
+  const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
     socket.on('match-found', () => {
@@ -128,6 +135,13 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       }
     }, 1000 / 60);
 
+    socket.on('game-over', (data) => {
+      setGameOver({
+          winner: data.winner,
+          reason: data.reason
+      });
+    });
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
@@ -145,6 +159,15 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
   return (
     <div className="scaling-wrapper">
+      {gameOver && (
+      <GameOverModal 
+        winner={gameOver.winner}
+        reason={gameOver.reason}
+        scores={{ p1: scores.home, p2: scores.away }}
+        onPlayAgain={() => window.location.reload()}
+        onHome={() => window.location.href = '/'}
+      />
+    )}
       {isSearching ? (
         <MatchmakingModal 
           socket={socket} 

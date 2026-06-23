@@ -67,9 +67,7 @@ export class GamePhysicsEngine {
         ];
 
         this.leftGoalBlocker = Bodies.rectangle(-10, this.height / 2, 20, goalWidth, blockerOptions);
-        console.log('Blocker Check:', this.leftGoalBlocker);
         this.rightGoalBlocker = Bodies.rectangle(this.width + 10, this.height / 2, 20, goalWidth, blockerOptions);
-        console.log('Blocker Check:', this.rightGoalBlocker);
         World.add(this.world, [...this.walls, this.leftGoalBlocker, this.rightGoalBlocker]);
     }
 
