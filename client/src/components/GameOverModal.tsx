@@ -1,7 +1,7 @@
 interface GameOverModalProps {
   winner: string;
   reason: string;
-  scores: { p1: number; p2: number };
+  scores: { home: number; away: number };
   onPlayAgain: () => void;
   onHome: () => void;
 }
@@ -9,8 +9,6 @@ interface GameOverModalProps {
 export const GameOverModal = ({ winner, reason, scores, onPlayAgain, onHome }: GameOverModalProps) => {
   const getDisplayName = (val: string) => {
     const map: Record<string, string> = {
-      'p1': 'RED TEAM',
-      'p2': 'BLUE TEAM',
       'home': 'RED TEAM',
       'away': 'BLUE TEAM'
     };
@@ -21,7 +19,7 @@ export const GameOverModal = ({ winner, reason, scores, onPlayAgain, onHome }: G
     <div className="modal-backdrop">
       <div className="modal-content">
         <h2>GAME OVER</h2>
-        <div className="final-scores">{scores.p1} - {scores.p2}</div>
+        <div className="final-scores">{scores.home} - {scores.away}</div>
         
         <p className="winner-text">
           Winner: <strong>{getDisplayName(winner)}</strong>

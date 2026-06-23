@@ -163,7 +163,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       <GameOverModal 
         winner={gameOver.winner}
         reason={gameOver.reason}
-        scores={{ p1: scores.home, p2: scores.away }}
+        scores={{ home: scores.home, away: scores.away }}
         onPlayAgain={() => window.location.reload()}
         onHome={() => window.location.href = '/'}
       />

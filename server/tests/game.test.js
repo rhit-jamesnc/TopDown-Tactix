@@ -32,7 +32,7 @@ const createClientConnection = (port) => {
 test('should broadcast game-state event', async () => {
   const socket = await createClientConnection(TEST_PORT);
   
-  startNewGame(socket.id, 'p2');
+  startNewGame(socket.id, 'away');
   
   const state = await new Promise((resolve) => {
     socket.on('game-state', resolve);
@@ -46,10 +46,10 @@ test('should broadcast game-state event', async () => {
 test('should update player position on input', async () => {
   const socket = await createClientConnection(TEST_PORT);
   
-  startNewGame('p1', 'p2'); 
+  startNewGame('home', 'away'); 
   const game = getActiveGame();
   
-  socket.emit('player-input', { id: 'p1', move: { x: 0.05, y: 0 } });
+  socket.emit('player-input', { id: 'home', move: { x: 0.05, y: 0 } });
 
   await new Promise(resolve => setTimeout(resolve, 50));
   
@@ -57,7 +57,7 @@ test('should update player position on input', async () => {
     game.update();
   };
   
-  const player = game.players['p1'];
+  const player = game.players['home'];
   expect(player.velocity.x).toBeGreaterThan(0);
   expect(player.position.x).toBeGreaterThan(100);
   socket.disconnect();
@@ -66,7 +66,7 @@ test('should update player position on input', async () => {
 test('should add player to game engine on connection', async () => {
   const socket = await createClientConnection(TEST_PORT);
   
-  startNewGame(socket.id, 'p2');
+  startNewGame(socket.id, 'away');
   const game = getActiveGame();
   
   expect(Object.keys(game.players).length).toBe(2);
@@ -85,13 +85,13 @@ test('should remove player from game engine on disconnection', async () => {
 
 test('should ignore malicious input with excessive force', async () => {
   const socket = await createClientConnection(TEST_PORT);
-  startNewGame('p1', 'p2');
+  startNewGame('home', 'away');
   const game = getActiveGame();
     
-  socket.emit('player-input', { id: 'p1', move: { x: 10, y: 0 } });
+  socket.emit('player-input', { id: 'home', move: { x: 10, y: 0 } });
   await new Promise(r => setTimeout(r, 50));
     
-  const player = game.players['p1'];
+  const player = game.players['home'];
   expect(player.position.x).toBe(1200); 
   socket.disconnect();
 });
@@ -99,7 +99,7 @@ test('should ignore malicious input with excessive force', async () => {
 test('should emit a goal event when the ball crosses the goal line', async () => {
   const socket = await createClientConnection(TEST_PORT);
   
-  startNewGame(socket.id, 'p2');
+  startNewGame(socket.id, 'away');
   const game = getActiveGame();
   
   const goalEmitted = new Promise((resolve) => socket.on('goal-scored', resolve));
@@ -112,7 +112,7 @@ test('should emit a goal event when the ball crosses the goal line', async () =>
 });
 
 test('should reset ball and player positions after a goal', async () => {
-  startNewGame('p1', 'p2');
+  startNewGame('home', 'away');
   const game = getActiveGame();
 
   Body.setPosition(game.ball, { x: -20, y: 450 });
