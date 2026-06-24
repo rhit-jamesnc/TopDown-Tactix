@@ -167,6 +167,16 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     };
   }, [isSearching]);
 
+  const handlePlayAgain = () => {
+    setGameOver(null);
+    setScores({ home: 0, away: 0 });
+    
+    setMyTeam(undefined);
+    setIsSearching(true);
+
+    socket.emit('find-match');
+  };
+
   return (
     <div className="scaling-wrapper">
       {gameOver && (
@@ -175,7 +185,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           reason={gameOver.reason}
           scores={{ home: scores.home, away: scores.away }}
           myTeam={myTeam}
-          onPlayAgain={() => window.location.reload()}
+          onPlayAgain={handlePlayAgain}
           onHome={() => window.location.href = '/'}
         />
       )}

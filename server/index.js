@@ -58,8 +58,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('find-match', () => {
+    if (playerToRoom.has(socket.id)) {
+        playerToRoom.delete(socket.id);
+    }
 
-    if (waitingQueue.includes(socket.id) || playerToRoom.has(socket.id)) {
+    if (waitingQueue.includes(socket.id)) {
       console.log(`User ${socket.id} is already in the queue. Ignoring.`);
       return; 
     }
