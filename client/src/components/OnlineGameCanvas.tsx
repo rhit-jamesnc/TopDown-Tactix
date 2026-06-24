@@ -18,6 +18,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(10);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
@@ -130,6 +131,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       });
     });
 
+    socket.on('game-timer', (time) => setTimeLeft(time));
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
@@ -139,6 +142,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       socket.off('player-disconnected', handleDisconnect);
       socket.off('current-score');
       socket.off('goal-scored');
+      socket.off('game-over');
+      socket.off('game-timer');
       Matter.Render.stop(render);
       Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
@@ -177,6 +182,9 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             <div className="right-goal-crease" />
             <div className="scoreboard">
                 <span className="score-value">{scores.home}</span>
+                <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
+                  {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+                </span>
                 <span className="score-value">{scores.away}</span>
             </div>
           </div>

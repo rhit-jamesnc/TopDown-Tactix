@@ -120,6 +120,8 @@ export const startNewGame = (player1Id, player2Id) => {
   const loop = setInterval(() => {
     newGame.update(1/60);
 
+    io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {
         clearInterval(loop);
