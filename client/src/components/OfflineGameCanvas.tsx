@@ -10,6 +10,7 @@ export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
   const [gameKey, setGameKey] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 })
+  const [timeLeft, setTimeLeft] = useState(10);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
@@ -72,6 +73,19 @@ export const OfflineGameCanvas = () => {
     const FORCE_MAGNITUDE = 0.012
 
     const tick = () => {
+        const status = manager.getGameStatus();
+        if (status !== 'ongoing' || manager.timer <= 0) {
+            cancelAnimationFrame(animationFrameId);
+
+            const gameStatus = status as { winner: string, reason: string };
+
+            setGameOver({
+                winner: gameStatus.winner,
+                reason: gameStatus.reason
+            });
+            return;
+        }
+
         const homeImpulse = { x: 0, y: 0 }
         const awayImpulse = { x: 0, y: 0 }
 
@@ -95,19 +109,7 @@ export const OfflineGameCanvas = () => {
         }
 
         manager.update(1/60);
-
-        const status = manager.getGameStatus();
-        if (status !== 'ongoing') {
-            cancelAnimationFrame(animationFrameId);
-
-            const gameStatus = status as { winner: string, reason: string };
-
-            setGameOver({
-                winner: gameStatus.winner,
-                reason: gameStatus.reason
-            });
-            return;
-        }
+        setTimeLeft(manager.getRemainingTime());
 
         animationFrameId = requestAnimationFrame(tick)
     }
@@ -134,7 +136,7 @@ export const OfflineGameCanvas = () => {
     <div className="game-container-offline" key={gameKey}>
       {gameOver && (
         <GameOverModal 
-            winner={gameOver.winner || "Draw"}
+            winner={gameOver.winner}
             reason={gameOver.reason}
             scores={scores}
             onPlayAgain={handlePlayAgain}
@@ -150,7 +152,9 @@ export const OfflineGameCanvas = () => {
         <div className="right-goal-crease" />
         <div className="scoreboard">
             <span className="score-value">{scores.home}</span>
-            <span className="score-separator"> </span>
+            <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
+                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+            </span>
             <span className="score-value">{scores.away}</span>
       </div>
       </div>

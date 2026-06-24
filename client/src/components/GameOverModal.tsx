@@ -4,9 +4,12 @@ export const GameOverModal = ({ winner, reason, scores, onPlayAgain, onHome }: G
   const getDisplayName = (val: string) => {
     const map: Record<string, string> = {
       'home': 'RED TEAM',
-      'away': 'BLUE TEAM'
+      'away': 'BLUE TEAM',
+      'win': 'RED TEAM',
+      'loss': 'BLUE TEAM',
+      'draw': 'DRAW'
     };
-    return map[val] || val;
+    return map[val.toLowerCase()] || val.toUpperCase();
   };
 
   return (
@@ -19,7 +22,7 @@ export const GameOverModal = ({ winner, reason, scores, onPlayAgain, onHome }: G
           Winner: <strong>{getDisplayName(winner)}</strong>
         </p>
         
-        <p className="reason-text">{reason === 'goal' ? 'Goal limit reached' : 'Time expired'}</p>
+        <p className="reason-text">{reason === 'goal' ? 'Goal limit reached' : 'Full Time'}</p>
         
         <div className="modal-actions">
           <button className="btn-playAgain" onClick={onPlayAgain}>PLAY AGAIN</button>
