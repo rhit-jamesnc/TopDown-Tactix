@@ -28,6 +28,16 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
+
+  socket.on('request-my-team', () => {
+    const roomId = playerToRoom.get(socket.id);
+    const gameData = games.get(roomId);
+
+    if (gameData && gameData.players) {
+      const team = gameData.players.indexOf(socket.id) === 0 ? 'home' : 'away';
+      socket.emit('player-assignment', { team });
+    }
+  });
   
   socket.on('request-score', () => {
     const roomId = playerToRoom.get(socket.id);
@@ -110,8 +120,11 @@ export const startNewGame = (player1Id, player2Id) => {
   const roomId = `game_${player1Id}_${player2Id}`;
   const newGame = new GameManager(PHYSICS_WIDTH, PHYSICS_HEIGHT);
   
-  newGame.addPlayer(player1Id, { x: 1200, y: 450 });
-  newGame.addPlayer(player2Id, { x: 400, y: 450 });
+  newGame.addPlayer(player1Id, { x: 400, y: 450 });
+  newGame.addPlayer(player2Id, { x: 1200, y: 450 });
+
+  io.to(player1Id).emit('player-assignment', { team: 'home' });
+  io.to(player2Id).emit('player-assignment', { team: 'away' });
   
   newGame.onGoal((side, scores) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
@@ -125,7 +138,13 @@ export const startNewGame = (player1Id, player2Id) => {
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {
         clearInterval(loop);
-        io.to(roomId).emit('game-over', status);
+        io.to(roomId).emit('game-over', {
+            ...status,
+            players: {
+              [player1Id]: 'home',
+              [player2Id]: 'away'
+          }
+        });
         
         games.delete(roomId);
         playerToRoom.delete(player1Id);

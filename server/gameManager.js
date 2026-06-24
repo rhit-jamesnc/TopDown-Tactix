@@ -67,6 +67,9 @@ export class GameManager {
         
         if (this.timer <= 0) {
             const result = checkTimeExpiry(this.scores.home, this.scores.away);
+
+            if (result === 'win') return { winner: 'home', reason: 'time' };
+            if (result === 'loss') return { winner: 'away', reason: 'time' };
             return { winner: result, reason: 'time' };
         }
         

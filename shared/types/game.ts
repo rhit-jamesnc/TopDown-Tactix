@@ -12,11 +12,3 @@ export interface GameScores {
   home: number;
   away: number;
 }
-
-export interface GameOverModalProps {
-  winner: string;
-  reason: string;
-  scores: GameScores;
-  onPlayAgain: () => void;
-  onHome: () => void;
-}

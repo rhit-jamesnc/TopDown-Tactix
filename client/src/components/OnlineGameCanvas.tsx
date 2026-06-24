@@ -16,6 +16,7 @@ const TARGET_HEIGHT = 900;
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
   const sceneRef = useRef<HTMLDivElement>(null);
+  const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
   const [timeLeft, setTimeLeft] = useState(10);
@@ -25,6 +26,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('match-found', () => {
       setIsSearching(false);
     });
+
+    if (!isSearching) {
+      socket.emit('request-my-team');
+    }
 
     return () => {
       socket.off('match-found');
@@ -105,6 +110,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('current-score', (data) => setScores({ home: data.home, away: data.away }));
     socket.on('goal-scored', (data) => setScores({ home: data.scores.home, away: data.scores.away }));
     socket.emit('request-score');
+    socket.on('player-assignment', (data) => setMyTeam(data.team));
 
     const activeKeys: Record<string, boolean> = {};
     const handleKeyDown = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = true; };
@@ -123,8 +129,18 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         socket.emit('player-input', { move, id: socket.id });
       }
     }, 1000 / 60);
+    
 
     socket.on('game-over', (data) => {
+      if (!socket.id) {
+        console.error("Game over received, but socket ID is missing.");
+        return;
+      }
+    
+      const myId = socket.id;
+      const myRole = data.players[myId];
+      setMyTeam(myRole);
+
       setGameOver({
           winner: data.winner,
           reason: data.reason
@@ -142,6 +158,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       socket.off('player-disconnected', handleDisconnect);
       socket.off('current-score');
       socket.off('goal-scored');
+      socket.off('player-assignment');
       socket.off('game-over');
       socket.off('game-timer');
       Matter.Render.stop(render);
@@ -153,14 +170,15 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   return (
     <div className="scaling-wrapper">
       {gameOver && (
-      <GameOverModal 
-        winner={gameOver.winner}
-        reason={gameOver.reason}
-        scores={{ home: scores.home, away: scores.away }}
-        onPlayAgain={() => window.location.reload()}
-        onHome={() => window.location.href = '/'}
-      />
-    )}
+        <GameOverModal 
+          winner={gameOver.winner}
+          reason={gameOver.reason}
+          scores={{ home: scores.home, away: scores.away }}
+          myTeam={myTeam}
+          onPlayAgain={() => window.location.reload()}
+          onHome={() => window.location.href = '/'}
+        />
+      )}
       {isSearching ? (
         <MatchmakingModal 
           socket={socket} 
