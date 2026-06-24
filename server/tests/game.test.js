@@ -92,7 +92,7 @@ test('should ignore malicious input with excessive force', async () => {
   await new Promise(r => setTimeout(r, 50));
     
   const player = game.players['home'];
-  expect(player.position.x).toBe(1200); 
+  expect(player.position.x).toBe(400); 
   socket.disconnect();
 });
 
