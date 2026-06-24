@@ -22,7 +22,7 @@ const io = new Server(httpServer, {
   }
 });
 
-app.get('/', (req, res) => {
+app.get('/', (res) => {
   res.send('TopDown Tactix Server is running smoothly.');
 });
 

@@ -34,7 +34,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     return () => {
       socket.off('match-found');
     };
-  }, []);
+  }, [isSearching]);
 
   useEffect(() => {
     const updateScale = () => {
