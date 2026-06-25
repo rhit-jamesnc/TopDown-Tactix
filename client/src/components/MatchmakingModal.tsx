@@ -12,8 +12,14 @@ export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) =>
     const timerInterval = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     socket.on('lobby-status', (data) => setStatus(data));
+    let isCancelled = false;
+    const matchTimer = setTimeout(() => {
+      if (!isCancelled) socket.emit('find-match');
+    }, 50);
 
     return () => {
+      isCancelled = true;
+      clearTimeout(matchTimer);
       clearInterval(statusInterval);
       clearInterval(timerInterval);
       socket.off('lobby-status');

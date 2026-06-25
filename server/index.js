@@ -59,7 +59,15 @@ io.on('connection', (socket) => {
 
   socket.on('find-match', () => {
     if (playerToRoom.has(socket.id)) {
-        playerToRoom.delete(socket.id);
+      const roomId = playerToRoom.get(socket.id);
+      const gameData = games.get(roomId);
+      
+      if (gameData) {
+        clearInterval(gameData.instance.loop);
+        gameData.players.forEach(pid => playerToRoom.delete(pid));
+        games.delete(roomId);
+        io.to(roomId).emit('opponent-disconnected');
+      }
     }
 
     if (waitingQueue.includes(socket.id)) {
