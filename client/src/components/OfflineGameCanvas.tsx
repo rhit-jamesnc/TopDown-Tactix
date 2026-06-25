@@ -1,23 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
-import { GamePhysicsEngine } from '../../../server/physicsEngine'
-import './GameCanvas.css'
+import { GameManager } from '../../../server/gameManager'
+import { GameOverModal } from './GameOverModal'
+import type { GameResult } from "../../../shared/types/game"
 
-interface PhysicsEngineInstance {
-    engine: Matter.Engine;
-    walls: Matter.Body[];
-    ball: Matter.Body;
-    players: { [key: string]: Matter.Body };
-    leftGoalBlocker: Matter.Body;
-    rightGoalBlocker: Matter.Body;
-    addPlayer: (id: string, pos: { x: number, y: number }) => void;
-    onGoal: (callback: (team: string) => void) => void;
-    update: () => void;
-}
+import './GameCanvas.css'
 
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
-  const [scores, setScores] = useState({ p1: 0, p2: 0 })
+  const [gameKey, setGameKey] = useState(0);
+  const [scores, setScores] = useState({ home: 0, away: 0 })
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
     if (!sceneRef.current) return
@@ -25,24 +19,34 @@ export const OfflineGameCanvas = () => {
     const PITCH_WIDTH = window.innerWidth
     const PITCH_HEIGHT = window.innerHeight
 
-    const physics = new GamePhysicsEngine(PITCH_WIDTH, PITCH_HEIGHT) as PhysicsEngineInstance
+    const manager = new GameManager(PITCH_WIDTH, PITCH_HEIGHT)
+    const physics = manager.physics;
 
-    physics.addPlayer('p1', { x: 200, y: PITCH_HEIGHT / 2 })
-    physics.addPlayer('p2', { x: PITCH_WIDTH - 200, y: PITCH_HEIGHT / 2 })
+    physics.addPlayer('home', { x: 200, y: PITCH_HEIGHT / 2 })
+    physics.addPlayer('away', { x: PITCH_WIDTH - 200, y: PITCH_HEIGHT / 2 })
 
     physics.walls.forEach(w => w.render.visible = false)
-    physics.leftGoalBlocker.render.visible = false
-    physics.rightGoalBlocker.render.visible = false
+    
+    if (physics.leftGoalBlocker && physics.leftGoalBlocker.render) {
+        physics.leftGoalBlocker.render.visible = false;
+    }
+    if (physics.rightGoalBlocker && physics.rightGoalBlocker.render) {
+        physics.rightGoalBlocker.render.visible = false;
+}
 
-    physics.ball.render.fillStyle = '#ffffff'
-    physics.players['p1'].render.fillStyle = '#ef4444'
-    physics.players['p2'].render.fillStyle = '#3b82f6'
+    if (physics.ball) {
+        physics.ball.render.fillStyle = '#ffffff';
+    }
 
-    physics.onGoal((team: string) => {
-        if (team === 'away') {
-            setScores(prev => ({ ...prev, p2: prev.p2 + 1 }))
+    const players = physics.players as { [key: string]: Matter.Body };
+    if (players['home']) players['home'].render.fillStyle = 'red';
+    if (players['away']) players['away'].render.fillStyle = 'blue';
+
+    manager.onGoal((team: string) => {
+        if (team === 'away' || team === 'away') {
+            setScores(prev => ({ ...prev, away: prev.away + 1 }))
         } else {
-            setScores(prev => ({ ...prev, p1: prev.p1 + 1 }))
+            setScores(prev => ({ ...prev, home: prev.home + 1 }))
         }
     })
 
@@ -69,29 +73,43 @@ export const OfflineGameCanvas = () => {
     const FORCE_MAGNITUDE = 0.012
 
     const tick = () => {
-        const p1Impulse = { x: 0, y: 0 }
-        const p2Impulse = { x: 0, y: 0 }
+        const status = manager.getGameStatus();
+        if (status !== 'ongoing' || manager.timer <= 0) {
+            cancelAnimationFrame(animationFrameId);
 
-        if (activeKeys['w']) p1Impulse.y -= FORCE_MAGNITUDE
-        if (activeKeys['s']) p1Impulse.y += FORCE_MAGNITUDE
-        if (activeKeys['a']) p1Impulse.x -= FORCE_MAGNITUDE
-        if (activeKeys['d']) p1Impulse.x += FORCE_MAGNITUDE
+            const gameStatus = status as { winner: string, reason: string };
 
-        if (activeKeys['arrowup']) p2Impulse.y -= FORCE_MAGNITUDE
-        if (activeKeys['arrowdown']) p2Impulse.y += FORCE_MAGNITUDE
-        if (activeKeys['arrowleft']) p2Impulse.x -= FORCE_MAGNITUDE
-        if (activeKeys['arrowright']) p2Impulse.x += FORCE_MAGNITUDE
+            setGameOver({
+                winner: gameStatus.winner,
+                reason: gameStatus.reason
+            });
+            return;
+        }
+
+        const homeImpulse = { x: 0, y: 0 }
+        const awayImpulse = { x: 0, y: 0 }
+
+        if (activeKeys['w']) homeImpulse.y -= FORCE_MAGNITUDE
+        if (activeKeys['s']) homeImpulse.y += FORCE_MAGNITUDE
+        if (activeKeys['a']) homeImpulse.x -= FORCE_MAGNITUDE
+        if (activeKeys['d']) homeImpulse.x += FORCE_MAGNITUDE
+
+        if (activeKeys['arrowup']) awayImpulse.y -= FORCE_MAGNITUDE
+        if (activeKeys['arrowdown']) awayImpulse.y += FORCE_MAGNITUDE
+        if (activeKeys['arrowleft']) awayImpulse.x -= FORCE_MAGNITUDE
+        if (activeKeys['arrowright']) awayImpulse.x += FORCE_MAGNITUDE
 
         const players = physics.players as { [key: string]: Matter.Body };
 
-        if (p1Impulse.x !== 0 || p1Impulse.y !== 0) {
-            Matter.Body.applyForce(players['p1'], players['p1'].position, p1Impulse)
+        if (homeImpulse.x !== 0 || homeImpulse.y !== 0) {
+            Matter.Body.applyForce(players['home'], players['home'].position, homeImpulse)
         }
-        if (p2Impulse.x !== 0 || p2Impulse.y !== 0) {
-            Matter.Body.applyForce(players['p2'], players['p2'].position, p2Impulse)
+        if (awayImpulse.x !== 0 || awayImpulse.y !== 0) {
+            Matter.Body.applyForce(players['away'], players['away'].position, awayImpulse)
         }
 
-        physics.update()
+        manager.update(1/60);
+        setTimeLeft(manager.getRemainingTime());
 
         animationFrameId = requestAnimationFrame(tick)
     }
@@ -106,10 +124,25 @@ export const OfflineGameCanvas = () => {
       Matter.Engine.clear(physics.engine)
       render.canvas.remove()
     }
-  }, [])
+  }, [gameKey])
+
+  const handlePlayAgain = () => {
+    setGameOver(null);
+    setScores({ home: 0, away: 0 });
+    setGameKey(prev => prev + 1);
+  };
 
   return (
-    <div className="game-container-offline">
+    <div className="game-container-offline" key={gameKey}>
+      {gameOver && (
+        <GameOverModal 
+            winner={gameOver.winner}
+            reason={gameOver.reason}
+            scores={scores}
+            onPlayAgain={handlePlayAgain}
+            onHome={() => window.location.href = '/'}
+        />
+      )}
       <div className="title-overlay-internal">TopDown Tactix</div>
       <div ref={sceneRef} className="game-canvas" />
       <div className="pitch-overlay">
@@ -118,9 +151,11 @@ export const OfflineGameCanvas = () => {
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
         <div className="scoreboard">
-            <span className="score-value">{scores.p1}</span>
-            <span className="score-separator"> </span>
-            <span className="score-value">{scores.p2}</span>
+            <span className="score-value">{scores.home}</span>
+            <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
+                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+            </span>
+            <span className="score-value">{scores.away}</span>
       </div>
       </div>
     </div>

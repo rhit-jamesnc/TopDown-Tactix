@@ -3,6 +3,7 @@ import Matter from 'matter-js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GamePhysicsEngine } from './physicsEngine.js';
+import { GameManager } from './gameManager';
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,12 +22,22 @@ const io = new Server(httpServer, {
   }
 });
 
-app.get('/', (req, res) => {
+app.get('/', (res) => {
   res.send('TopDown Tactix Server is running smoothly.');
 });
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
+
+  socket.on('request-my-team', () => {
+    const roomId = playerToRoom.get(socket.id);
+    const gameData = games.get(roomId);
+
+    if (gameData && gameData.players) {
+      const team = gameData.players.indexOf(socket.id) === 0 ? 'home' : 'away';
+      socket.emit('player-assignment', { team });
+    }
+  });
   
   socket.on('request-score', () => {
     const roomId = playerToRoom.get(socket.id);
@@ -47,8 +58,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('find-match', () => {
+    if (playerToRoom.has(socket.id)) {
+        playerToRoom.delete(socket.id);
+    }
 
-    if (waitingQueue.includes(socket.id) || playerToRoom.has(socket.id)) {
+    if (waitingQueue.includes(socket.id)) {
       console.log(`User ${socket.id} is already in the queue. Ignoring.`);
       return; 
     }
@@ -107,17 +121,40 @@ if (process.env.NODE_ENV !== 'test') {
 
 export const startNewGame = (player1Id, player2Id) => {
   const roomId = `game_${player1Id}_${player2Id}`;
-  const newGame = new GamePhysicsEngine(PHYSICS_WIDTH, PHYSICS_HEIGHT);
+  const newGame = new GameManager(PHYSICS_WIDTH, PHYSICS_HEIGHT);
   
-  newGame.addPlayer(player1Id, { x: 1200, y: 450 });
-  newGame.addPlayer(player2Id, { x: 400, y: 450 });
+  newGame.addPlayer(player1Id, { x: 400, y: 450 });
+  newGame.addPlayer(player2Id, { x: 1200, y: 450 });
+
+  io.to(player1Id).emit('player-assignment', { team: 'home' });
+  io.to(player2Id).emit('player-assignment', { team: 'away' });
   
   newGame.onGoal((side, scores) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
   });
 
   const loop = setInterval(() => {
-    newGame.update();
+    newGame.update(1/60);
+
+    io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+
+    const status = newGame.getGameStatus();
+    if (status !== 'ongoing') {
+        clearInterval(loop);
+        io.to(roomId).emit('game-over', {
+            ...status,
+            players: {
+              [player1Id]: 'home',
+              [player2Id]: 'away'
+          }
+        });
+        
+        games.delete(roomId);
+        playerToRoom.delete(player1Id);
+        playerToRoom.delete(player2Id);
+        return; 
+    }
+
     io.to(roomId).emit('game-state', newGame.getState());
   }, 1000 / 60);
 

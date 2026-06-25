@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
 import { MatchmakingModal } from './MatchmakingModal';
+import { GameOverModal } from './GameOverModal';
+import type { GameState, GameResult } from "../../../shared/types/game"
+import type { OnlineGameCanvasProps} from "../../../shared/types/props"
 import './GameCanvas.css';
 import './MatchmakingModal.css';
 
@@ -10,30 +13,28 @@ const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;
 
-interface GameState {
-  ball: { x: number; y: number };
-  players: { [key: string]: { position: { x: number; y: number } } };
-}
-
-interface OnlineGameCanvasProps {
-  onExit: () => void;
-}
-
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
   const sceneRef = useRef<HTMLDivElement>(null);
+  const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
     socket.on('match-found', () => {
       setIsSearching(false);
     });
 
+    if (!isSearching) {
+      socket.emit('request-my-team');
+    }
+
     return () => {
       socket.off('match-found');
     };
-  }, []);
+  }, [isSearching]);
 
   useEffect(() => {
     const updateScale = () => {
@@ -109,6 +110,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('current-score', (data) => setScores({ home: data.home, away: data.away }));
     socket.on('goal-scored', (data) => setScores({ home: data.scores.home, away: data.scores.away }));
     socket.emit('request-score');
+    socket.on('player-assignment', (data) => setMyTeam(data.team));
 
     const activeKeys: Record<string, boolean> = {};
     const handleKeyDown = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = true; };
@@ -127,6 +129,25 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         socket.emit('player-input', { move, id: socket.id });
       }
     }, 1000 / 60);
+    
+
+    socket.on('game-over', (data) => {
+      if (!socket.id) {
+        console.error("Game over received, but socket ID is missing.");
+        return;
+      }
+    
+      const myId = socket.id;
+      const myRole = data.players[myId];
+      setMyTeam(myRole);
+
+      setGameOver({
+          winner: data.winner,
+          reason: data.reason
+      });
+    });
+
+    socket.on('game-timer', (time) => setTimeLeft(time));
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -137,14 +158,37 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       socket.off('player-disconnected', handleDisconnect);
       socket.off('current-score');
       socket.off('goal-scored');
+      socket.off('player-assignment');
+      socket.off('game-over');
+      socket.off('game-timer');
       Matter.Render.stop(render);
       Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
     };
   }, [isSearching]);
 
+  const handlePlayAgain = () => {
+    setGameOver(null);
+    setScores({ home: 0, away: 0 });
+    
+    setMyTeam(undefined);
+    setIsSearching(true);
+
+    socket.emit('find-match');
+  };
+
   return (
     <div className="scaling-wrapper">
+      {gameOver && (
+        <GameOverModal 
+          winner={gameOver.winner}
+          reason={gameOver.reason}
+          scores={{ home: scores.home, away: scores.away }}
+          myTeam={myTeam}
+          onPlayAgain={handlePlayAgain}
+          onHome={() => window.location.href = '/'}
+        />
+      )}
       {isSearching ? (
         <MatchmakingModal 
           socket={socket} 
@@ -166,6 +210,9 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             <div className="right-goal-crease" />
             <div className="scoreboard">
                 <span className="score-value">{scores.home}</span>
+                <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
+                  {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+                </span>
                 <span className="score-value">{scores.away}</span>
             </div>
           </div>

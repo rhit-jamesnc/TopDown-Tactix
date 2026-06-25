@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
+import type { MatchmakingModalProps } from '../../../shared/types/props';
 import './MatchmakingModal.css';
-
-interface MatchmakingModalProps {
-  socket: Socket;
-  onCancel: () => void;
-}
 
 export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) => {
   const [status, setStatus] = useState({ totalOnline: 0, inQueue: 0 });
@@ -17,7 +12,6 @@ export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) =>
     const timerInterval = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     socket.on('lobby-status', (data) => setStatus(data));
-    socket.emit('find-match');
 
     return () => {
       clearInterval(statusInterval);

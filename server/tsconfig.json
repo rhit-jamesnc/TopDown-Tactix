@@ -3,27 +3,24 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
       "#shared/*": ["../shared/*"]
     },
-    "rootDir": "./",
-    "outDir": "./dist",
+    "rootDir": "..", 
+    "outDir": "../dist",
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "checkJs": false,
     "noEmit": true 
   },
   "include": [
-    "index.js",
     "./src/**/*",
-    "../shared"
+    "../shared/**/*",
+    "index.js"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "../dist"
   ]
 }
