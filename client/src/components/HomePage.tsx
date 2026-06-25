@@ -21,6 +21,7 @@ export const HomePage = ({ onStartOffline, onStartOnline }: HomePageProps) => {
               <>
                 <h2>How to Play</h2>
                 <p>Select a game mode to see specific controls and rules.</p>
+                <p>Press <b>Escape</b> at any time to pause the game.</p>
                 <button onClick={() => setHelpView('offline')}>1v1 Offline</button>
                 <button onClick={() => setHelpView('online')}>1v1 Online</button>
               </>

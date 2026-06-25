@@ -23,3 +23,8 @@ export interface GameOverModalProps {
   onPlayAgain: () => void;
   onHome: () => void;
 }
+
+export interface PauseMenuProps {
+  onResume: () => void;
+  onQuit: () => void;
+}

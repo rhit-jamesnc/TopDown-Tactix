@@ -3,7 +3,7 @@ import Matter from 'matter-js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GamePhysicsEngine } from './physicsEngine.js';
-import { GameManager } from './gameManager';
+import { GameManager } from './gameManager.js';
 
 const app = express();
 const httpServer = createServer(app);

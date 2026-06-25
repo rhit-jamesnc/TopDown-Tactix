@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
 import { GameManager } from '../../../server/gameManager'
 import { GameOverModal } from './GameOverModal'
+import { PauseMenuModal } from './PauseMenuModal';
 import type { GameResult } from "../../../shared/types/game"
 
 import './GameCanvas.css'
@@ -10,6 +11,8 @@ export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
   const [gameKey, setGameKey] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 })
+  const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(false);
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
@@ -39,6 +42,7 @@ export const OfflineGameCanvas = () => {
     }
 
     const players = physics.players as { [key: string]: Matter.Body };
+
     if (players['home']) players['home'].render.fillStyle = 'red';
     if (players['away']) players['away'].render.fillStyle = 'blue';
 
@@ -64,7 +68,14 @@ export const OfflineGameCanvas = () => {
     Matter.Render.run(render)
 
     const activeKeys: { [key: string]: boolean } = {}
-    const handleKeyDown = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = true }
+    const handleKeyDown = (e: KeyboardEvent) => { 
+        if (e.key === 'Escape') {
+            const nextPaused = !isPausedRef.current;
+            isPausedRef.current = nextPaused;
+            setIsPaused(nextPaused);
+        }
+        activeKeys[e.key.toLowerCase()] = true 
+    }
     const handleKeyUp = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = false }
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
@@ -73,6 +84,11 @@ export const OfflineGameCanvas = () => {
     const FORCE_MAGNITUDE = 0.012
 
     const tick = () => {
+        if (isPausedRef.current) {
+            animationFrameId = requestAnimationFrame(tick);
+            return;
+        }
+
         const status = manager.getGameStatus();
         if (status !== 'ongoing' || manager.timer <= 0) {
             cancelAnimationFrame(animationFrameId);
@@ -134,6 +150,15 @@ export const OfflineGameCanvas = () => {
 
   return (
     <div className="game-container-offline" key={gameKey}>
+      {isPaused && (
+        <PauseMenuModal 
+            onResume={() => {
+                isPausedRef.current = false;
+                setIsPaused(false);
+            }} 
+            onQuit={() => window.location.href = '/'}
+        />
+        )}
       {gameOver && (
         <GameOverModal 
             winner={gameOver.winner}
