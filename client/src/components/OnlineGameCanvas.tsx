@@ -23,6 +23,14 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
+    socket.emit('find-match');
+    
+    return () => {
+      socket.emit('cancel-match');
+    };
+  }, []);
+
+  useEffect(() => {
     socket.on('match-found', () => {
       setIsSearching(false);
     });
