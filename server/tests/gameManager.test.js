@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { Body } from 'matter-js';
-import { GameManager } from '../GameManager';
+import { GameManager } from '../gameManager';
 
 describe('Game Manager - State Reset', () => {
   let manager;
