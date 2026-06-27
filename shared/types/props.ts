@@ -28,3 +28,10 @@ export interface PauseMenuProps {
   onResume: () => void;
   onQuit: () => void;
 }
+
+export type HelpView = 'main' | 'offline' | 'online';
+
+export interface HelpModalProps {
+  initialView?: HelpView;
+  onClose: () => void;
+}
