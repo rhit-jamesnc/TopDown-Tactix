@@ -98,6 +98,16 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('pause-game', (isPaused) => {
+    const roomId = playerToRoom.get(socket.id);
+    const gameData = games.get(roomId);
+    
+    if (gameData) {
+        gameData.instance.isPaused = isPaused;
+        io.to(roomId).emit('game-paused', isPaused);
+    }
+  });
+
   socket.on('cancel-match', () => {
     const index = waitingQueue.indexOf(socket.id);
     if (index !== -1) waitingQueue.splice(index, 1);
@@ -142,9 +152,11 @@ export const startNewGame = (player1Id, player2Id) => {
   });
 
   const loop = setInterval(() => {
-    newGame.update(1/60);
-
-    io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+    if (!newGame.isPaused) {
+        newGame.update(1/60);
+        io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+        io.to(roomId).emit('game-state', newGame.getState());
+    }
 
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {
