@@ -13,7 +13,7 @@ export const OfflineGameCanvas = () => {
   const [scores, setScores] = useState({ home: 0, away: 0 })
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
