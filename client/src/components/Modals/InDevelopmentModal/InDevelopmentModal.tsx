@@ -1,4 +1,4 @@
-import '../Styles/InDevelopmentModal.css';
+import './InDevelopmentModal.css';
 
 export const InDevelopmentModal = ({ onClose }: { onClose: () => void }) => {
   return (

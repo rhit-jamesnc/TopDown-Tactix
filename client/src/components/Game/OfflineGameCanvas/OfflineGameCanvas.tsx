@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
-import { GameManager } from '../../../../server/gameManager'
-import { GameOverModal } from './GameOverModal'
-import { PauseMenuModal } from './PauseMenuModal';
-import type { GameResult } from "../../../../shared/types/game"
+import { GameManager } from '../../../../../server/gameManager'
+import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
+import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
+import { Scoreboard } from '../Scoreboard/Scoreboard';
+import type { GameResult } from "../../../../../shared/types/game"
 
-import '../Styles/GameCanvas.css'
+import '../GameCanvas.css'
 
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)

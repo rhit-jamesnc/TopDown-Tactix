@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
-import { MatchmakingModal } from './MatchmakingModal';
-import { GameOverModal } from './GameOverModal';
-import { PauseMenuModal } from './PauseMenuModal';
-import type { GameState, GameResult } from "../../../../shared/types/game"
-import type { OnlineGameCanvasProps} from "../../../../shared/types/props"
-import '../Styles/GameCanvas.css';
-import '../Styles/MatchmakingModal.css';
+import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
+import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
+import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
+import type { GameState, GameResult } from "../../../../../shared/types/game"
+import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
+import '../GameCanvas.css';
+import '../../Modals/MatchmakingModal/MatchmakingModal.css'
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { HelpModal } from './HelpModal';
-import type { PauseMenuProps } from '../../../../shared/types/props'
-import '../Styles/PauseMenuModal.css'
+import { HelpModal } from '../HelpModal/HelpModal';
+import type { PauseMenuProps } from '../../../../../shared/types/props'
+import './PauseMenuModal.css'
 
 export const PauseMenuModal = ({ onResume, onQuit, pauseTimeLeft }: PauseMenuProps) => {
   const [view, setView] = useState<'menu' | 'help'>('menu');
