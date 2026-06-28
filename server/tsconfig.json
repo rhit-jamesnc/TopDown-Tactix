@@ -17,7 +17,7 @@
   "include": [
     "./src/**/*",
     "../shared/**/*",
-    "index.js"
+    "server.js"
   ],
   "exclude": [
     "node_modules",

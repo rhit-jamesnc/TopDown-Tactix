@@ -3,7 +3,7 @@ import Matter from 'matter-js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GamePhysicsEngine } from './physicsEngine.js';
-import { GameManager } from './gameManager';
+import { GameManager } from './gameManager.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -22,7 +22,7 @@ const io = new Server(httpServer, {
   }
 });
 
-app.get('/', (res) => {
+app.get('/', (req, res) => {
   res.send('TopDown Tactix Server is running smoothly.');
 });
 
@@ -59,7 +59,15 @@ io.on('connection', (socket) => {
 
   socket.on('find-match', () => {
     if (playerToRoom.has(socket.id)) {
-        playerToRoom.delete(socket.id);
+      const roomId = playerToRoom.get(socket.id);
+      const gameData = games.get(roomId);
+      
+      if (gameData) {
+        clearInterval(gameData.instance.loop);
+        gameData.players.forEach(pid => playerToRoom.delete(pid));
+        games.delete(roomId);
+        io.to(roomId).emit('opponent-disconnected');
+      }
     }
 
     if (waitingQueue.includes(socket.id)) {
@@ -87,6 +95,16 @@ io.on('connection', (socket) => {
       if (player) {
         Matter.Body.applyForce(player, player.position, data.move);
       }
+    }
+  });
+
+  socket.on('pause-game', (isPaused) => {
+    const roomId = playerToRoom.get(socket.id);
+    const gameData = games.get(roomId);
+    
+    if (gameData) {
+        gameData.instance.isPaused = isPaused;
+        io.to(roomId).emit('game-paused', isPaused);
     }
   });
 
@@ -133,10 +151,27 @@ export const startNewGame = (player1Id, player2Id) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
   });
 
-  const loop = setInterval(() => {
-    newGame.update(1/60);
+  let pauseTimeRemaining = 30;
 
-    io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+  const loop = setInterval(() => {
+    if (newGame.isPaused) {
+        pauseTimeRemaining -= 1/60;
+        io.to(roomId).emit('pause-timer', pauseTimeRemaining);
+
+        if (pauseTimeRemaining <= 0) {
+            newGame.isPaused = false;
+            pauseTimeRemaining = 30;
+            io.to(roomId).emit('game-paused', false);
+        }
+    } else {
+        pauseTimeRemaining = 30;
+    }
+
+    if (!newGame.isPaused) {
+        newGame.update(1/60);
+        io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+        io.to(roomId).emit('game-state', newGame.getState());
+    }
 
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {
@@ -154,8 +189,6 @@ export const startNewGame = (player1Id, player2Id) => {
         playerToRoom.delete(player2Id);
         return; 
     }
-
-    io.to(roomId).emit('game-state', newGame.getState());
   }, 1000 / 60);
 
   games.set(roomId, { 

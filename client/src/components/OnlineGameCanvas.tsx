@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import Matter from 'matter-js';
 import { MatchmakingModal } from './MatchmakingModal';
 import { GameOverModal } from './GameOverModal';
+import { PauseMenuModal } from './PauseMenuModal';
 import type { GameState, GameResult } from "../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../shared/types/props"
 import './GameCanvas.css';
@@ -15,11 +16,14 @@ const TARGET_HEIGHT = 900;
 
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(false);
+  const [pauseTimeLeft, setPauseTimeLeft] = useState(30);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [scale, setScale] = useState(1);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
 
   useEffect(() => {
@@ -111,14 +115,30 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('goal-scored', (data) => setScores({ home: data.scores.home, away: data.scores.away }));
     socket.emit('request-score');
     socket.on('player-assignment', (data) => setMyTeam(data.team));
+    socket.on('pause-timer', (time) => setPauseTimeLeft(time));
+
+    socket.on('game-paused', (paused) => {
+        isPausedRef.current = paused;
+        setIsPaused(paused);
+    });
 
     const activeKeys: Record<string, boolean> = {};
-    const handleKeyDown = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = true; };
+
+    const handleKeyDown = (e: KeyboardEvent) => { 
+      if (e.key === 'Escape') {
+          const nextPaused = !isPausedRef.current;
+          socket.emit('pause-game', nextPaused);
+      }
+      activeKeys[e.key.toLowerCase()] = true; 
+    };
+
     const handleKeyUp = (e: KeyboardEvent) => { activeKeys[e.key.toLowerCase()] = false; };
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
     const interval = setInterval(() => {
+      if (isPausedRef.current) return;
+
       const move = { x: 0, y: 0 };
       const FORCE = 0.012;
       if (activeKeys['w'] || activeKeys['arrowup']) move.y -= FORCE;
@@ -173,12 +193,23 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     
     setMyTeam(undefined);
     setIsSearching(true);
-
-    socket.emit('find-match');
   };
 
   return (
     <div className="scaling-wrapper">
+      {isPaused && (
+        <PauseMenuModal 
+          pauseTimeLeft={pauseTimeLeft}
+          onResume={() => {
+            socket.emit('pause-game', false);
+          }} 
+          onQuit={() => {
+            socket.emit('pause-game', false);
+            socket.emit('cancel-match');
+            window.location.href = '/';
+          }}
+        />
+      )}
       {gameOver && (
         <GameOverModal 
           winner={gameOver.winner}

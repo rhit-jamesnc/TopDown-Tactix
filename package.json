@@ -9,7 +9,7 @@
     "shared"
   ],
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "lint": "npm run lint --workspaces --if-present && eslint .",
     "test": "vitest",
@@ -18,7 +18,7 @@
     "dev": "vite",
     "build": "npm install --include=dev",
     "preview": "vite preview",
-    "start": "node ./server/index.js",
+    "start": "node ./server/server.js",
     "start:all": "concurrently \"npm start\" \"npm run dev --workspace=client\""
   },
   "keywords": [],

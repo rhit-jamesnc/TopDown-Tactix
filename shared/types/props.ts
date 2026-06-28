@@ -23,3 +23,16 @@ export interface GameOverModalProps {
   onPlayAgain: () => void;
   onHome: () => void;
 }
+
+export interface PauseMenuProps {
+  onResume: () => void;
+  onQuit: () => void;
+  pauseTimeLeft?: number;
+}
+
+export type HelpView = 'main' | 'offline' | 'online';
+
+export interface HelpModalProps {
+  initialView?: HelpView;
+  onClose: () => void;
+}

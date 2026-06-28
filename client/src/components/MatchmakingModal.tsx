@@ -12,8 +12,14 @@ export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) =>
     const timerInterval = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     socket.on('lobby-status', (data) => setStatus(data));
+    let isCancelled = false;
+    const matchTimer = setTimeout(() => {
+      if (!isCancelled) socket.emit('find-match');
+    }, 50);
 
     return () => {
+      isCancelled = true;
+      clearTimeout(matchTimer);
       clearInterval(statusInterval);
       clearInterval(timerInterval);
       socket.off('lobby-status');
@@ -23,7 +29,7 @@ export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) =>
   return (
     <div className="matchmaking-overlay">
       <div className="matchmaking-content">
-        <button className="close-x" onClick={onCancel}>X</button>
+        <button className="close-x" onClick={onCancel}>&times;</button>
         <h2>Finding Opponent...</h2>
         <div className="spinner"></div>
         <p>Time searching: {seconds}s</p>
