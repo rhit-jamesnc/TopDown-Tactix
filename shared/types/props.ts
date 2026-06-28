@@ -15,6 +15,12 @@ export interface OnlineGameCanvasProps {
   onExit: () => void;
 }
 
+export interface ScoreboardProps {
+  scores: { home: number; away: number };
+  timeLeft: number;
+  onPause: () => void;
+}
+
 export interface GameOverModalProps {
   winner: string;
   reason: string;
