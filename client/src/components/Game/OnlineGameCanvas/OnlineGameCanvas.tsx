@@ -250,18 +250,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         }}>
           <div ref={sceneRef} className="game-canvas" />
           {isPausePending && (
-            <div className="pause-pending-indicator" style={{
-              position: 'absolute',
-              top: '80px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(230, 126, 34, 0.9)',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '4px',
-              fontWeight: 'bold',
-              zIndex: 10
-            }}>
+            <div className="pause-pending-indicator">
               Match will pause after the next goal...
             </div>
           )}
