@@ -201,7 +201,6 @@ export const OfflineGameCanvas = () => {
                 isCountdownFrozenRef.current = false;
             }
         }}
-        onCountdownComplete={() => console.log('Kickoff countdown finished')}
       />
 
       <div className="pitch-overlay">

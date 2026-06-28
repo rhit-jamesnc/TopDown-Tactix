@@ -43,7 +43,7 @@ export interface PauseMenuProps {
 
 export interface CountdownOverlayProps {
   duration: number;
-  onCountdownComplete: () => void;
+  onCountdownComplete?: () => void;
   onStateChange: (state: { isFrozen: boolean }) => void;
 }
 
