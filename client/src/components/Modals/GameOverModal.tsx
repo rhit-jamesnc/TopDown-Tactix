@@ -1,4 +1,4 @@
-import type { GameOverModalProps } from "../../../shared/types/props"
+import type { GameOverModalProps } from "../../../../shared/types/props"
 
 export const GameOverModal = ({ winner, reason, scores, myTeam, onPlayAgain, onHome }: GameOverModalProps) => {
   const getDisplayName = (val: string) => {

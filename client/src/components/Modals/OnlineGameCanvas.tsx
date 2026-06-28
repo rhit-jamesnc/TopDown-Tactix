@@ -4,8 +4,8 @@ import Matter from 'matter-js';
 import { MatchmakingModal } from './MatchmakingModal';
 import { GameOverModal } from './GameOverModal';
 import { PauseMenuModal } from './PauseMenuModal';
-import type { GameState, GameResult } from "../../../shared/types/game"
-import type { OnlineGameCanvasProps} from "../../../shared/types/props"
+import type { GameState, GameResult } from "../../../../shared/types/game"
+import type { OnlineGameCanvasProps} from "../../../../shared/types/props"
 import './GameCanvas.css';
 import './MatchmakingModal.css';
 

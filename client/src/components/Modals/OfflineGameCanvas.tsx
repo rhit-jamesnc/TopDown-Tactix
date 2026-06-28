@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
-import { GameManager } from '../../../server/gameManager'
+import { GameManager } from '../../../../server/gameManager'
 import { GameOverModal } from './GameOverModal'
 import { PauseMenuModal } from './PauseMenuModal';
-import type { GameResult } from "../../../shared/types/game"
+import type { GameResult } from "../../../../shared/types/game"
 
 import './GameCanvas.css'
 
