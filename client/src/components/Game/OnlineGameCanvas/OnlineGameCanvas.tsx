@@ -186,11 +186,13 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
       const move = { x: 0, y: 0 };
       const FORCE = 0.012;
+      
       if (activeKeys['w'] || activeKeys['arrowup']) move.y -= FORCE;
       if (activeKeys['s'] || activeKeys['arrowdown']) move.y += FORCE;
       if (activeKeys['a'] || activeKeys['arrowleft']) move.x -= FORCE;
       if (activeKeys['d'] || activeKeys['arrowright']) move.x += FORCE;
-      if (socket.id && (move.x !== 0 || move.y !== 0)) {
+
+      if (socket.id) {
         socket.emit('player-input', { move, id: socket.id });
       }
     }, 1000 / 60);

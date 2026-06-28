@@ -1,5 +1,4 @@
 import express from 'express';
-import Matter from 'matter-js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GamePhysicsEngine } from './physicsEngine.js';
@@ -93,10 +92,7 @@ io.on('connection', (socket) => {
     if (gameData && gameData.instance.isCountdownActive) return;
 
     if (gameData && !gameData.instance.isPaused && GamePhysicsEngine.isValidMove(data.move)) {
-      const player = gameData.instance.players[data.id];
-      if (gameData && !gameData.instance.isPaused && player) {
-        Matter.Body.applyForce(player, player.position, data.move);
-      }
+      gameData.instance.setPlayerInput(data.id, data.move);
     }
   });
 
@@ -221,12 +217,12 @@ export const startNewGame = (player1Id, player2Id) => {
         pauseTimeRemaining = 30;
     }
 
-    if (!newGame.isPaused && !newGame.isCountdownActive) {
+    if (!newGame.isPaused) {
+      newGame.applyInputs();
       newGame.update(1/60);
+      io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+      io.to(roomId).emit('game-state', newGame.getState());
     }
-
-    io.to(roomId).emit('game-timer', newGame.getRemainingTime());
-    io.to(roomId).emit('game-state', newGame.getState());
 
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {
