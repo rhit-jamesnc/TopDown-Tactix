@@ -141,6 +141,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     });
 
     socket.on('game-paused', (paused) => {
+      const wasPaused = isPausedRef.current;
       isPausedRef.current = paused;
       setIsPaused(paused);
       if (paused) {
@@ -148,6 +149,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         setIsPausePending(false);
         setPauseRequestedBy(null);
         pauseRequestedByRef.current = null;
+      } else if (wasPaused) {
+        isCountdownFrozenRef.current = true;
+        setCountdownDuration(3);
+        setCountdownKey(prev => prev + 1);
       }
     });
 

@@ -37,6 +37,14 @@ export class GameManager {
         });
     }
 
+    triggerCountdown(durationMs) {
+        this.isCountdownActive = true;
+        if (this.countdownTimeout) clearTimeout(this.countdownTimeout);
+        this.countdownTimeout = setTimeout(() => {
+            this.isCountdownActive = false;
+        }, durationMs);
+    }
+
     get ball() { 
         return this.physics.ball; 
     }

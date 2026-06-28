@@ -21,6 +21,14 @@ export const OfflineGameCanvas = () => {
   const [countdownKey, setCountdownKey] = useState(0);
   const [countdownDuration, setCountdownDuration] = useState(5);
 
+  const triggerUnpauseCountdown = () => {
+    if (!isCountdownFrozenRef.current) {
+    isCountdownFrozenRef.current = true;
+    setCountdownDuration(3);
+    setCountdownKey(prev => prev + 1);
+    }
+  };
+
   useEffect(() => {
     if (!sceneRef.current) return
  
@@ -82,6 +90,7 @@ export const OfflineGameCanvas = () => {
     const handleKeyDown = (e: KeyboardEvent) => { 
         if (e.key === 'Escape') {
             const nextPaused = !isPausedRef.current;
+            if (!nextPaused) triggerUnpauseCountdown();
             isPausedRef.current = nextPaused;
             setIsPaused(nextPaused);
         }
@@ -166,6 +175,7 @@ export const OfflineGameCanvas = () => {
       {isPaused && (
         <PauseMenuModal 
             onResume={() => {
+                triggerUnpauseCountdown();
                 isPausedRef.current = false;
                 setIsPaused(false);
             }} 
@@ -206,6 +216,7 @@ export const OfflineGameCanvas = () => {
         timeLeft={timeLeft} 
         onPause={() => {
             const nextPaused = !isPausedRef.current;
+            if (!nextPaused) triggerUnpauseCountdown();
             isPausedRef.current = nextPaused;
             setIsPaused(nextPaused)
         }}

@@ -126,6 +126,10 @@ io.on('connection', (socket) => {
         gameData.instance.pauseRequestedBy = null;
         io.to(roomId).emit('game-paused', false);
         io.to(roomId).emit('pause-pending', { pending: false, requestedBy: null });
+
+        if (!gameData.instance.isCountdownActive) {
+          gameData.instance.triggerCountdown(3800);
+        }
       }
     }
   });
@@ -179,20 +183,11 @@ export const startNewGame = (player1Id, player2Id) => {
 
   let pauseTimeRemaining = 30;
 
-  const triggerCountdown = (durationMs) => {
-    newGame.isCountdownActive = true;
-    if (newGame.countdownTimeout) clearTimeout(newGame.countdownTimeout);
-    
-    newGame.countdownTimeout = setTimeout(() => {
-      newGame.isCountdownActive = false;
-    }, durationMs);
-  };
-
-  triggerCountdown(5800);
+  newGame.triggerCountdown(5800);
   
   newGame.onGoal((side, scores) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
-    triggerCountdown(3800);
+    newGame.triggerCountdown(3800);
 
     if (newGame.isPausePending) {
       newGame.isPaused = true;
@@ -212,14 +207,21 @@ export const startNewGame = (player1Id, player2Id) => {
             newGame.isPaused = false;
             pauseTimeRemaining = 30;
             io.to(roomId).emit('game-paused', false);
+
+            if (!newGame.isCountdownActive) {
+                newGame.triggerCountdown(3800);
+            }
         }
     } else {
         pauseTimeRemaining = 30;
     }
 
     if (!newGame.isPaused) {
-      newGame.applyInputs();
-      newGame.update(1/60);
+      if (!newGame.isCountdownActive) {
+        newGame.applyInputs();
+        newGame.update(1/60);
+      }
+      
       io.to(roomId).emit('game-timer', newGame.getRemainingTime());
       io.to(roomId).emit('game-state', newGame.getState());
     }
