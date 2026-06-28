@@ -8,7 +8,8 @@ export const Scoreboard = ({
   pauseRequestedBy, 
   mySocketId, 
   onPause, 
-  onAcceptPause 
+  onAcceptPause,
+  isOnline = false
 }: ScoreboardProps) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -35,7 +36,7 @@ export const Scoreboard = ({
   };
 
   return (
-    <div className='scoreboard-container'>
+    <div className={`scoreboard-container ${isOnline ? 'online' : ''}`}>
       <div className="scoreboard-wrapper">
         <div className="scoreboard-display">
           <div className="team-score">

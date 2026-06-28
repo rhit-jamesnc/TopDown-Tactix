@@ -23,6 +23,7 @@ export interface ScoreboardProps {
   mySocketId?: string | null;
   onPause: () => void;
   onAcceptPause?: () => void;
+  isOnline?: boolean;
 }
 
 export interface GameOverModalProps {

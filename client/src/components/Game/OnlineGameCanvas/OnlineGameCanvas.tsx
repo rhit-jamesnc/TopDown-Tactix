@@ -221,6 +221,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const handlePlayAgain = () => {
     setGameOver(null);
     setScores({ home: 0, away: 0 });
+
+    setIsPaused(false);
+    isPausedRef.current = false;
+    
+    setIsPausePending(false);
+    isPausePendingRef.current = false;
+    
+    setPauseRequestedBy(null);
+    if (pauseRequestedByRef) pauseRequestedByRef.current = null;
+    
+    setPauseTimeLeft(30);
     
     setMyTeam(undefined);
     setIsSearching(true);
@@ -285,6 +296,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
               onAcceptPause={() => {
                 socket.emit('pause-game', true); 
               }}
+              isOnline={true}
             />
           </div>
         </div>
