@@ -29,7 +29,7 @@ export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) =>
   return (
     <div className="matchmaking-overlay">
       <div className="matchmaking-content">
-        <button className="close-x" onClick={onCancel}>X</button>
+        <button className="close-x" onClick={onCancel}>&times;</button>
         <h2>Finding Opponent...</h2>
         <div className="spinner"></div>
         <p>Time searching: {seconds}s</p>
