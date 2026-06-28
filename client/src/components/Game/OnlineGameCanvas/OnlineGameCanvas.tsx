@@ -146,7 +146,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     const handleKeyDown = (e: KeyboardEvent) => { 
       if (e.key === 'Escape') {
         if (isTogglingPause.current) return;
-        
+
         isTogglingPause.current = true;
         setTimeout(() => { isTogglingPause.current = false; }, 300);
 
@@ -293,6 +293,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
               pauseRequestedBy={pauseRequestedBy}
               mySocketId={socket.id || null}
               onPause={() => {
+                if (isTogglingPause.current) return;
+                isTogglingPause.current = true;
+                setTimeout(() => { isTogglingPause.current = false; }, 300);
+
                 if (isPausedRef.current || isPausePendingRef.current) {
                   socket.emit('pause-game', false);
                 } else {

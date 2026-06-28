@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
     const roomId = playerToRoom.get(data.id);
     const gameData = games.get(roomId);
 
-    if (gameData & !gameData.instance.isPaused && GamePhysicsEngine.isValidMove(data.move)) {
+    if (gameData && !gameData.instance.isPaused && GamePhysicsEngine.isValidMove(data.move)) {
       const player = gameData.instance.players[data.id];
       if (player) {
         Matter.Body.applyForce(player, player.position, data.move);
@@ -218,7 +218,7 @@ export const startNewGame = (player1Id, player2Id) => {
         newGame.pauseRequestedBy = null;
         io.to(roomId).emit('pause-pending', { pending: false, requestedBy: null });
         io.to(roomId).emit('game-paused', false);
-        
+
         io.to(roomId).emit('game-over', {
             ...status,
             players: {
