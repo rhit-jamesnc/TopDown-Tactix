@@ -18,6 +18,8 @@ export const OfflineGameCanvas = () => {
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
   const isCountdownFrozenRef = useRef(true);
+  const [countdownKey, setCountdownKey] = useState(0);
+  const [countdownDuration, setCountdownDuration] = useState(5);
 
   useEffect(() => {
     if (!sceneRef.current) return
@@ -55,6 +57,12 @@ export const OfflineGameCanvas = () => {
         } else {
             setScores(prev => ({ ...prev, home: prev.home + 1 }))
         }
+
+        isCountdownFrozenRef.current = true;
+        manager.resetPitch();
+
+        setCountdownDuration(3);
+        setCountdownKey(prev => prev + 1);
     })
 
     const render = Matter.Render.create({
@@ -148,6 +156,8 @@ export const OfflineGameCanvas = () => {
   const handlePlayAgain = () => {
     setGameOver(null);
     setScores({ home: 0, away: 0 });
+    setCountdownKey(0);
+    setCountdownDuration(5);
     setGameKey(prev => prev + 1);
   };
 
@@ -174,12 +184,14 @@ export const OfflineGameCanvas = () => {
       <div ref={sceneRef} className="game-canvas" />
 
       <CountdownOverlay 
+        key={countdownKey}
+        duration={countdownDuration}
         onStateChange={({ isFrozen }: { isFrozen: boolean }) =>{
             if (!isFrozen) {
                 isCountdownFrozenRef.current = false;
             }
         }}
-        onCountdownComplete={() => console.log('Offline Match Started')}
+        onCountdownComplete={() => console.log('Kickoff countdown finished')}
       />
 
       <div className="pitch-overlay">
@@ -188,6 +200,7 @@ export const OfflineGameCanvas = () => {
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
       </div>
+
       <Scoreboard 
         scores={scores} 
         timeLeft={timeLeft} 

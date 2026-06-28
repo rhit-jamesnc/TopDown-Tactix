@@ -41,6 +41,12 @@ export interface PauseMenuProps {
   pauseTimeLeft?: number;
 }
 
+export interface CountdownOverlayProps {
+  duration: number;
+  onCountdownComplete: () => void;
+  onStateChange: (state: { isFrozen: boolean }) => void;
+}
+
 export type HelpView = 'main' | 'offline' | 'online';
 
 export interface HelpModalProps {

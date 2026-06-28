@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { CountdownOverlayProps } from '../../../../../shared/types/props'
 import './CountdownOverlay.css';
 
-export const CountdownOverlay = ({ onCountdownComplete, onStateChange }) => {
-  const [count, setCount] = useState(5);
+export const CountdownOverlay = ({ duration, onCountdownComplete, onStateChange }: CountdownOverlayProps) => {
+  const [count, setCount] = useState<number>(duration);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -20,22 +21,20 @@ export const CountdownOverlay = ({ onCountdownComplete, onStateChange }) => {
             if (onStateChange) onStateChange({ isFrozen: false });
             if (onCountdownComplete) onCountdownComplete();
           }, 800);
-          
-          return 'GO!';
         }
         return prevCount - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [onCountdownComplete, onStateChange]);
+  }, [duration, onCountdownComplete, onStateChange]);
 
   if (!isVisible) return null;
 
   return (
     <div className="countdown-overlay">
-      <div className={`countdown-number ${typeof count === 'string' ? 'go' : ''}`}>
-        {count}
+      <div className={`countdown-number ${count <= 0 ? 'go' : ''}`}>
+        {count <= 0 ? 'GO!' : count}
       </div>
     </div>
   );
