@@ -9,6 +9,7 @@ export interface HomePageProps {
 export interface MatchmakingModalProps {
   socket: Socket;
   onCancel: () => void;
+  onMatchReady: () => void;
 }
 
 export interface OnlineGameCanvasProps {

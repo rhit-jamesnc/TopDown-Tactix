@@ -37,6 +37,12 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [countdownDuration, setCountdownDuration] = useState(5);
 
   useEffect(() => {
+    const handleMatchFound = () => {
+      setTimeout(() => {
+        setIsSearching(false);
+      }, 3000);
+    };
+
     socket.on('match-found', () => {
       setIsSearching(false);
     });
@@ -46,7 +52,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     }
 
     return () => {
-      socket.off('match-found');
+      socket.off('match-found', handleMatchFound);
     };
   }, [isSearching]);
 
@@ -294,6 +300,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             socket.emit('cancel-match');
             onExit();
           }} 
+          onMatchReady={() => setIsSearching(false)}
         />
       ) : (
         <div className="game-container-online" style={{ 
