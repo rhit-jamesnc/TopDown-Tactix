@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
 
     if (gameData && !gameData.instance.isPaused && GamePhysicsEngine.isValidMove(data.move)) {
       const player = gameData.instance.players[data.id];
-      if (player) {
+      if (gameData && !gameData.instance.isPaused && player) {
         Matter.Body.applyForce(player, player.position, data.move);
       }
     }
@@ -188,6 +188,11 @@ export const startNewGame = (player1Id, player2Id) => {
   });
 
   let pauseTimeRemaining = 30;
+  let isCountdownActive = true;
+
+  setTimeout(() => {
+    isCountdownActive = false;
+  }, 5800);
 
   const loop = setInterval(() => {
     if (newGame.isPaused) {
@@ -203,11 +208,11 @@ export const startNewGame = (player1Id, player2Id) => {
         pauseTimeRemaining = 30;
     }
 
-    if (!newGame.isPaused) {
-        newGame.update(1/60);
-        io.to(roomId).emit('game-timer', newGame.getRemainingTime());
-        io.to(roomId).emit('game-state', newGame.getState());
+    if (!newGame.isPaused && !isCountdownActive) {
+      newGame.update(1/60);
     }
+    io.to(roomId).emit('game-timer', newGame.getRemainingTime());
+    io.to(roomId).emit('game-state', newGame.getState());
 
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {

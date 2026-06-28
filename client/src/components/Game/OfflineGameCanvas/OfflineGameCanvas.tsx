@@ -4,6 +4,7 @@ import { GameManager } from '../../../../../server/gameManager'
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
+import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay'
 import type { GameResult } from "../../../../../shared/types/game"
 
 import '../GameCanvas.css'
@@ -16,6 +17,7 @@ export const OfflineGameCanvas = () => {
   const isPausedRef = useRef(false);
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
+  const isCountdownFrozenRef = useRef(true);
 
   useEffect(() => {
     if (!sceneRef.current) return
@@ -48,7 +50,7 @@ export const OfflineGameCanvas = () => {
     if (players['away']) players['away'].render.fillStyle = 'blue';
 
     manager.onGoal((team: string) => {
-        if (team === 'away' || team === 'away') {
+        if (team === 'away') {
             setScores(prev => ({ ...prev, away: prev.away + 1 }))
         } else {
             setScores(prev => ({ ...prev, home: prev.home + 1 }))
@@ -85,7 +87,7 @@ export const OfflineGameCanvas = () => {
     const FORCE_MAGNITUDE = 0.012
 
     const tick = () => {
-        if (isPausedRef.current) {
+        if (isPausedRef.current || isCountdownFrozenRef.current) {
             animationFrameId = requestAnimationFrame(tick);
             return;
         }
@@ -170,6 +172,16 @@ export const OfflineGameCanvas = () => {
         />
       )}
       <div ref={sceneRef} className="game-canvas" />
+
+      <CountdownOverlay 
+        onStateChange={({ isFrozen }: { isFrozen: boolean }) =>{
+            if (!isFrozen) {
+                isCountdownFrozenRef.current = false;
+            }
+        }}
+        onCountdownComplete={() => console.log('Offline Match Started')}
+      />
+
       <div className="pitch-overlay">
         <div className="center-line" />
         <div className="center-circle" />

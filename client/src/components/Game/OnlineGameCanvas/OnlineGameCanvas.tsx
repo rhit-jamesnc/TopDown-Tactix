@@ -5,6 +5,7 @@ import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
+import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay';
 import type { GameState, GameResult } from "../../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
 import '../GameCanvas.css';
@@ -31,6 +32,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [scale, setScale] = useState(1);
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
+  const isCountdownFrozenRef = useRef(true);
 
   useEffect(() => {
     socket.on('match-found', () => {
@@ -172,7 +174,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     window.addEventListener('keyup', handleKeyUp);
 
     const interval = setInterval(() => {
-      if (isPausedRef.current) return;
+      if (isPausedRef.current || isCountdownFrozenRef.current) return;
 
       const move = { x: 0, y: 0 };
       const FORCE = 0.012;
@@ -280,7 +282,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         <div className="game-container-online" style={{ 
           transform: `scale(${scale})`
         }}>
-        <div ref={sceneRef} className="game-canvas" />
+          <div ref={sceneRef} className="game-canvas" />
+
+          <CountdownOverlay 
+            onStateChange={({ isFrozen }: { isFrozen: boolean }) => {
+              if (!isFrozen) {
+                isCountdownFrozenRef.current = false;
+              }
+            }}
+            onCountdownComplete={() => console.log('Online match running!')}
+          />
+
           <div className="pitch-overlay">
             <div className="center-line" />
             <div className="center-circle" />
