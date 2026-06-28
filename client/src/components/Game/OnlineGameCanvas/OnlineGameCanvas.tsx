@@ -23,6 +23,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const isPausePendingRef = useRef(false);
   const [pauseRequestedBy, setPauseRequestedBy] = useState<string | null>(null);
   const pauseRequestedByRef = useRef<string | null>(null);
+  const isTogglingPause = useRef(false);
   const [pauseTimeLeft, setPauseTimeLeft] = useState(30);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
@@ -144,6 +145,11 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
     const handleKeyDown = (e: KeyboardEvent) => { 
       if (e.key === 'Escape') {
+        if (isTogglingPause.current) return;
+        
+        isTogglingPause.current = true;
+        setTimeout(() => { isTogglingPause.current = false; }, 300);
+
         if (isPausedRef.current) {
           socket.emit('pause-game', false);
         } else if (isPausePendingRef.current) {
