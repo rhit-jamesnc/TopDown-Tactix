@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
-import { MatchmakingModal } from './MatchmakingModal';
-import { GameOverModal } from './GameOverModal';
-import { PauseMenuModal } from './PauseMenuModal';
-import type { GameState, GameResult } from "../../../shared/types/game"
-import type { OnlineGameCanvasProps} from "../../../shared/types/props"
-import './GameCanvas.css';
-import './MatchmakingModal.css';
+import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
+import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
+import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
+import { Scoreboard } from '../Scoreboard/Scoreboard';
+import type { GameState, GameResult } from "../../../../../shared/types/game"
+import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
+import '../GameCanvas.css';
+import '../../Modals/MatchmakingModal/MatchmakingModal.css'
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 
@@ -232,20 +233,20 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         <div className="game-container-online" style={{ 
           transform: `scale(${scale})`
         }}>
-          <div className="title-overlay-internal">TopDown Tactix</div>
           <div ref={sceneRef} className="game-canvas" />
           <div className="pitch-overlay">
             <div className="center-line" />
             <div className="center-circle" />
             <div className="left-goal-crease" />
             <div className="right-goal-crease" />
-            <div className="scoreboard">
-                <span className="score-value">{scores.home}</span>
-                <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
-                  {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-                </span>
-                <span className="score-value">{scores.away}</span>
-            </div>
+            <Scoreboard 
+              scores={scores} 
+              timeLeft={timeLeft} 
+              onPause={() => {
+                const nextPaused = !isPausedRef.current;
+                socket.emit('pause-game', nextPaused);
+              }} 
+            />
           </div>
         </div>
         )}

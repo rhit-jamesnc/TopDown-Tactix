@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
-import { GameManager } from '../../../server/gameManager'
-import { GameOverModal } from './GameOverModal'
-import { PauseMenuModal } from './PauseMenuModal';
-import type { GameResult } from "../../../shared/types/game"
+import { GameManager } from '../../../../../server/gameManager'
+import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
+import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
+import { Scoreboard } from '../Scoreboard/Scoreboard';
+import type { GameResult } from "../../../../../shared/types/game"
 
-import './GameCanvas.css'
+import '../GameCanvas.css'
 
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)
@@ -168,20 +169,23 @@ export const OfflineGameCanvas = () => {
             onHome={() => window.location.href = '/'}
         />
       )}
-      <div className="title-overlay-internal">TopDown Tactix</div>
       <div ref={sceneRef} className="game-canvas" />
       <div className="pitch-overlay">
         <div className="center-line" />
         <div className="center-circle" />
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
-        <div className="scoreboard">
-            <span className="score-value">{scores.home}</span>
-            <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
-                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-            </span>
-            <span className="score-value">{scores.away}</span>
-      </div>
+
+        <Scoreboard 
+            scores={scores} 
+            timeLeft={timeLeft} 
+            onPause={() => {
+                const nextPaused = !isPausedRef.current;
+                isPausedRef.current = nextPaused;
+                setIsPaused(nextPaused)
+            }}
+        />
+        
       </div>
     </div>
   )

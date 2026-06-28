@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { MatchmakingModalProps } from '../../../shared/types/props';
+import type { MatchmakingModalProps } from '../../../../../shared/types/props';
 import './MatchmakingModal.css';
 
 export const MatchmakingModal = ({ socket, onCancel }: MatchmakingModalProps) => {
