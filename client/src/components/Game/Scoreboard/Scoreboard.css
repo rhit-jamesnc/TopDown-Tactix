@@ -1,9 +1,16 @@
-.scoreboard-wrapper {
+.scoreboard-container {
   position: absolute;
   top: 15px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.scoreboard-wrapper {
   display: flex;
   align-items: center;
   background: #0d0d0d;
@@ -13,6 +20,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
   font-family: 'Helvetica Neue', Arial, sans-serif;
   gap: 30px;
+  pointer-events: auto;
 }
 
 .scoreboard-display {
@@ -71,4 +79,22 @@
 
 .pause-button:hover {
   background: #e0e0e0;
+}
+
+.pause-pending-indicator {
+  background: rgba(230, 126, 34, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  font-size: 0.9rem;
+  pointer-events: auto;
+  position: static;
+  transform: none;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
 }

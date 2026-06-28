@@ -248,12 +248,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         <div className="game-container-online" style={{ 
           transform: `scale(${scale})`
         }}>
-          <div ref={sceneRef} className="game-canvas" />
-          {isPausePending && (
-            <div className="pause-pending-indicator">
-              Match will pause after the next goal...
-            </div>
-          )}
+        <div ref={sceneRef} className="game-canvas" />
           <div className="pitch-overlay">
             <div className="center-line" />
             <div className="center-circle" />
@@ -262,10 +257,14 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             <Scoreboard 
               scores={scores} 
               timeLeft={timeLeft} 
+              isPausePending={isPausePending}
               onPause={() => {
-                const nextPaused = !isPausedRef.current;
-                socket.emit('pause-game', nextPaused);
-              }} 
+                if (isPausedRef.current || isPausePendingRef.current) {
+                  socket.emit('pause-game', false);
+                } else {
+                  socket.emit('pause-game', true);
+                }
+              }}
             />
           </div>
         </div>

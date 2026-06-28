@@ -18,6 +18,7 @@ export interface OnlineGameCanvasProps {
 export interface ScoreboardProps {
   scores: { home: number; away: number };
   timeLeft: number;
+  isPausePending?: boolean;
   onPause: () => void;
 }
 
