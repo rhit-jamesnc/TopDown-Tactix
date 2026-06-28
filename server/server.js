@@ -151,7 +151,22 @@ export const startNewGame = (player1Id, player2Id) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
   });
 
+  let pauseTimeRemaining = 30;
+
   const loop = setInterval(() => {
+    if (newGame.isPaused) {
+        pauseTimeRemaining -= 1/60;
+        io.to(roomId).emit('pause-timer', pauseTimeRemaining);
+
+        if (pauseTimeRemaining <= 0) {
+            newGame.isPaused = false;
+            pauseTimeRemaining = 30;
+            io.to(roomId).emit('game-paused', false);
+        }
+    } else {
+        pauseTimeRemaining = 30;
+    }
+
     if (!newGame.isPaused) {
         newGame.update(1/60);
         io.to(roomId).emit('game-timer', newGame.getRemainingTime());
@@ -174,8 +189,6 @@ export const startNewGame = (player1Id, player2Id) => {
         playerToRoom.delete(player2Id);
         return; 
     }
-
-    io.to(roomId).emit('game-state', newGame.getState());
   }, 1000 / 60);
 
   games.set(roomId, { 

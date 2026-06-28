@@ -18,6 +18,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
+  const [pauseTimeLeft, setPauseTimeLeft] = useState(30);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
   const [scores, setScores] = useState({ home: 0, away: 0 });
@@ -114,6 +115,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('goal-scored', (data) => setScores({ home: data.scores.home, away: data.scores.away }));
     socket.emit('request-score');
     socket.on('player-assignment', (data) => setMyTeam(data.team));
+    socket.on('pause-timer', (time) => setPauseTimeLeft(time));
 
     socket.on('game-paused', (paused) => {
         isPausedRef.current = paused;
@@ -197,6 +199,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     <div className="scaling-wrapper">
       {isPaused && (
         <PauseMenuModal 
+          pauseTimeLeft={pauseTimeLeft}
           onResume={() => {
             socket.emit('pause-game', false);
           }} 

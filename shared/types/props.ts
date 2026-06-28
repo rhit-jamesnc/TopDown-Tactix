@@ -27,6 +27,7 @@ export interface GameOverModalProps {
 export interface PauseMenuProps {
   onResume: () => void;
   onQuit: () => void;
+  pauseTimeLeft?: number;
 }
 
 export type HelpView = 'main' | 'offline' | 'online';
