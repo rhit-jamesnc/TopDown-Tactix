@@ -11,6 +11,8 @@ export class GameManager {
         this.isGoalTriggered = false;
         this.isPaused = false;
         this.isPausePending = false;
+        this.isCountdownActive = true;
+        this.countdownTimeout = null;
     }
 
     addPlayer(id, pos) { 

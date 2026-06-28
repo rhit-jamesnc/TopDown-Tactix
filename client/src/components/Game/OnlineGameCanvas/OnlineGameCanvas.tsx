@@ -298,11 +298,13 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             key={countdownKey}
             duration={countdownDuration}
             onStateChange={({ isFrozen }: { isFrozen: boolean }) => {
-              if (!isFrozen) {
-                isCountdownFrozenRef.current = false;
+              if (isFrozen) {
+                isCountdownFrozenRef.current = true;
               }
             }}
-            onCountdownComplete={() => console.log('Online match running!')}
+            onCountdownComplete={() => {
+              isCountdownFrozenRef.current = false;
+            }}
           />
 
           <div className="pitch-overlay">

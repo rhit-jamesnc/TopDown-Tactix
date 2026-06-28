@@ -90,6 +90,8 @@ io.on('connection', (socket) => {
     const roomId = playerToRoom.get(data.id);
     const gameData = games.get(roomId);
 
+    if (gameData && gameData.instance.isCountdownActive) return;
+
     if (gameData && !gameData.instance.isPaused && GamePhysicsEngine.isValidMove(data.move)) {
       const player = gameData.instance.players[data.id];
       if (gameData && !gameData.instance.isPaused && player) {
@@ -147,6 +149,10 @@ io.on('connection', (socket) => {
     if (gameData) {
       clearInterval(gameData.instance.loop);
 
+      if (gameData.instance.countdownTimeout) {
+        clearTimeout(gameData.instance.countdownTimeout);
+      }
+
       gameData.instance.isPaused = false;
       gameData.instance.isPausePending = false;
       gameData.instance.pauseRequestedBy = null;
@@ -174,9 +180,23 @@ export const startNewGame = (player1Id, player2Id) => {
 
   io.to(player1Id).emit('player-assignment', { team: 'home' });
   io.to(player2Id).emit('player-assignment', { team: 'away' });
+
+  let pauseTimeRemaining = 30;
+
+  const triggerCountdown = (durationMs) => {
+    newGame.isCountdownActive = true;
+    if (newGame.countdownTimeout) clearTimeout(newGame.countdownTimeout);
+    
+    newGame.countdownTimeout = setTimeout(() => {
+      newGame.isCountdownActive = false;
+    }, durationMs);
+  };
+
+  triggerCountdown(5800);
   
   newGame.onGoal((side, scores) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
+    triggerCountdown(3800);
 
     if (newGame.isPausePending) {
       newGame.isPaused = true;
@@ -186,13 +206,6 @@ export const startNewGame = (player1Id, player2Id) => {
       io.to(roomId).emit('game-paused', true);
     }
   });
-
-  let pauseTimeRemaining = 30;
-  let isCountdownActive = true;
-
-  setTimeout(() => {
-    isCountdownActive = false;
-  }, 5800);
 
   const loop = setInterval(() => {
     if (newGame.isPaused) {
@@ -208,9 +221,10 @@ export const startNewGame = (player1Id, player2Id) => {
         pauseTimeRemaining = 30;
     }
 
-    if (!newGame.isPaused && !isCountdownActive) {
+    if (!newGame.isPaused && !newGame.isCountdownActive) {
       newGame.update(1/60);
     }
+
     io.to(roomId).emit('game-timer', newGame.getRemainingTime());
     io.to(roomId).emit('game-state', newGame.getState());
 
