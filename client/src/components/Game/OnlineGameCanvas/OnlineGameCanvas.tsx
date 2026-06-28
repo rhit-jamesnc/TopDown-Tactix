@@ -33,6 +33,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
   const isCountdownFrozenRef = useRef(true);
+  const [countdownKey, setCountdownKey] = useState(0);
+  const [countdownDuration, setCountdownDuration] = useState(5);
 
   useEffect(() => {
     socket.on('match-found', () => {
@@ -120,10 +122,16 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('game-state', handleGameState);
     socket.on('player-disconnected', handleDisconnect);
     socket.on('current-score', (data) => setScores({ home: data.home, away: data.away }));
-    socket.on('goal-scored', (data) => setScores({ home: data.scores.home, away: data.scores.away }));
-    socket.emit('request-score');
     socket.on('player-assignment', (data) => setMyTeam(data.team));
     socket.on('pause-timer', (time) => setPauseTimeLeft(time));
+    socket.emit('request-score');
+
+    socket.on('goal-scored', (data) => {
+      setScores({ home: data.scores.home, away: data.scores.away });
+      isCountdownFrozenRef.current = true;
+      setCountdownDuration(3);
+      setCountdownKey(prev => prev + 1);
+    });
 
     socket.on('pause-pending', (data: { pending: boolean; requestedBy: string }) => {
       isPausePendingRef.current = data.pending;
@@ -240,6 +248,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     if (pauseRequestedByRef) pauseRequestedByRef.current = null;
     
     setPauseTimeLeft(30);
+    setCountdownKey(0);
+    setCountdownDuration(5);
     
     setMyTeam(undefined);
     setIsSearching(true);
@@ -285,6 +295,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           <div ref={sceneRef} className="game-canvas" />
 
           <CountdownOverlay 
+            key={countdownKey}
+            duration={countdownDuration}
             onStateChange={({ isFrozen }: { isFrozen: boolean }) => {
               if (!isFrozen) {
                 isCountdownFrozenRef.current = false;
