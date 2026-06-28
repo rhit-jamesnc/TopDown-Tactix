@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
     const roomId = playerToRoom.get(data.id);
     const gameData = games.get(roomId);
 
-    if (gameData && GamePhysicsEngine.isValidMove(data.move)) {
+    if (gameData & !gameData.instance.isPaused && GamePhysicsEngine.isValidMove(data.move)) {
       const player = gameData.instance.players[data.id];
       if (player) {
         Matter.Body.applyForce(player, player.position, data.move);
@@ -112,7 +112,7 @@ io.on('connection', (socket) => {
           io.to(roomId).emit('game-paused', true);
           return;
         }
-        
+
         if (!gameData.instance.isPaused) {
           gameData.instance.isPausePending = true;
           gameData.instance.pauseRequestedBy = socket.id; 
@@ -146,6 +146,10 @@ io.on('connection', (socket) => {
 
     if (gameData) {
       clearInterval(gameData.instance.loop);
+
+      gameData.instance.isPaused = false;
+      gameData.instance.isPausePending = false;
+      gameData.instance.pauseRequestedBy = null;
       
       gameData.players.forEach(pid => playerToRoom.delete(pid));
       games.delete(roomId);
@@ -208,6 +212,13 @@ export const startNewGame = (player1Id, player2Id) => {
     const status = newGame.getGameStatus();
     if (status !== 'ongoing') {
         clearInterval(loop);
+
+        newGame.isPaused = false;
+        newGame.isPausePending = false;
+        newGame.pauseRequestedBy = null;
+        io.to(roomId).emit('pause-pending', { pending: false, requestedBy: null });
+        io.to(roomId).emit('game-paused', false);
+        
         io.to(roomId).emit('game-over', {
             ...status,
             players: {
