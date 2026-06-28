@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { HelpModalProps } from '../../../../shared/types/props';
-import '../HelpModal.css';
+import '../Styles/HelpModal.css';
 
 type HelpView = 'main' | 'offline' | 'online';
 
