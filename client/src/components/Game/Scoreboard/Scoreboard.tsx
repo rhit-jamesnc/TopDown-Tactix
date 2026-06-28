@@ -1,37 +1,72 @@
 import type { ScoreboardProps } from '../../../../../shared/types/props';
 import './Scoreboard.css';
 
-export const Scoreboard = ({ scores, timeLeft, onPause }: ScoreboardProps) => {
+export const Scoreboard = ({ 
+  scores, 
+  timeLeft, 
+  isPausePending, 
+  pauseRequestedBy, 
+  mySocketId, 
+  onPause, 
+  onAcceptPause,
+  isOnline = false
+}: ScoreboardProps) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${String(secs).padStart(2, '0')}`;
   };
 
+  const isMyPauseRequest = !!pauseRequestedBy && pauseRequestedBy === mySocketId;
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (isPausePending && !isMyPauseRequest && onAcceptPause) {
+      onAcceptPause();
+    } else {
+      onPause(); 
+    }
+  };
+
+  const getButtonText = () => {
+    if (isPausePending) {
+      return isMyPauseRequest ? "Cancel" : "Accept Pause";
+    }
+    return "Pause";
+  };
+
   return (
-    <div className="scoreboard-wrapper">
-      <div className="scoreboard-display">
-        <div className="team-score">
-          <span className="team-name">Home</span>
-          <span className="score-value">{scores.home}</span>
+    <div className={`scoreboard-container ${isOnline ? 'online' : ''}`}>
+      <div className="scoreboard-wrapper">
+        <div className="scoreboard-display">
+          <div className="team-score">
+            <span className="team-name">Home</span>
+            <span className="score-value">{scores.home}</span>
+          </div>
+          
+          <div className="timer-box">{formatTime(timeLeft)}</div>
+          
+          <div className="team-score">
+            <span className="team-name">Away</span>
+            <span className="score-value">{scores.away}</span>
+          </div>
         </div>
         
-        <div className="timer-box">{formatTime(timeLeft)}</div>
-        
-        <div className="team-score">
-          <span className="team-name">Away</span>
-          <span className="score-value">{scores.away}</span>
-        </div>
+        <button className="pause-button" onClick={handleButtonClick}>
+          {getButtonText()}
+        </button>
       </div>
-      
-      <button className="pause-button" onClick={(e) => {
-        console.log("Button clicked!");
-          e.preventDefault();
-          onPause();
-        }}  
-      >
-        Pause
-      </button>
+
+      {isPausePending && (
+        <div className="pause-pending-indicator">
+          <span className="indicator-text">
+            {isMyPauseRequest 
+              ? "Waiting for opponent to accept or next goal..." 
+              : "Accept to pause now, or match pauses on next goal."
+            }
+          </span>
+        </div>
+      )}
     </div>
   );
 };

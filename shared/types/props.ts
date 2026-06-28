@@ -18,7 +18,12 @@ export interface OnlineGameCanvasProps {
 export interface ScoreboardProps {
   scores: { home: number; away: number };
   timeLeft: number;
+  isPausePending?: boolean;
+  pauseRequestedBy?: string | null;
+  mySocketId?: string | null;
   onPause: () => void;
+  onAcceptPause?: () => void;
+  isOnline?: boolean;
 }
 
 export interface GameOverModalProps {

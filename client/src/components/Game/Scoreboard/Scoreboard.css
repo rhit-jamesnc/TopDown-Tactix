@@ -1,18 +1,31 @@
-.scoreboard-wrapper {
+.scoreboard-container {
   position: absolute;
   top: 15px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.scoreboard-wrapper {
+  display: flex;
   align-items: center;
   background: #0d0d0d;
   padding: 10px 25px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   border: 2px solid #222;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
   font-family: 'Helvetica Neue', Arial, sans-serif;
   gap: 30px;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.scoreboard-wrapper:only-child {
+  border-radius: 8px;
 }
 
 .scoreboard-display {
@@ -71,4 +84,67 @@
 
 .pause-button:hover {
   background: #e0e0e0;
+}
+
+.pause-pending-indicator {
+  background: #111111;
+  color: #f39c12;
+  width: 90%;
+  box-sizing: border-box;
+  padding: 6px 16px;
+  border: 2px solid #222;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  font-weight: 700;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  pointer-events: auto;
+  position: static;
+  transform: none;
+}
+
+.scoreboard-container.online .scoreboard-wrapper {
+  padding: 14px 35px;
+  gap: 40px;
+  border-radius: 12px 12px 0 0;
+}
+
+.scoreboard-container.online .scoreboard-wrapper:only-child {
+  border-radius: 12px;
+}
+
+.scoreboard-container.online .scoreboard-display {
+  gap: 35px;
+}
+
+.scoreboard-container.online .team-name {
+  font-size: 0.9rem;
+  letter-spacing: 2.5px;
+}
+
+.scoreboard-container.online .score-value {
+  font-size: 3rem !important;
+}
+
+.scoreboard-container.online .timer-box {
+  padding: 10px 22px;
+  font-size: 2.2rem;
+  border-radius: 6px;
+}
+
+.scoreboard-container.online .pause-button {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  border-radius: 6px;
+}
+
+.scoreboard-container.online .pause-pending-indicator {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  border-radius: 0 0 12px 12px;
+  width: 100%;
 }
