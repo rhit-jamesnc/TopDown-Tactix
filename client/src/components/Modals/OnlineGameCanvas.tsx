@@ -6,8 +6,8 @@ import { GameOverModal } from './GameOverModal';
 import { PauseMenuModal } from './PauseMenuModal';
 import type { GameState, GameResult } from "../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../shared/types/props"
-import './GameCanvas.css';
-import './MatchmakingModal.css';
+import '../Styles/GameCanvas.css';
+import '../Styles/MatchmakingModal.css';
 
 const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 

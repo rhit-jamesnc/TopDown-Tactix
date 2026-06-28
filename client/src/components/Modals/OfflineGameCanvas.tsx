@@ -5,7 +5,7 @@ import { GameOverModal } from './GameOverModal'
 import { PauseMenuModal } from './PauseMenuModal';
 import type { GameResult } from "../../../../shared/types/game"
 
-import './GameCanvas.css'
+import '../Styles/GameCanvas.css'
 
 export const OfflineGameCanvas = () => {
   const sceneRef = useRef<HTMLDivElement>(null)

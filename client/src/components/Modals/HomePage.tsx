@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { InDevelopmentModal } from './InDevelopmentModal';
 import { HelpModal } from './HelpModal';
-import type { HomePageProps } from "../../../shared/types/props"
-import './HomePage.css';
+import type { HomePageProps } from "../../../../shared/types/props"
+import '../Styles/HomePage.css';
 
 export const HomePage = ({ onStartOffline, onStartOnline }: HomePageProps) => {
   const [showHelp, setShowHelp] = useState(false);

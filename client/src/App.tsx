@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { HomePage } from './components/HomePage.tsx';
-import { OfflineGameCanvas } from './components/OfflineGameCanvas.tsx'
-import { OnlineGameCanvas } from './components/OnlineGameCanvas.tsx';
+import { HomePage } from './components/Modals/HomePage.tsx';
+import { OfflineGameCanvas } from './components/Modals/OfflineGameCanvas.tsx'
+import { OnlineGameCanvas } from './components/Modals/OnlineGameCanvas.tsx';
 import './App.css'
 
 function App() {
