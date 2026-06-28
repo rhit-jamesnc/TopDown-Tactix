@@ -21,6 +21,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const isPausedRef = useRef(false);
   const [isPausePending, setIsPausePending] = useState(false);
   const isPausePendingRef = useRef(false);
+  const [pauseRequestedBy, setPauseRequestedBy] = useState<string | null>(null);
+  const pauseRequestedByRef = useRef<string | null>(null);
   const [pauseTimeLeft, setPauseTimeLeft] = useState(30);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
@@ -120,9 +122,11 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('player-assignment', (data) => setMyTeam(data.team));
     socket.on('pause-timer', (time) => setPauseTimeLeft(time));
 
-    socket.on('pause-pending', (pending) => {
-      isPausePendingRef.current = pending;
-      setIsPausePending(pending);
+    socket.on('pause-pending', (data: { pending: boolean; requestedBy: string }) => {
+      isPausePendingRef.current = data.pending;
+      setIsPausePending(data.pending);
+      setPauseRequestedBy(data.requestedBy);
+      pauseRequestedByRef.current = data.requestedBy;
     });
 
     socket.on('game-paused', (paused) => {
@@ -131,6 +135,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       if (paused) {
         isPausePendingRef.current = false;
         setIsPausePending(false);
+        setPauseRequestedBy(null);
+        pauseRequestedByRef.current = null;
       }
     });
 
@@ -138,8 +144,16 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
     const handleKeyDown = (e: KeyboardEvent) => { 
       if (e.key === 'Escape') {
-        if (isPausedRef.current || isPausePendingRef.current) {
+        if (isPausedRef.current) {
           socket.emit('pause-game', false);
+        } else if (isPausePendingRef.current) {
+          const isMyRequest = pauseRequestedByRef.current === socket.id;
+
+          if (isMyRequest) {
+            socket.emit('pause-game', false);
+          } else {
+            socket.emit('pause-game', true);
+          }
         } else {
           socket.emit('pause-game', true);
         }
@@ -197,6 +211,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       socket.off('game-over');
       socket.off('game-timer');
       socket.off('pause-pending');
+      socket.off('game-paused');
       Matter.Render.stop(render);
       Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
@@ -258,12 +273,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
               scores={scores} 
               timeLeft={timeLeft} 
               isPausePending={isPausePending}
+              pauseRequestedBy={pauseRequestedBy}
+              mySocketId={socket.id || null}
               onPause={() => {
                 if (isPausedRef.current || isPausePendingRef.current) {
                   socket.emit('pause-game', false);
                 } else {
                   socket.emit('pause-game', true);
                 }
+              }}
+              onAcceptPause={() => {
+                socket.emit('pause-game', true); 
               }}
             />
           </div>

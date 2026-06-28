@@ -1,11 +1,37 @@
 import type { ScoreboardProps } from '../../../../../shared/types/props';
 import './Scoreboard.css';
 
-export const Scoreboard = ({ scores, timeLeft, isPausePending, onPause }: ScoreboardProps) => {
+export const Scoreboard = ({ 
+  scores, 
+  timeLeft, 
+  isPausePending, 
+  pauseRequestedBy, 
+  mySocketId, 
+  onPause, 
+  onAcceptPause 
+}: ScoreboardProps) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const isMyPauseRequest = !!pauseRequestedBy && pauseRequestedBy === mySocketId;
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (isPausePending && !isMyPauseRequest && onAcceptPause) {
+      onAcceptPause();
+    } else {
+      onPause(); 
+    }
+  };
+
+  const getButtonText = () => {
+    if (isPausePending) {
+      return isMyPauseRequest ? "Cancel" : "Accept Pause";
+    }
+    return "Pause";
   };
 
   return (
@@ -25,19 +51,19 @@ export const Scoreboard = ({ scores, timeLeft, isPausePending, onPause }: Scoreb
           </div>
         </div>
         
-        <button className="pause-button" onClick={(e) => {
-          console.log("Button clicked!");
-            e.preventDefault();
-            onPause();
-          }}  
-        >
-          Pause
+        <button className="pause-button" onClick={handleButtonClick}>
+          {getButtonText()}
         </button>
       </div>
 
       {isPausePending && (
         <div className="pause-pending-indicator">
-          Match will pause after the next goal...
+          <span className="indicator-text">
+            {isMyPauseRequest 
+              ? "Waiting for opponent to accept or next goal..." 
+              : "Accept to pause now, or match pauses on next goal."
+            }
+          </span>
         </div>
       )}
     </div>

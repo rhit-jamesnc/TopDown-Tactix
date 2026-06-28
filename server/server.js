@@ -104,18 +104,30 @@ io.on('connection', (socket) => {
     
     if (gameData) {
       if (isPaused) {
+        if (gameData.instance.isPausePending && gameData.instance.pauseRequestedBy !== socket.id) {
+          gameData.instance.isPaused = true;
+          gameData.instance.isPausePending = false;
+          gameData.instance.pauseRequestedBy = null;
+          io.to(roomId).emit('pause-pending', { pending: false, requestedBy: null });
+          io.to(roomId).emit('game-paused', true);
+          return;
+        }
+        
         if (!gameData.instance.isPaused) {
           gameData.instance.isPausePending = true;
-          io.to(roomId).emit('pause-pending', true);
+          gameData.instance.pauseRequestedBy = socket.id; 
+          
+          io.to(roomId).emit('pause-pending', { 
+            pending: true, 
+            requestedBy: socket.id 
+          });
         }
       } else {
-        if (gameData.instance.isPaused) {
-          gameData.instance.isPaused = false;
-          io.to(roomId).emit('game-paused', false);
-        } else {
-          gameData.instance.isPausePending = false;
-          io.to(roomId).emit('pause-pending', false);
-        }
+        gameData.instance.isPaused = false;
+        gameData.instance.isPausePending = false;
+        gameData.instance.pauseRequestedBy = null;
+        io.to(roomId).emit('game-paused', false);
+        io.to(roomId).emit('pause-pending', { pending: false, requestedBy: null });
       }
     }
   });
@@ -165,7 +177,8 @@ export const startNewGame = (player1Id, player2Id) => {
     if (newGame.isPausePending) {
       newGame.isPaused = true;
       newGame.isPausePending = false;
-      io.to(roomId).emit('pause-pending', false);
+      newGame.pauseRequestedBy = null;
+      io.to(roomId).emit('pause-pending', { pending: false, requestedBy: null });
       io.to(roomId).emit('game-paused', true);
     }
   });
