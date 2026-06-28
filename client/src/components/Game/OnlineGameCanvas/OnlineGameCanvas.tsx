@@ -243,7 +243,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
               scores={scores} 
               timeLeft={timeLeft} 
               onPause={() => {
-                socket.emit('pause-game', true);
+                const nextPaused = !isPausedRef.current;
+                socket.emit('pause-game', nextPaused);
               }} 
             />
           </div>

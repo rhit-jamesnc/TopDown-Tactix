@@ -175,13 +175,14 @@ export const OfflineGameCanvas = () => {
         <div className="center-circle" />
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
-        
+
         <Scoreboard 
             scores={scores} 
             timeLeft={timeLeft} 
             onPause={() => {
-                isPausedRef.current = true;
-                setIsPaused(true);
+                const nextPaused = !isPausedRef.current;
+                isPausedRef.current = nextPaused;
+                setIsPaused(nextPaused)
             }}
         />
         

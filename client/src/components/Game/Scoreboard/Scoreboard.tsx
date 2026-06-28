@@ -24,7 +24,12 @@ export const Scoreboard = ({ scores, timeLeft, onPause }: ScoreboardProps) => {
         </div>
       </div>
       
-      <button className="pause-button" onClick={onPause}>
+      <button className="pause-button" onClick={(e) => {
+        console.log("Button clicked!");
+          e.preventDefault();
+          onPause();
+        }}  
+      >
         Pause
       </button>
     </div>
