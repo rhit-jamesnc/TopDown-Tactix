@@ -103,8 +103,20 @@ io.on('connection', (socket) => {
     const gameData = games.get(roomId);
     
     if (gameData) {
-        gameData.instance.isPaused = isPaused;
-        io.to(roomId).emit('game-paused', isPaused);
+      if (isPaused) {
+        if (!gameData.instance.isPaused) {
+          gameData.instance.isPausePending = true;
+          io.to(roomId).emit('pause-pending', true);
+        }
+      } else {
+        if (gameData.instance.isPaused) {
+          gameData.instance.isPaused = false;
+          io.to(roomId).emit('game-paused', false);
+        } else {
+          gameData.instance.isPausePending = false;
+          io.to(roomId).emit('pause-pending', false);
+        }
+      }
     }
   });
 
@@ -149,6 +161,13 @@ export const startNewGame = (player1Id, player2Id) => {
   
   newGame.onGoal((side, scores) => {
     io.to(roomId).emit('goal-scored', { side, scores: scores });
+
+    if (newGame.isPausePending) {
+      newGame.isPaused = true;
+      newGame.isPausePending = false;
+      io.to(roomId).emit('pause-pending', false);
+      io.to(roomId).emit('game-paused', true);
+    }
   });
 
   let pauseTimeRemaining = 30;

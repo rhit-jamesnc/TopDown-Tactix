@@ -19,6 +19,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
+  const [isPausePending, setIsPausePending] = useState(false);
+  const isPausePendingRef = useRef(false);
   const [pauseTimeLeft, setPauseTimeLeft] = useState(30);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [myTeam, setMyTeam] = useState<'home' | 'away' | undefined>(undefined);
@@ -118,17 +120,29 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('player-assignment', (data) => setMyTeam(data.team));
     socket.on('pause-timer', (time) => setPauseTimeLeft(time));
 
+    socket.on('pause-pending', (pending) => {
+      isPausePendingRef.current = pending;
+      setIsPausePending(pending);
+    });
+
     socket.on('game-paused', (paused) => {
-        isPausedRef.current = paused;
-        setIsPaused(paused);
+      isPausedRef.current = paused;
+      setIsPaused(paused);
+      if (paused) {
+        isPausePendingRef.current = false;
+        setIsPausePending(false);
+      }
     });
 
     const activeKeys: Record<string, boolean> = {};
 
     const handleKeyDown = (e: KeyboardEvent) => { 
       if (e.key === 'Escape') {
-          const nextPaused = !isPausedRef.current;
-          socket.emit('pause-game', nextPaused);
+        if (isPausedRef.current || isPausePendingRef.current) {
+          socket.emit('pause-game', false);
+        } else {
+          socket.emit('pause-game', true);
+        }
       }
       activeKeys[e.key.toLowerCase()] = true; 
     };
@@ -182,6 +196,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       socket.off('player-assignment');
       socket.off('game-over');
       socket.off('game-timer');
+      socket.off('pause-pending');
       Matter.Render.stop(render);
       Matter.Engine.clear(engine);
       if (render.canvas) render.canvas.remove();
@@ -234,6 +249,22 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           transform: `scale(${scale})`
         }}>
           <div ref={sceneRef} className="game-canvas" />
+          {isPausePending && (
+            <div className="pause-pending-indicator" style={{
+              position: 'absolute',
+              top: '80px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'rgba(230, 126, 34, 0.9)',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              fontWeight: 'bold',
+              zIndex: 10
+            }}>
+              Match will pause after the next goal...
+            </div>
+          )}
           <div className="pitch-overlay">
             <div className="center-line" />
             <div className="center-circle" />

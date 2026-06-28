@@ -9,6 +9,8 @@ export class GameManager {
         this.winLimit = 5;
         this.goalCallback = null;
         this.isGoalTriggered = false;
+        this.isPaused = false;
+        this.isPausePending = false;
     }
 
     addPlayer(id, pos) { 
