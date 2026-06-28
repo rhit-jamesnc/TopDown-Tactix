@@ -169,7 +169,6 @@ export const OfflineGameCanvas = () => {
             onHome={() => window.location.href = '/'}
         />
       )}
-      <div className="title-overlay-internal">TopDown Tactix</div>
       <div ref={sceneRef} className="game-canvas" />
       <div className="pitch-overlay">
         <div className="center-line" />
@@ -183,6 +182,7 @@ export const OfflineGameCanvas = () => {
             </span>
             <span className="score-value">{scores.away}</span>
       </div>
+      <Scoreboard />
       </div>
     </div>
   )
