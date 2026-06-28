@@ -175,6 +175,7 @@ export const OfflineGameCanvas = () => {
         <div className="center-circle" />
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
+        
         <Scoreboard 
             scores={scores} 
             timeLeft={timeLeft} 
@@ -183,6 +184,7 @@ export const OfflineGameCanvas = () => {
                 setIsPaused(true);
             }}
         />
+        
       </div>
     </div>
   )

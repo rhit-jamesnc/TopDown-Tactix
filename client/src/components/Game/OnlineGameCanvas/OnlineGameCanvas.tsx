@@ -4,6 +4,7 @@ import Matter from 'matter-js';
 import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
+import { Scoreboard } from '../Scoreboard/Scoreboard';
 import type { GameState, GameResult } from "../../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
 import '../GameCanvas.css';
@@ -232,20 +233,19 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         <div className="game-container-online" style={{ 
           transform: `scale(${scale})`
         }}>
-          <div className="title-overlay-internal">TopDown Tactix</div>
           <div ref={sceneRef} className="game-canvas" />
           <div className="pitch-overlay">
             <div className="center-line" />
             <div className="center-circle" />
             <div className="left-goal-crease" />
             <div className="right-goal-crease" />
-            <div className="scoreboard">
-                <span className="score-value">{scores.home}</span>
-                <span className="timer-display" style={{ color: 'white', margin: '0 20px' }}>
-                  {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-                </span>
-                <span className="score-value">{scores.away}</span>
-            </div>
+            <Scoreboard 
+              scores={scores} 
+              timeLeft={timeLeft} 
+              onPause={() => {
+                socket.emit('pause-game', true);
+              }} 
+            />
           </div>
         </div>
         )}

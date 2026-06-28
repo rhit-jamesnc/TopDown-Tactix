@@ -1,4 +1,3 @@
-import React from 'react';
 import type { ScoreboardProps } from '../../../../../shared/types/props';
 import './Scoreboard.css';
 
