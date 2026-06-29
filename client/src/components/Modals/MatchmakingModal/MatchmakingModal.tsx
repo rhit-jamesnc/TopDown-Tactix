@@ -6,7 +6,7 @@ export const MatchmakingModal = ({ socket, onCancel, onMatchReady }: Matchmaking
   const [status, setStatus] = useState({ totalOnline: 0, inQueue: 0 });
   const [seconds, setSeconds] = useState(0);
   const [matchFound, setMatchFound] = useState(false);
-  const [countdown, setCountdown] = useState(100000);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
     socket.emit('request-lobby-status');
