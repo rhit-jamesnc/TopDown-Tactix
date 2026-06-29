@@ -49,11 +49,17 @@ test('should update player position on input', async () => {
   startNewGame('home', 'away'); 
   const game = getActiveGame();
   
+  game.isCountdownActive = false; 
+  if (game.countdownTimeout) {
+      clearTimeout(game.countdownTimeout);
+  }
+  
   socket.emit('player-input', { id: 'home', move: { x: 0.05, y: 0 } });
 
   await new Promise(resolve => setTimeout(resolve, 50));
   
   for(let i=0; i<10; i++) {
+    game.applyInputs();
     game.update();
   };
   
