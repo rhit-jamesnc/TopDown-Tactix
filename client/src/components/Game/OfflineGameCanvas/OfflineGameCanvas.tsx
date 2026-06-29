@@ -4,6 +4,7 @@ import { GameManager } from '../../../../../server/gameManager'
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
+import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay'
 import type { GameResult } from "../../../../../shared/types/game"
 
 import '../GameCanvas.css'
@@ -16,6 +17,17 @@ export const OfflineGameCanvas = () => {
   const isPausedRef = useRef(false);
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
+  const isCountdownFrozenRef = useRef(true);
+  const [countdownKey, setCountdownKey] = useState(0);
+  const [countdownDuration, setCountdownDuration] = useState(5);
+
+  const triggerUnpauseCountdown = () => {
+    if (!isCountdownFrozenRef.current) {
+    isCountdownFrozenRef.current = true;
+    setCountdownDuration(3);
+    setCountdownKey(prev => prev + 1);
+    }
+  };
 
   useEffect(() => {
     if (!sceneRef.current) return
@@ -48,11 +60,17 @@ export const OfflineGameCanvas = () => {
     if (players['away']) players['away'].render.fillStyle = 'blue';
 
     manager.onGoal((team: string) => {
-        if (team === 'away' || team === 'away') {
+        if (team === 'away') {
             setScores(prev => ({ ...prev, away: prev.away + 1 }))
         } else {
             setScores(prev => ({ ...prev, home: prev.home + 1 }))
         }
+
+        isCountdownFrozenRef.current = true;
+        manager.resetPitch();
+
+        setCountdownDuration(3);
+        setCountdownKey(prev => prev + 1);
     })
 
     const render = Matter.Render.create({
@@ -72,6 +90,7 @@ export const OfflineGameCanvas = () => {
     const handleKeyDown = (e: KeyboardEvent) => { 
         if (e.key === 'Escape') {
             const nextPaused = !isPausedRef.current;
+            if (!nextPaused) triggerUnpauseCountdown();
             isPausedRef.current = nextPaused;
             setIsPaused(nextPaused);
         }
@@ -85,7 +104,7 @@ export const OfflineGameCanvas = () => {
     const FORCE_MAGNITUDE = 0.012
 
     const tick = () => {
-        if (isPausedRef.current) {
+        if (isPausedRef.current || isCountdownFrozenRef.current) {
             animationFrameId = requestAnimationFrame(tick);
             return;
         }
@@ -146,6 +165,8 @@ export const OfflineGameCanvas = () => {
   const handlePlayAgain = () => {
     setGameOver(null);
     setScores({ home: 0, away: 0 });
+    setCountdownKey(0);
+    setCountdownDuration(5);
     setGameKey(prev => prev + 1);
   };
 
@@ -154,6 +175,7 @@ export const OfflineGameCanvas = () => {
       {isPaused && (
         <PauseMenuModal 
             onResume={() => {
+                triggerUnpauseCountdown();
                 isPausedRef.current = false;
                 setIsPaused(false);
             }} 
@@ -170,17 +192,30 @@ export const OfflineGameCanvas = () => {
         />
       )}
       <div ref={sceneRef} className="game-canvas" />
+
+      <CountdownOverlay 
+        key={countdownKey}
+        duration={countdownDuration}
+        onStateChange={({ isFrozen }: { isFrozen: boolean }) =>{
+            if (!isFrozen) {
+                isCountdownFrozenRef.current = false;
+            }
+        }}
+      />
+
       <div className="pitch-overlay">
         <div className="center-line" />
         <div className="center-circle" />
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
       </div>
+
       <Scoreboard 
         scores={scores} 
         timeLeft={timeLeft} 
         onPause={() => {
             const nextPaused = !isPausedRef.current;
+            if (!nextPaused) triggerUnpauseCountdown();
             isPausedRef.current = nextPaused;
             setIsPaused(nextPaused)
         }}

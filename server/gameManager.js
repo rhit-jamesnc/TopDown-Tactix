@@ -1,3 +1,5 @@
+
+import Matter from 'matter-js';
 import { GamePhysicsEngine } from './physicsEngine.js';
 import { checkGoalWin, checkTimeExpiry } from '../shared/gameEndConditions.js';
 
@@ -11,10 +13,36 @@ export class GameManager {
         this.isGoalTriggered = false;
         this.isPaused = false;
         this.isPausePending = false;
+        this.isCountdownActive = true;
+        this.countdownTimeout = null;
+        this.playerInputs = {};
     }
 
     addPlayer(id, pos) { 
         this.physics.addPlayer(id, pos); 
+    }
+
+    setPlayerInput(id, move) {
+        this.playerInputs[id] = move;
+    }
+
+    applyInputs() {
+        Object.entries(this.playerInputs).forEach(([id, move]) => {
+            if (move.x !== 0 || move.y !== 0) {
+                const player = this.physics.players[id];
+                if (player) {
+                    Matter.Body.applyForce(player, player.position, move);
+                }
+            }
+        });
+    }
+
+    triggerCountdown(durationMs) {
+        this.isCountdownActive = true;
+        if (this.countdownTimeout) clearTimeout(this.countdownTimeout);
+        this.countdownTimeout = setTimeout(() => {
+            this.isCountdownActive = false;
+        }, durationMs);
     }
 
     get ball() { 

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
 import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
+import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay';
 import type { GameState, GameResult } from "../../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
 import '../GameCanvas.css';
@@ -31,20 +32,12 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [scale, setScale] = useState(1);
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
-
-  useEffect(() => {
-    socket.on('match-found', () => {
-      setIsSearching(false);
-    });
-
-    if (!isSearching) {
-      socket.emit('request-my-team');
-    }
-
-    return () => {
-      socket.off('match-found');
-    };
-  }, [isSearching]);
+  const [isGameOverSignal, setIsGameOverSignal] = useState(false);
+  const isCountdownFrozenRef = useRef(true);
+  const [countdownKey, setCountdownKey] = useState(0);
+  const [countdownDuration, setCountdownDuration] = useState(5);
+  const [isCountdown, setIsCountdown] = useState(false);
+  const isCountdownRef = useRef(false);
 
   useEffect(() => {
     const updateScale = () => {
@@ -118,10 +111,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.on('game-state', handleGameState);
     socket.on('player-disconnected', handleDisconnect);
     socket.on('current-score', (data) => setScores({ home: data.home, away: data.away }));
-    socket.on('goal-scored', (data) => setScores({ home: data.scores.home, away: data.scores.away }));
-    socket.emit('request-score');
     socket.on('player-assignment', (data) => setMyTeam(data.team));
     socket.on('pause-timer', (time) => setPauseTimeLeft(time));
+    socket.emit('request-score');
+
+    socket.on('goal-scored', (data) => {
+      if (isCountdownRef.current) return;
+      setScores({ home: data.scores.home, away: data.scores.away });
+      isCountdownFrozenRef.current = true;
+      setCountdownDuration(3);
+      setCountdownKey(prev => prev + 1);
+    });
 
     socket.on('pause-pending', (data: { pending: boolean; requestedBy: string }) => {
       isPausePendingRef.current = data.pending;
@@ -131,6 +131,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     });
 
     socket.on('game-paused', (paused) => {
+      const wasPaused = isPausedRef.current;
       isPausedRef.current = paused;
       setIsPaused(paused);
       if (paused) {
@@ -138,6 +139,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
         setIsPausePending(false);
         setPauseRequestedBy(null);
         pauseRequestedByRef.current = null;
+      } else if (wasPaused) {
+        isCountdownFrozenRef.current = true;
+        setCountdownDuration(3);
+        setCountdownKey(prev => prev + 1);
       }
     });
 
@@ -145,6 +150,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
     const handleKeyDown = (e: KeyboardEvent) => { 
       if (e.key === 'Escape') {
+        if (isCountdownRef.current) return;
         if (isTogglingPause.current) return;
 
         isTogglingPause.current = true;
@@ -172,34 +178,42 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     window.addEventListener('keyup', handleKeyUp);
 
     const interval = setInterval(() => {
-      if (isPausedRef.current) return;
+      if (isPausedRef.current || isCountdownFrozenRef.current) return;
 
       const move = { x: 0, y: 0 };
       const FORCE = 0.012;
+      
       if (activeKeys['w'] || activeKeys['arrowup']) move.y -= FORCE;
       if (activeKeys['s'] || activeKeys['arrowdown']) move.y += FORCE;
       if (activeKeys['a'] || activeKeys['arrowleft']) move.x -= FORCE;
       if (activeKeys['d'] || activeKeys['arrowright']) move.x += FORCE;
-      if (socket.id && (move.x !== 0 || move.y !== 0)) {
+
+      if (socket.id) {
         socket.emit('player-input', { move, id: socket.id });
       }
     }, 1000 / 60);
     
 
     socket.on('game-over', (data) => {
+      setIsGameOverSignal(true);
+      isCountdownFrozenRef.current = true;
+
       if (!socket.id) {
         console.error("Game over received, but socket ID is missing.");
         return;
       }
-    
-      const myId = socket.id;
-      const myRole = data.players[myId];
-      setMyTeam(myRole);
 
-      setGameOver({
-          winner: data.winner,
-          reason: data.reason
-      });
+      const myId = socket.id;
+    
+      setTimeout(() => {
+        const myRole = data.players[myId];
+        setMyTeam(myRole);
+
+        setGameOver({
+            winner: data.winner,
+            reason: data.reason
+        });
+      }, 2000);
     });
 
     socket.on('game-timer', (time) => setTimeLeft(time));
@@ -225,6 +239,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   }, [isSearching]);
 
   const handlePlayAgain = () => {
+    setIsGameOverSignal(false);
     setGameOver(null);
     setScores({ home: 0, away: 0 });
 
@@ -238,10 +253,23 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     if (pauseRequestedByRef) pauseRequestedByRef.current = null;
     
     setPauseTimeLeft(30);
+    setCountdownKey(0);
+    setCountdownDuration(5);
     
     setMyTeam(undefined);
     setIsSearching(true);
   };
+
+  const handleStateChange = useCallback(({ isFrozen }: { isFrozen: boolean }) => {
+    setIsCountdown(isFrozen);
+    isCountdownRef.current = isFrozen;
+  }, []);
+
+  const handleCountdownComplete = useCallback(() => {
+    setIsCountdown(false);
+    isCountdownFrozenRef.current = false;
+    isCountdownRef.current = false;
+  }, []);
 
   return (
     <div className="scaling-wrapper">
@@ -275,12 +303,21 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             socket.emit('cancel-match');
             onExit();
           }} 
+          onMatchReady={() => setIsSearching(false)}
         />
       ) : (
         <div className="game-container-online" style={{ 
           transform: `scale(${scale})`
         }}>
-        <div ref={sceneRef} className="game-canvas" />
+          <div ref={sceneRef} className="game-canvas" />
+
+          <CountdownOverlay 
+            key={countdownKey}
+            duration={countdownDuration}
+            onStateChange={handleStateChange}
+            onCountdownComplete={handleCountdownComplete}
+          />
+
           <div className="pitch-overlay">
             <div className="center-line" />
             <div className="center-circle" />
@@ -307,6 +344,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
                 socket.emit('pause-game', true); 
               }}
               isOnline={true}
+              isGameOver={isGameOverSignal}
+              isCountdown={isCountdown}
             />
           </div>
         </div>

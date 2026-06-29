@@ -17,6 +17,7 @@
   border: 4px solid var(--line-white-bright);
   box-sizing: border-box;
   transform-origin: center center;
+  z-index: 1;
 }
 
 .game-container-offline {

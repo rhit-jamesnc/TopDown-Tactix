@@ -9,18 +9,15 @@ export const Scoreboard = ({
   mySocketId, 
   onPause, 
   onAcceptPause,
-  isOnline = false
+  isOnline = false,
+  isGameOver,
+  isCountdown
 }: ScoreboardProps) => {
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${String(secs).padStart(2, '0')}`;
-  };
-
   const isMyPauseRequest = !!pauseRequestedBy && pauseRequestedBy === mySocketId;
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (isCountdown) return;
     if (isPausePending && !isMyPauseRequest && onAcceptPause) {
       onAcceptPause();
     } else {
@@ -34,6 +31,16 @@ export const Scoreboard = ({
     }
     return "Pause";
   };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const displayMessage = isMyPauseRequest
+    ? "Waiting for opponent to accept or next goal..." 
+    : "Accept to pause now, or match pauses on next goal.";
 
   return (
     <div className={`scoreboard-container ${isOnline ? 'online' : ''}`}>
@@ -52,19 +59,21 @@ export const Scoreboard = ({
           </div>
         </div>
         
-        <button className="pause-button" onClick={handleButtonClick}>
+        <button 
+          className={`pause-button ${isCountdown ? 'disabled' : ''}`} 
+          onClick={handleButtonClick}
+          disabled={!!isCountdown}
+        >
           {getButtonText()}
         </button>
       </div>
+      <div className={`pause-pending-indicator ${!isPausePending ? 'hiding' : ''}`}>
+        <span className="indicator-text">{displayMessage}</span>
+      </div>
 
-      {isPausePending && (
-        <div className="pause-pending-indicator">
-          <span className="indicator-text">
-            {isMyPauseRequest 
-              ? "Waiting for opponent to accept or next goal..." 
-              : "Accept to pause now, or match pauses on next goal."
-            }
-          </span>
+      {isGameOver && (
+        <div className="game-over-banner">
+          Game Over
         </div>
       )}
     </div>

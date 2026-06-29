@@ -9,6 +9,7 @@ export interface HomePageProps {
 export interface MatchmakingModalProps {
   socket: Socket;
   onCancel: () => void;
+  onMatchReady: () => void;
 }
 
 export interface OnlineGameCanvasProps {
@@ -24,6 +25,8 @@ export interface ScoreboardProps {
   onPause: () => void;
   onAcceptPause?: () => void;
   isOnline?: boolean;
+  isGameOver?: boolean;
+  isCountdown?: boolean;
 }
 
 export interface GameOverModalProps {
@@ -39,6 +42,12 @@ export interface PauseMenuProps {
   onResume: () => void;
   onQuit: () => void;
   pauseTimeLeft?: number;
+}
+
+export interface CountdownOverlayProps {
+  duration: number;
+  onCountdownComplete?: () => void;
+  onStateChange: (state: { isFrozen: boolean }) => void;
 }
 
 export type HelpView = 'main' | 'offline' | 'online';
