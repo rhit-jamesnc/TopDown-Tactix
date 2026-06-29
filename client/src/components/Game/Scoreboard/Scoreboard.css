@@ -86,6 +86,13 @@
   background: #e0e0e0;
 }
 
+.pause-button.disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .pause-pending-indicator {
   background: #111111;
   color: #f39c12;

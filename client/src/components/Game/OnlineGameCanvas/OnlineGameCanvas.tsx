@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Matter from 'matter-js';
 import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
@@ -36,26 +36,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const isCountdownFrozenRef = useRef(true);
   const [countdownKey, setCountdownKey] = useState(0);
   const [countdownDuration, setCountdownDuration] = useState(5);
-
-  useEffect(() => {
-    const handleMatchFound = () => {
-      setTimeout(() => {
-        setIsSearching(false);
-      }, 3000);
-    };
-
-    socket.on('match-found', () => {
-      setIsSearching(false);
-    });
-
-    if (!isSearching) {
-      socket.emit('request-my-team');
-    }
-
-    return () => {
-      socket.off('match-found', handleMatchFound);
-    };
-  }, [isSearching]);
+  const [isCountdown, setIsCountdown] = useState(false);
+  const isCountdownRef = useRef(false);
 
   useEffect(() => {
     const updateScale = () => {
@@ -167,6 +149,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
     const handleKeyDown = (e: KeyboardEvent) => { 
       if (e.key === 'Escape') {
+        if (isCountdownRef.current) return;
         if (isTogglingPause.current) return;
 
         isTogglingPause.current = true;
@@ -276,6 +259,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     setIsSearching(true);
   };
 
+  const handleStateChange = useCallback(({ isFrozen }: { isFrozen: boolean }) => {
+    setIsCountdown(isFrozen);
+    isCountdownRef.current = isFrozen;
+  }, []);
+
+  const handleCountdownComplete = useCallback(() => {
+    setIsCountdown(false);
+    isCountdownFrozenRef.current = false;
+    isCountdownRef.current = false;
+  }, []);
+
   return (
     <div className="scaling-wrapper">
       {isPaused && (
@@ -319,14 +313,8 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           <CountdownOverlay 
             key={countdownKey}
             duration={countdownDuration}
-            onStateChange={({ isFrozen }: { isFrozen: boolean }) => {
-              if (isFrozen) {
-                isCountdownFrozenRef.current = true;
-              }
-            }}
-            onCountdownComplete={() => {
-              isCountdownFrozenRef.current = false;
-            }}
+            onStateChange={handleStateChange}
+            onCountdownComplete={handleCountdownComplete}
           />
 
           <div className="pitch-overlay">
@@ -356,6 +344,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
               }}
               isOnline={true}
               isGameOver={isGameOverSignal}
+              isCountdown={isCountdown}
             />
           </div>
         </div>

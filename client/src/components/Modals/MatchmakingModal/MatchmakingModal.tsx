@@ -21,7 +21,7 @@ export const MatchmakingModal = ({ socket, onCancel, onMatchReady }: Matchmaking
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
-            onMatchReady();
+            setTimeout(() => onMatchReady(), 0);
           }
           return prev - 1;
         });

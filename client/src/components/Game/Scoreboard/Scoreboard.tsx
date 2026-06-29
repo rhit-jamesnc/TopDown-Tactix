@@ -10,12 +10,14 @@ export const Scoreboard = ({
   onPause, 
   onAcceptPause,
   isOnline = false,
-  isGameOver
+  isGameOver,
+  isCountdown
 }: ScoreboardProps) => {
   const isMyPauseRequest = !!pauseRequestedBy && pauseRequestedBy === mySocketId;
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (isCountdown) return;
     if (isPausePending && !isMyPauseRequest && onAcceptPause) {
       onAcceptPause();
     } else {
@@ -57,7 +59,11 @@ export const Scoreboard = ({
           </div>
         </div>
         
-        <button className="pause-button" onClick={handleButtonClick}>
+        <button 
+          className={`pause-button ${isCountdown ? 'disabled' : ''}`} 
+          onClick={handleButtonClick}
+          disabled={!!isCountdown}
+        >
           {getButtonText()}
         </button>
       </div>

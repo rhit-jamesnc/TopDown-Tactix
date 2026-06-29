@@ -21,13 +21,14 @@ export const CountdownOverlay = ({ duration, onCountdownComplete, onStateChange 
             if (onStateChange) onStateChange({ isFrozen: false });
             if (onCountdownComplete) onCountdownComplete();
           }, 800);
+          return 0;
         }
         return prevCount - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [duration, onCountdownComplete, onStateChange]);
+  }, [onStateChange, onCountdownComplete]);
 
   if (!isVisible) return null;
 
