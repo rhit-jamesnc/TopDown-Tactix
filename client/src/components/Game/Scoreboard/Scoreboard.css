@@ -105,6 +105,11 @@
   pointer-events: auto;
   position: static;
   transform: none;
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+.pause-pending-indicator.hiding {
+  animation: slideUp 0.4s ease-out forwards;
 }
 
 .scoreboard-container.online .scoreboard-wrapper {
@@ -147,4 +152,32 @@
   font-size: 0.95rem;
   border-radius: 0 0 12px 12px;
   width: 100%;
+}
+
+.game-over-banner {
+  position: static; 
+  transform: none;
+  margin-top: -2px;
+  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  color: white;
+  padding: 8px 30px;
+  border-radius: 0 0 8px 8px; 
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  animation: slideDown 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 1; transform: translateY(0px); }
+  to { opacity: 0; transform: translateY(-20px); display: none; }
 }

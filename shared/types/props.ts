@@ -25,6 +25,7 @@ export interface ScoreboardProps {
   onPause: () => void;
   onAcceptPause?: () => void;
   isOnline?: boolean;
+  isGameOver?: boolean;
 }
 
 export interface GameOverModalProps {

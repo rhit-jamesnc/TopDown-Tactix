@@ -32,6 +32,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [scale, setScale] = useState(1);
   const [timeLeft, setTimeLeft] = useState(180);
   const [gameOver, setGameOver] = useState<GameResult | null>(null);
+  const [isGameOverSignal, setIsGameOverSignal] = useState(false);
   const isCountdownFrozenRef = useRef(true);
   const [countdownKey, setCountdownKey] = useState(0);
   const [countdownDuration, setCountdownDuration] = useState(5);
@@ -210,19 +211,25 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     
 
     socket.on('game-over', (data) => {
+      setIsGameOverSignal(true);
+      isCountdownFrozenRef.current = true;
+
       if (!socket.id) {
         console.error("Game over received, but socket ID is missing.");
         return;
       }
-    
-      const myId = socket.id;
-      const myRole = data.players[myId];
-      setMyTeam(myRole);
 
-      setGameOver({
-          winner: data.winner,
-          reason: data.reason
-      });
+      const myId = socket.id;
+    
+      setTimeout(() => {
+        const myRole = data.players[myId];
+        setMyTeam(myRole);
+
+        setGameOver({
+            winner: data.winner,
+            reason: data.reason
+        });
+      }, 2000);
     });
 
     socket.on('game-timer', (time) => setTimeLeft(time));
@@ -248,6 +255,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   }, [isSearching]);
 
   const handlePlayAgain = () => {
+    setIsGameOverSignal(false);
     setGameOver(null);
     setScores({ home: 0, away: 0 });
 
@@ -347,6 +355,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
                 socket.emit('pause-game', true); 
               }}
               isOnline={true}
+              isGameOver={isGameOverSignal}
             />
           </div>
         </div>

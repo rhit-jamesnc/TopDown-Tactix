@@ -9,14 +9,9 @@ export const Scoreboard = ({
   mySocketId, 
   onPause, 
   onAcceptPause,
-  isOnline = false
+  isOnline = false,
+  isGameOver
 }: ScoreboardProps) => {
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${String(secs).padStart(2, '0')}`;
-  };
-
   const isMyPauseRequest = !!pauseRequestedBy && pauseRequestedBy === mySocketId;
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,6 +29,16 @@ export const Scoreboard = ({
     }
     return "Pause";
   };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const displayMessage = isMyPauseRequest
+    ? "Waiting for opponent to accept or next goal..." 
+    : "Accept to pause now, or match pauses on next goal.";
 
   return (
     <div className={`scoreboard-container ${isOnline ? 'online' : ''}`}>
@@ -56,15 +61,13 @@ export const Scoreboard = ({
           {getButtonText()}
         </button>
       </div>
+      <div className={`pause-pending-indicator ${!isPausePending ? 'hiding' : ''}`}>
+        <span className="indicator-text">{displayMessage}</span>
+      </div>
 
-      {isPausePending && (
-        <div className="pause-pending-indicator">
-          <span className="indicator-text">
-            {isMyPauseRequest 
-              ? "Waiting for opponent to accept or next goal..." 
-              : "Accept to pause now, or match pauses on next goal."
-            }
-          </span>
+      {isGameOver && (
+        <div className="game-over-banner">
+          Game Over
         </div>
       )}
     </div>
