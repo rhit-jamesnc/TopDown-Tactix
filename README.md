@@ -1,4 +1,8 @@
-# TopDown-Tactix
+# TopDown Tactix
+
+**[▶ Play the Live Demo](https://topdown-tactix.vercel.app/)** | **[View Source Code](https://github.com/rhit-jamesnc/TopDown-Tactix)** | **[Technical Documentation](/docs)**
+
+> **Note for Recruiters:** This project demonstrates a server-authoritative architecture built to prevent cheating and ensure competitive fairness. I invite you to test the engine live at the [Live Demo](https://topdown-tactix.vercel.app/).
 
 A high-performance, real-time 2D multiplayer soccer engine designed to solve the challenges of **deterministic physics synchronization** and **authoritative state management** in web-based environments.
 
