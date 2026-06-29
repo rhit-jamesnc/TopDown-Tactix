@@ -116,6 +116,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     socket.emit('request-score');
 
     socket.on('goal-scored', (data) => {
+      if (isCountdownRef.current) return;
       setScores({ home: data.scores.home, away: data.scores.away });
       isCountdownFrozenRef.current = true;
       setCountdownDuration(3);
