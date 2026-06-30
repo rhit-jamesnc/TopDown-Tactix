@@ -284,6 +284,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
             socket.emit('cancel-match');
             window.location.href = '/';
           }}
+          gameType='online'
         />
       )}
       {gameOver && (

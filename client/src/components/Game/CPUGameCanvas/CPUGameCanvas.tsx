@@ -175,6 +175,7 @@ export const CPUGameCanvas = () => {
                 setIsPaused(false);
             }} 
             onQuit={() => window.location.href = '/'}
+            gameType='cpu'
         />
       )}
 

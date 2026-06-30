@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { HelpModalProps } from '../../../../../shared/types/props';
 import './HelpModal.css';
 
-type HelpView = 'main' | 'offline' | 'online';
+type HelpView = 'main' | 'offline' | 'online' | "cpu";
 
 export const HelpModal = ({ initialView = 'main', onClose }: HelpModalProps) => {
   const [view, setView] = useState<HelpView>(initialView);
@@ -19,6 +19,7 @@ export const HelpModal = ({ initialView = 'main', onClose }: HelpModalProps) => 
             <p>Press <b>Escape</b> at any time to pause the game.</p>
             <button onClick={() => setView('offline')}>1v1 Offline</button>
             <button onClick={() => setView('online')}>1v1 Online</button>
+            <button onClick={() => setView('cpu')}>1v1 CPU</button>
           </>
         )}
         
@@ -42,6 +43,20 @@ export const HelpModal = ({ initialView = 'main', onClose }: HelpModalProps) => 
             <p><b>Goal:</b> First to <b>5 goals</b> or highest score after <b>3 minutes</b> wins.</p>
             <p><b>Controls:</b> Use <b>WASD</b> or <b>Arrow Keys</b> to move your player.</p>
             <p>The game automatically matches you with an online opponent.</p>
+            {initialView === 'main' ? (
+              <button onClick={() => setView('main')}>Back</button>
+            ) : (
+              <button onClick={onClose}>Close</button>
+            )}
+          </>
+        )}
+
+        {view === 'cpu' && (
+          <>
+            <h2>1v1 Mode - CPU</h2>
+            <p><b>Goal:</b> First to <b>5 goals</b> or highest score after <b>3 minutes</b> wins.</p>
+            <p><b>Controls:</b> Use <b>WASD</b> or <b>Arrow Keys</b> to move your player.</p>
+            <p>Face off against an intelligent AI opponent.</p>
             {initialView === 'main' ? (
               <button onClick={() => setView('main')}>Back</button>
             ) : (

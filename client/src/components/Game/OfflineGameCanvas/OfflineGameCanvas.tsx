@@ -180,6 +180,7 @@ export const OfflineGameCanvas = () => {
                 setIsPaused(false);
             }} 
             onQuit={() => window.location.href = '/'}
+            gameType='offline'
         />
         )}
       {gameOver && (
