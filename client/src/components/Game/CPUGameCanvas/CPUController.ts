@@ -4,11 +4,18 @@ const FORCE_MAGNITUDE = 0.012;
 const SWEET_SPOT_DISTANCE = 50;
 const PADDING = 50;
 
+const SPEED_MULTIPLIER = {
+    'academy': 0.7,
+    'reserves': 0.9,
+    'first-team': 1.0
+};
+
 export const calculateCpuImpulse = (
     cpuPlayer: Matter.Body | null, 
     ball: Matter.Body | null, 
     pitchWidth: number, 
-    pitchHeight: number
+    pitchHeight: number,
+    difficulty: 'academy' | 'reserves' | 'first-team' = 'reserves'
 ) => {
     if (!cpuPlayer || !ball) return { x: 0, y: 0 };
 
@@ -40,12 +47,13 @@ export const calculateCpuImpulse = (
     const cpuToBallY = ball.position.y - cpuPlayer.position.y;
     const distToBall = Math.sqrt(cpuToBallX * cpuToBallX + cpuToBallY * cpuToBallY);
 
-    const moveForce = distToTarget < 100 ? FORCE_MAGNITUDE * 0.5 : FORCE_MAGNITUDE;
+    const effectiveForce = FORCE_MAGNITUDE * SPEED_MULTIPLIER[difficulty];
+    const moveForce = distToTarget < 100 ? FORCE_MAGNITUDE * 0.5 : effectiveForce;
 
     if (distToTarget < 50) {
         return {
-            x: (cpuToBallX / distToBall) * FORCE_MAGNITUDE,
-            y: (cpuToBallY / distToBall) * FORCE_MAGNITUDE
+            x: (cpuToBallX / distToBall) * effectiveForce,
+            y: (cpuToBallY / distToBall) * effectiveForce
         };
     }
 
