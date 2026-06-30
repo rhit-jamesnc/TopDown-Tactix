@@ -10,7 +10,7 @@ import type { GameResult } from "../../../../../shared/types/game"
 
 import '../GameCanvas.css'
 
-export const CPUGameCanvas = () => {
+export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserves' | 'first-team' }) => {
   const sceneRef = useRef<HTMLDivElement>(null)
   const [gameKey, setGameKey] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 })
@@ -134,7 +134,7 @@ export const CPUGameCanvas = () => {
         const cpuPlayer = players['away'];
         const ball = manager.ball;
 
-        const cpuImpulse = calculateCpuImpulse(cpuPlayer, ball, window.innerWidth, window.innerHeight);
+        const cpuImpulse = calculateCpuImpulse(cpuPlayer, ball, window.innerWidth, window.innerHeight, difficulty);
         if (cpuImpulse.x !== 0 || cpuImpulse.y !== 0) {
             Matter.Body.applyForce(cpuPlayer, cpuPlayer.position, cpuImpulse);
         }
