@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Matter from 'matter-js'
 import { GameManager } from '../../../../../server/gameManager'
+import { calculateCpuImpulse } from './CPUController';
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
@@ -133,23 +134,9 @@ export const CPUGameCanvas = () => {
         const cpuPlayer = players['away'];
         const ball = manager.ball;
 
-        if (cpuPlayer && ball) {
-            const dx = ball.position.x - cpuPlayer.position.x;
-            const dy = ball.position.y - cpuPlayer.position.y;
-            
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance > 1) {
-                const normalizedX = dx / distance;
-                const normalizedY = dy / distance;
-
-                const cpuImpulse = {
-                    x: normalizedX * FORCE_MAGNITUDE,
-                    y: normalizedY * FORCE_MAGNITUDE
-                };
-
-                Matter.Body.applyForce(cpuPlayer, cpuPlayer.position, cpuImpulse);
-            }
+        const cpuImpulse = calculateCpuImpulse(cpuPlayer, ball);
+        if (cpuImpulse.x !== 0 || cpuImpulse.y !== 0) {
+            Matter.Body.applyForce(cpuPlayer, cpuPlayer.position, cpuImpulse);
         }
 
         manager.update(1/60);
