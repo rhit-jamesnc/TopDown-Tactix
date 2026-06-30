@@ -1,16 +1,28 @@
 import Matter from 'matter-js';
 
-const FORCE_MAGNITUDE = 0.012;
+const FORCE_MAGNITUDE = 0.015;
 const SWEET_SPOT_DISTANCE = 50;
 const PADDING = 50;
 
 const SPEED_MULTIPLIER = {
-    'academy': 0.7,
-    'reserves': 0.9,
-    'first-team': 1.0
+    'academy': 0.6,
+    'reserves': 1,
+    'first-team': 1.2
+};
+
+const delayFrames = { 
+    'academy': 30, 
+    'reserves': 15, 
+    'first-team': 0 
 };
 
 let frameCounter = 0;
+let lastImpulse = { x: 0, y: 0 };
+
+export const resetCpuState = () => {
+    frameCounter = 0;
+    lastImpulse = { x: 0, y: 0 };
+};
 
 export const calculateCpuImpulse = (
     cpuPlayer: Matter.Body | null, 
@@ -24,11 +36,9 @@ export const calculateCpuImpulse = (
         return { x: 0, y: 0 };
     }
 
-    const delayFrames = { 'academy': 30, 'reserves': 10, 'first-team': 0 };
-
     if (frameCounter < delayFrames[difficulty]) {
         frameCounter++;
-        return { x: 0, y: 0 };
+        return lastImpulse;
     }
 
     frameCounter = 0;
@@ -61,21 +71,22 @@ export const calculateCpuImpulse = (
     const cpuToBallY = ball.position.y - cpuPlayer.position.y;
     const distToBall = Math.sqrt(cpuToBallX * cpuToBallX + cpuToBallY * cpuToBallY);
 
-    const effectiveForce = FORCE_MAGNITUDE * SPEED_MULTIPLIER[difficulty];
-    const moveForce = distToTarget < 100 ? FORCE_MAGNITUDE * 0.5 : effectiveForce;
+    const moveForce = FORCE_MAGNITUDE * SPEED_MULTIPLIER[difficulty]
 
     if (distToTarget < 50) {
-        return {
-            x: (cpuToBallX / distToBall) * effectiveForce,
-            y: (cpuToBallY / distToBall) * effectiveForce
+        lastImpulse = {
+            x: (cpuToBallX / distToBall) * moveForce,
+            y: (cpuToBallY / distToBall) * moveForce
         };
+        return lastImpulse;
     }
 
     if (distToTarget > 10) {
-        return {
+        lastImpulse = {
             x: (cpuToTargetX / distToTarget) * moveForce,
             y: (cpuToTargetY / distToTarget) * moveForce
         };
+        return lastImpulse;
     }
 
     return { x: 0, y: 0 };

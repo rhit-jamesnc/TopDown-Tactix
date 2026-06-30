@@ -1,29 +1,44 @@
-import { describe, it, expect } from 'vitest';
-import { calculateCpuImpulse } from '../components/Game/CPUGameCanvas/CPUController';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { calculateCpuImpulse, resetCpuState } from '../components/Game/CPUGameCanvas/CPUController';
 
 describe('calculateCpuImpulse', () => {
     const mockPlayer = { position: { x: 0, y: 0 } } as Matter.Body;
     const mockBall = { position: { x: 10, y: 10 } } as Matter.Body;
 
-    it('should cap movement force to 70% for academy difficulty', () => {
+    beforeEach(() => resetCpuState());
+
+    it('should cap movement force to 60% for academy difficulty', () => {
+        calculateCpuImpulse(null, null, 800, 600, 'academy');
+        for (let i = 0; i < 30; i++) {
+            calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'academy');
+        }
         const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'academy');
-        expect(impulse.x).toBeLessThanOrEqual(0.0084);
+        expect(impulse.x).toBeLessThanOrEqual(0.00637);
     });
 
-    it('should cap movement force to 90% for reserves difficulty', () => {
+    it('should use 100% force for reserves difficulty', () => {
+        calculateCpuImpulse(null, null, 800, 600, 'reserves');
+        for (let i = 0; i < 15; i++) {
+            calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'reserves');
+        }
         const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'reserves');
-        expect(impulse.x).toBeLessThanOrEqual(0.0108);
+        expect(impulse.x).toBeCloseTo(0.0106, 3);
     });
 
-    it('should allow 100% force for first-team difficulty', () => {
+    it('should use 120% force for first-team difficulty', () => {
+        calculateCpuImpulse(null, null, 800, 600, 'first-team');
+        for (let i = 0; i < 5; i++) {
+            calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'first-team');
+        }
         const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'first-team');
-        expect(impulse.x).toBeCloseTo(0.00848, 4); 
+        expect(impulse.x).toBeCloseTo(0.0127, 3);
     });
 });
 
 describe('calculateCpuImpulse - Reaction Delay', () => {
   const mockPlayer = { position: { x: 0, y: 0 } } as Matter.Body;
   const mockBall = { position: { x: 100, y: 100 } } as Matter.Body;
+  beforeEach(() => resetCpuState());
 
   it('should return zero impulse for the first 30 frames in academy mode', () => {
     calculateCpuImpulse(null, null, 800, 600, 'academy'); 
@@ -37,7 +52,7 @@ describe('calculateCpuImpulse - Reaction Delay', () => {
   it('should return zero impulse for the first 30 frames in reserves mode', () => {
     calculateCpuImpulse(null, null, 800, 600, 'reserves'); 
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 14; i++) {
       const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'reserves');
       expect(impulse).toEqual({ x: 0, y: 0 });
     }
@@ -47,5 +62,5 @@ describe('calculateCpuImpulse - Reaction Delay', () => {
     calculateCpuImpulse(null, null, 800, 600, 'first-team');
     const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'first-team');
     expect(impulse.x).not.toBe(0);
-    });
+  });
 });
