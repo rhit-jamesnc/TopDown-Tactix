@@ -134,7 +134,7 @@ export const CPUGameCanvas = () => {
         const cpuPlayer = players['away'];
         const ball = manager.ball;
 
-        const cpuImpulse = calculateCpuImpulse(cpuPlayer, ball);
+        const cpuImpulse = calculateCpuImpulse(cpuPlayer, ball, window.innerWidth, window.innerHeight);
         if (cpuImpulse.x !== 0 || cpuImpulse.y !== 0) {
             Matter.Body.applyForce(cpuPlayer, cpuPlayer.position, cpuImpulse);
         }
