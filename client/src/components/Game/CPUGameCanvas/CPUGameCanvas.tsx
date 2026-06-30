@@ -130,7 +130,27 @@ export const CPUGameCanvas = () => {
             Matter.Body.applyForce(players['home'], players['home'].position, homeImpulse)
         }
 
-        //TODO: ADD CPU LOGIC HERE
+        const cpuPlayer = players['away'];
+        const ball = manager.ball;
+
+        if (cpuPlayer && ball) {
+            const dx = ball.position.x - cpuPlayer.position.x;
+            const dy = ball.position.y - cpuPlayer.position.y;
+            
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 1) {
+                const normalizedX = dx / distance;
+                const normalizedY = dy / distance;
+
+                const cpuImpulse = {
+                    x: normalizedX * FORCE_MAGNITUDE,
+                    y: normalizedY * FORCE_MAGNITUDE
+                };
+
+                Matter.Body.applyForce(cpuPlayer, cpuPlayer.position, cpuImpulse);
+            }
+        }
 
         manager.update(1/60);
         setTimeLeft(manager.getRemainingTime());
