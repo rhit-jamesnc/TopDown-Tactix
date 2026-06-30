@@ -10,6 +10,8 @@ const SPEED_MULTIPLIER = {
     'first-team': 1.0
 };
 
+let frameCounter = 0;
+
 export const calculateCpuImpulse = (
     cpuPlayer: Matter.Body | null, 
     ball: Matter.Body | null, 
@@ -17,7 +19,17 @@ export const calculateCpuImpulse = (
     pitchHeight: number,
     difficulty: 'academy' | 'reserves' | 'first-team' = 'reserves'
 ) => {
-    if (!cpuPlayer || !ball) return { x: 0, y: 0 };
+    if (!cpuPlayer || !ball) {
+        frameCounter = 0;
+        return { x: 0, y: 0 };
+    }
+
+    const delayFrames = { 'academy': 30, 'reserves': 10, 'first-team': 0 };
+
+    if (frameCounter < delayFrames[difficulty]) {
+        frameCounter++;
+        return { x: 0, y: 0 };
+    }
 
     const attackGoal = { x: 0, y: pitchHeight / 2 };
 
