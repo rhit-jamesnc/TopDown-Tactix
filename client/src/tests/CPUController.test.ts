@@ -20,3 +20,17 @@ describe('calculateCpuImpulse', () => {
         expect(impulse.x).toBeCloseTo(0.00848, 4); 
     });
 });
+
+describe('calculateCpuImpulse - Reaction Delay', () => {
+  const mockPlayer = { position: { x: 0, y: 0 } } as Matter.Body;
+  const mockBall = { position: { x: 100, y: 100 } } as Matter.Body;
+
+  it('should return zero impulse for the first 30 frames in academy mode', () => {
+    calculateCpuImpulse(null, null, 800, 600, 'academy'); 
+
+    for (let i = 0; i < 29; i++) {
+      const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'academy');
+      expect(impulse).toEqual({ x: 0, y: 0 });
+    }
+  });
+});
