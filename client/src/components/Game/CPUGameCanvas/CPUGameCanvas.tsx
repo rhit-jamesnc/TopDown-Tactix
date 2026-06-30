@@ -189,7 +189,8 @@ export const CPUGameCanvas = () => {
             }} 
             onQuit={() => window.location.href = '/'}
         />
-        )}
+      )}
+
       {gameOver && (
         <GameOverModal 
             winner={gameOver.winner}
@@ -199,6 +200,7 @@ export const CPUGameCanvas = () => {
             onHome={() => window.location.href = '/'}
         />
       )}
+
       <div ref={sceneRef} className="game-canvas" />
 
       <CountdownOverlay 
@@ -216,18 +218,17 @@ export const CPUGameCanvas = () => {
         <div className="center-circle" />
         <div className="left-goal-crease" />
         <div className="right-goal-crease" />
+        <Scoreboard 
+            scores={scores} 
+            timeLeft={timeLeft} 
+            onPause={() => {
+                const nextPaused = !isPausedRef.current;
+                if (!nextPaused) triggerUnpauseCountdown();
+                isPausedRef.current = nextPaused;
+                setIsPaused(nextPaused)
+            }}
+        />
       </div>
-
-      <Scoreboard 
-        scores={scores} 
-        timeLeft={timeLeft} 
-        onPause={() => {
-            const nextPaused = !isPausedRef.current;
-            if (!nextPaused) triggerUnpauseCountdown();
-            isPausedRef.current = nextPaused;
-            setIsPaused(nextPaused)
-        }}
-      />
     </div>
   )
 }
