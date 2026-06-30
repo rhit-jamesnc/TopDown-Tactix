@@ -31,6 +31,8 @@ export const calculateCpuImpulse = (
         return { x: 0, y: 0 };
     }
 
+    frameCounter = 0;
+
     const attackGoal = { x: 0, y: pitchHeight / 2 };
 
     const goalToBallX = ball.position.x - attackGoal.x;
