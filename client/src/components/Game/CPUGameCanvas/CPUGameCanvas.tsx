@@ -56,8 +56,8 @@ export const CPUGameCanvas = () => {
 
     const players = physics.players as { [key: string]: Matter.Body };
 
-    if (players['home']) players['home'].render.fillStyle = 'red';
-    if (players['away']) players['away'].render.fillStyle = 'blue';
+    if (players['home']) players['home'].render.fillStyle = 'blue';
+    if (players['away']) players['away'].render.fillStyle = 'red';
 
     manager.onGoal((team: string) => {
         if (team === 'away') {
