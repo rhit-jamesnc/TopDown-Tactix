@@ -33,4 +33,19 @@ describe('calculateCpuImpulse - Reaction Delay', () => {
       expect(impulse).toEqual({ x: 0, y: 0 });
     }
   });
+
+  it('should return zero impulse for the first 30 frames in reserves mode', () => {
+    calculateCpuImpulse(null, null, 800, 600, 'reserves'); 
+
+    for (let i = 0; i < 9; i++) {
+      const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'reserves');
+      expect(impulse).toEqual({ x: 0, y: 0 });
+    }
+  });
+
+  it('should react instantly in first-team mode', () => {
+    calculateCpuImpulse(null, null, 800, 600, 'first-team');
+    const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'first-team');
+    expect(impulse.x).not.toBe(0);
+    });
 });
