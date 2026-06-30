@@ -4,6 +4,7 @@ import type { GameScores } from './game';
 export interface HomePageProps {
   onStartOffline: () => void;
   onStartOnline: () => void;
+  onStartCpu: () => void;
 }
 
 export interface MatchmakingModalProps {
@@ -38,10 +39,13 @@ export interface GameOverModalProps {
   onHome: () => void;
 }
 
+export type HelpView = 'main' | 'offline' | 'online' | 'cpu';
+
 export interface PauseMenuProps {
   onResume: () => void;
   onQuit: () => void;
   pauseTimeLeft?: number;
+  gameType: HelpView;
 }
 
 export interface CountdownOverlayProps {
@@ -49,8 +53,6 @@ export interface CountdownOverlayProps {
   onCountdownComplete?: () => void;
   onStateChange: (state: { isFrozen: boolean }) => void;
 }
-
-export type HelpView = 'main' | 'offline' | 'online';
 
 export interface HelpModalProps {
   initialView?: HelpView;

@@ -4,7 +4,7 @@ import { HelpModal } from '../../components/Modals/HelpModal/HelpModal';
 import type { HomePageProps } from "../../../../shared/types/props"
 import './HomePage.css';
 
-export const HomePage = ({ onStartOffline, onStartOnline }: HomePageProps) => {
+export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePageProps) => {
   const [showHelp, setShowHelp] = useState(false);
   const [showDevModal, setShowDevModal] = useState(true);
   
@@ -18,12 +18,19 @@ export const HomePage = ({ onStartOffline, onStartOnline }: HomePageProps) => {
 
       <h1>TopDown Tactix</h1>
       <p className="creator">Created By Noah James</p>
+
       <button className="preview-btn" onClick={onStartOffline}>
           Offline
       </button>
+
       <button className="preview-btn" onClick={onStartOnline}>
           Online
       </button>
+
+      <button className="preview-btn" onClick={onStartCpu}>
+          Play CPU
+      </button>
+
       <a href="https://github.com/rhit-jamesnc/TopDown-Tactix" target="_blank" rel="noreferrer">
           GitHub Repository
       </a>

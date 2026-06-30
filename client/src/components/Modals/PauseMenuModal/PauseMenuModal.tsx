@@ -3,13 +3,13 @@ import { HelpModal } from '../HelpModal/HelpModal';
 import type { PauseMenuProps } from '../../../../../shared/types/props'
 import './PauseMenuModal.css'
 
-export const PauseMenuModal = ({ onResume, onQuit, pauseTimeLeft }: PauseMenuProps) => {
+export const PauseMenuModal = ({ onResume, onQuit, pauseTimeLeft, gameType }: PauseMenuProps) => {
   const [view, setView] = useState<'menu' | 'help'>('menu');
 
   if (view === 'help') {
     return (
       <HelpModal 
-        initialView="offline" 
+        initialView={gameType}
         onClose={() => setView('menu')}
       />
     );
