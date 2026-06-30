@@ -2,12 +2,21 @@ import { describe, it, expect } from 'vitest';
 import { calculateCpuImpulse } from '../components/Game/CPUGameCanvas/CPUController';
 
 describe('calculateCpuImpulse', () => {
-  it('should accept a difficulty level', () => {
     const mockPlayer = { position: { x: 0, y: 0 } } as Matter.Body;
     const mockBall = { position: { x: 10, y: 10 } } as Matter.Body;
-    
-    const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'academy');
-    
-    expect(impulse.x).toBeLessThanOrEqual(0.0084);
-  });
+
+    it('should cap movement force to 70% for academy difficulty', () => {
+        const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'academy');
+        expect(impulse.x).toBeLessThanOrEqual(0.0084);
+    });
+
+    it('should cap movement force to 90% for reserves difficulty', () => {
+        const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'reserves');
+        expect(impulse.x).toBeLessThanOrEqual(0.0108);
+    });
+
+    it('should allow 100% force for first-team difficulty', () => {
+        const impulse = calculateCpuImpulse(mockPlayer, mockBall, 800, 600, 'first-team');
+        expect(impulse.x).toBeCloseTo(0.00848, 4); 
+    });
 });
