@@ -1,16 +1,47 @@
 import Matter from 'matter-js';
 
-const FORCE_MAGNITUDE = 0.012;
+const FORCE_MAGNITUDE = 0.015;
 const SWEET_SPOT_DISTANCE = 50;
 const PADDING = 50;
+
+const SPEED_MULTIPLIER = {
+    'academy': 0.6,
+    'reserves': 1,
+    'first-team': 1.2
+};
+
+const delayFrames = { 
+    'academy': 30, 
+    'reserves': 15, 
+    'first-team': 0 
+};
+
+let frameCounter = 0;
+let lastImpulse = { x: 0, y: 0 };
+
+export const resetCpuState = () => {
+    frameCounter = 0;
+    lastImpulse = { x: 0, y: 0 };
+};
 
 export const calculateCpuImpulse = (
     cpuPlayer: Matter.Body | null, 
     ball: Matter.Body | null, 
     pitchWidth: number, 
-    pitchHeight: number
+    pitchHeight: number,
+    difficulty: 'academy' | 'reserves' | 'first-team' = 'reserves'
 ) => {
-    if (!cpuPlayer || !ball) return { x: 0, y: 0 };
+    if (!cpuPlayer || !ball) {
+        frameCounter = 0;
+        return { x: 0, y: 0 };
+    }
+
+    if (frameCounter < delayFrames[difficulty]) {
+        frameCounter++;
+        return lastImpulse;
+    }
+
+    frameCounter = 0;
 
     const attackGoal = { x: 0, y: pitchHeight / 2 };
 
@@ -40,20 +71,22 @@ export const calculateCpuImpulse = (
     const cpuToBallY = ball.position.y - cpuPlayer.position.y;
     const distToBall = Math.sqrt(cpuToBallX * cpuToBallX + cpuToBallY * cpuToBallY);
 
-    const moveForce = distToTarget < 100 ? FORCE_MAGNITUDE * 0.5 : FORCE_MAGNITUDE;
+    const moveForce = FORCE_MAGNITUDE * SPEED_MULTIPLIER[difficulty]
 
     if (distToTarget < 50) {
-        return {
-            x: (cpuToBallX / distToBall) * FORCE_MAGNITUDE,
-            y: (cpuToBallY / distToBall) * FORCE_MAGNITUDE
+        lastImpulse = {
+            x: (cpuToBallX / distToBall) * moveForce,
+            y: (cpuToBallY / distToBall) * moveForce
         };
+        return lastImpulse;
     }
 
     if (distToTarget > 10) {
-        return {
+        lastImpulse = {
             x: (cpuToTargetX / distToTarget) * moveForce,
             y: (cpuToTargetY / distToTarget) * moveForce
         };
+        return lastImpulse;
     }
 
     return { x: 0, y: 0 };

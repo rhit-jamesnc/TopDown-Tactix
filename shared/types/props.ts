@@ -4,7 +4,7 @@ import type { GameScores } from './game';
 export interface HomePageProps {
   onStartOffline: () => void;
   onStartOnline: () => void;
-  onStartCpu: () => void;
+  onStartCpu: (difficulty: 'academy' | 'reserves' | 'first-team') => void;
 }
 
 export interface MatchmakingModalProps {
@@ -57,4 +57,9 @@ export interface CountdownOverlayProps {
 export interface HelpModalProps {
   initialView?: HelpView;
   onClose: () => void;
+}
+
+export interface DifficultySelectionProps {
+  onSelect: (difficulty: 'academy' | 'reserves' | 'first-team') => void;
+  onBack: () => void;
 }

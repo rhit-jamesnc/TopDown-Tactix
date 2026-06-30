@@ -26,20 +26,27 @@ A high-performance, real-time 2D multiplayer soccer engine designed to solve the
 *   **Synchronization:** Optimized the client-server communication protocol to maintain a consistent gameplay loop.
 
 ## Technical Documentation
-For a deeper look into the architectural decisions, physics synchronization logic, and system design, please refer to the [**/docs directory**](https://github.com/rhit-jamesnc/TopDown-Tactix/tree/main/docs). 
+For a deeper look into the architectural decisions, physics synchronization logic, system design, and AI logic, please refer to the [**/docs directory**](https://github.com/rhit-jamesnc/TopDown-Tactix/tree/main/docs). 
 
-*   *Key topics covered:* Deterministic time-stepping, server-authoritative state resolution, and monorepo structural patterns.
+* **[ARCHITECTURE.md](/docs/ARCHITECTURE.md):** Monorepo structure and data flow.
+* **[PHYSICS.md](/docs/PHYSICS.md):** Deterministic time-stepping and collision masking.
+* **[SYNC.md](/docs/SYNC.md):** Server-authoritative state resolution.
+* **[TESTING.md](/docs/TESTING.md):** QA and reliability standards.
+* **[AI_CONTROLLER.md](/docs/AI_CONTROLLER.md):** Difficulty scaling and movement logic for the CPU.
 
 ## Development Roadmap
 
 ### Engine & Core Mechanics
 - [x] Physics core, boundary constraints, and rigid body dynamics.
 - [x] Authoritative server-side goal detection and pitch-reset.
+- [x] CPU/AI Implementation: Integrated difficulty-scaled AI with reaction delays and deterministic movement logic.
 - [ ] Implement forfeit/win-screen logic for player disconnections.
 
 ### Feature Roadmap (TopDown Games)
-- [ ] **Game Modes:** Implementation of vs. Computer, Ranked matches, and special ability variants.
-- [ ] **Draft System:** Randomly generated player pools with a draft/ban phase.
+- [ ] **Game Modes:**
+    - [x] **vs. Computer:** Implemented three difficulty tiers (Academy, Reserves, First-Team) with reactive AI.
+    - [ ] **Ranked Matches:** Server-authoritative competitive matchmaking.
+    - [ ] **Special Ability Variants:** Physics-modifier power-ups and unique player capabilities.- [ ] **Draft System:** Randomly generated player pools with a draft/ban phase.
 - [ ] **Player Stats & Leaderboard:** Tracking Win %, average goals, and games played.
 - [ ] **Expansion:** Scaling the engine for additional titles (e.g., *TopDown Touchdown*).
 

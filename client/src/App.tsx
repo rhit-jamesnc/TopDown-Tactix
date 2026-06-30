@@ -7,6 +7,7 @@ import './App.css'
 
 function App() {
   const [mode, setMode] = useState<'home' | 'offline' | 'online' | 'CPU'>('home');
+  const [cpuDifficulty, setCpuDifficulty] = useState<'academy' | 'reserves' | 'first-team'>('reserves');
 
   return (
     <div className="app-viewport">
@@ -14,14 +15,17 @@ function App() {
         <HomePage 
           onStartOffline={() => setMode('offline')} 
           onStartOnline={() => setMode('online')} 
-          onStartCpu={() => setMode('CPU')}
+          onStartCpu={(diff) => {
+            setCpuDifficulty(diff);
+            setMode('CPU');
+          }}
       />}
 
       {mode === 'offline' && <OfflineGameCanvas />}
       {mode === 'online' && (
         <OnlineGameCanvas onExit={() => setMode('home')} />
       )}
-      {mode === 'CPU' && <CPUGameCanvas />}
+      {mode === 'CPU' && <CPUGameCanvas difficulty={cpuDifficulty} />}
     </div>
   );
 }
