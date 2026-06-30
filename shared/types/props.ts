@@ -4,6 +4,7 @@ import type { GameScores } from './game';
 export interface HomePageProps {
   onStartOffline: () => void;
   onStartOnline: () => void;
+  onStartCpu: () => void;
 }
 
 export interface MatchmakingModalProps {
