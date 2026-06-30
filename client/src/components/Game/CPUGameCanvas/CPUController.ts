@@ -2,7 +2,7 @@ import Matter from 'matter-js';
 
 const FORCE_MAGNITUDE = 0.012;
 const SWEET_SPOT_DISTANCE = 50;
-const PADDING = 40;
+const PADDING = 50;
 
 export const calculateCpuImpulse = (
     cpuPlayer: Matter.Body | null, 
@@ -24,8 +24,13 @@ export const calculateCpuImpulse = (
     let targetX = ball.position.x + (dirX * SWEET_SPOT_DISTANCE);
     let targetY = ball.position.y + (dirY * SWEET_SPOT_DISTANCE);
 
-    targetX = Math.max(PADDING, Math.min(pitchWidth - PADDING, targetX));
-    targetY = Math.max(PADDING, Math.min(pitchHeight - PADDING, targetY));
+    const isBallInCorner = ball.position.x < 100 || ball.position.x > pitchWidth - 100 || 
+                           ball.position.y < 100 || ball.position.y > pitchHeight - 100;
+    
+    const dynamicPadding = isBallInCorner ? PADDING + 30 : PADDING;
+
+    targetX = Math.max(dynamicPadding, Math.min(pitchWidth - PADDING, targetX));
+    targetY = Math.max(dynamicPadding, Math.min(pitchHeight - PADDING, targetY));
 
     const cpuToTargetX = targetX - cpuPlayer.position.x;
     const cpuToTargetY = targetY - cpuPlayer.position.y;
@@ -35,17 +40,19 @@ export const calculateCpuImpulse = (
     const cpuToBallY = ball.position.y - cpuPlayer.position.y;
     const distToBall = Math.sqrt(cpuToBallX * cpuToBallX + cpuToBallY * cpuToBallY);
 
-    if (distToTarget < 40) {
+    const moveForce = distToTarget < 100 ? FORCE_MAGNITUDE * 0.5 : FORCE_MAGNITUDE;
+
+    if (distToTarget < 50) {
         return {
             x: (cpuToBallX / distToBall) * FORCE_MAGNITUDE,
             y: (cpuToBallY / distToBall) * FORCE_MAGNITUDE
         };
     }
 
-    if (distToTarget > 5) {
+    if (distToTarget > 10) {
         return {
-            x: (cpuToTargetX / distToTarget) * FORCE_MAGNITUDE,
-            y: (cpuToTargetY / distToTarget) * FORCE_MAGNITUDE
+            x: (cpuToTargetX / distToTarget) * moveForce,
+            y: (cpuToTargetY / distToTarget) * moveForce
         };
     }
 
