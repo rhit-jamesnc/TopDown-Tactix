@@ -40,13 +40,14 @@ For a deeper look into the architectural decisions, physics synchronization logi
 - [x] Physics core, boundary constraints, and rigid body dynamics.
 - [x] Authoritative server-side goal detection and pitch-reset.
 - [x] CPU/AI Implementation: Integrated difficulty-scaled AI with reaction delays and deterministic movement logic.
-- [ ] Implement forfeit/win-screen logic for player disconnections.
+- [x] Implement forfeit/win-screen logic for player disconnections.
 
 ### Feature Roadmap (TopDown Games)
 - [ ] **Game Modes:**
     - [x] **vs. Computer:** Implemented three difficulty tiers (Academy, Reserves, First-Team) with reactive AI.
     - [ ] **Ranked Matches:** Server-authoritative competitive matchmaking.
-    - [ ] **Special Ability Variants:** Physics-modifier power-ups and unique player capabilities.- [ ] **Draft System:** Randomly generated player pools with a draft/ban phase.
+    - [ ] **Special Ability Variants:** Physics-modifier power-ups and unique player capabilities.
+    - [ ] **Draft System:** Randomly generated player pools with a draft/ban phase.
 - [ ] **Player Stats & Leaderboard:** Tracking Win %, average goals, and games played.
 - [ ] **Expansion:** Scaling the engine for additional titles (e.g., *TopDown Touchdown*).
 
