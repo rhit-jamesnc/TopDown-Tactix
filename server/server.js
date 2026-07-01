@@ -147,6 +147,20 @@ io.on('connection', (socket) => {
     const gameData = games.get(roomId);
 
     if (gameData) {
+      const { home, away } = gameData.instance.scores;
+      let winner = 'draw';
+      if (home > away) winner = 'home';
+      else if (away > home) winner = 'away';
+
+      io.to(roomId).emit('game-over', {
+        winner: winner,
+        reason: 'forfeit',
+        players: {
+          [gameData.players[0]]: 'home',
+          [gameData.players[1]]: 'away'
+        }
+      });
+
       clearInterval(gameData.instance.loop);
 
       if (gameData.instance.countdownTimeout) {
@@ -159,8 +173,6 @@ io.on('connection', (socket) => {
       
       gameData.players.forEach(pid => playerToRoom.delete(pid));
       games.delete(roomId);
-      
-      io.to(roomId).emit('opponent-disconnected');
     }
     console.log(`User disconnected and cleaned up: ${socket.id}`);
   });

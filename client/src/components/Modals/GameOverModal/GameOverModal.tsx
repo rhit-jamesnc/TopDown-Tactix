@@ -27,7 +27,10 @@ export const GameOverModal = ({ winner, reason, scores, myTeam, onPlayAgain, onH
         
         <p className="winner-text"><strong>{getDisplayName(winner)}</strong></p>
         
-        <p className="reason-text">{reason === 'goal' ? 'Goal limit reached' : 'Full Time'}</p>
+        <p className="reason-text">
+          {reason === 'goal' ? 'Goal limit reached' : 
+           reason === 'forfeit' ? 'Opponent forfeited' : 'Full Time'}
+        </p>
         
         <div className="modal-actions">
           <button className="btn-playAgain" onClick={onPlayAgain}>PLAY AGAIN</button>
