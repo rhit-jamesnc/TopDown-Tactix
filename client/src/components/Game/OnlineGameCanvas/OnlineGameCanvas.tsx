@@ -16,6 +16,12 @@ const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;
 
+const GAME_EVENTS = [
+  'match-found', 'game-state', 'player-disconnected', 'current-score',
+  'goal-scored', 'player-assignment', 'game-over', 'game-timer',
+  'pause-pending', 'game-paused'
+];
+
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
   const engineRef = useRef<Matter.Engine | null>(null);
@@ -40,6 +46,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [countdownDuration, setCountdownDuration] = useState(5);
   const [isCountdown, setIsCountdown] = useState(false);
   const isCountdownRef = useRef(false);
+
+  const cleanupEvents = useCallback(() => {
+    GAME_EVENTS.forEach(event => socket.off(event));
+  }, []);
 
   useEffect(() => {
     const updateScale = () => {
@@ -87,21 +97,25 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       const playerIds = Object.keys(state.players);
       if (!playerIds.includes(socket.id)) return;
 
-      if (state.ball && visualBodiesRef.current['ball']) Matter.Body.setPosition(visualBodiesRef.current['ball'], state.ball);
+      if (!engineRef.current) return;
+      const engine = engineRef.current;
+      const visualBodies = visualBodiesRef.current;
+
+      if (state.ball && visualBodies['ball']) Matter.Body.setPosition(visualBodiesRef.current['ball'], state.ball);
       
       Object.entries(state.players).forEach(([id, data]) => {
-        if (!visualBodiesRef.current[id]) createVisual(id, (id === socket.id) ? 'blue' : 'red', 25);
-        if (visualBodiesRef.current[id]) {
-          Matter.Body.setPosition(visualBodiesRef.current[id], data.position);
-          visualBodiesRef.current[id].render.fillStyle = id === socket.id ? 'blue' : 'red';
+        if (!visualBodies[id]) createVisual(id, (id === socket.id) ? 'blue' : 'red', 25);
+        if (visualBodies[id]) {
+          Matter.Body.setPosition(visualBodies[id], data.position);
+          visualBodies[id].render.fillStyle = id === socket.id ? 'blue' : 'red';
         }
       });
       
       const serverIds = Object.keys(state.players);
-      Object.keys(visualBodiesRef.current).forEach(id => {
+      Object.keys(visualBodies).forEach(id => {
         if (id !== 'ball' && !serverIds.includes(id)) {
-          Matter.World.remove(engine.world, visualBodiesRef.current[id]);
-          delete visualBodiesRef.current[id];
+          Matter.World.remove(engine.world, visualBodies[id]);
+          delete visualBodies[id];
         }
       });
     };
@@ -227,29 +241,25 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       clearInterval(interval);
-      socket.off('match-found', handleMatchFound);
-      socket.off('game-state', handleGameState);
-      socket.off('player-disconnected', handleDisconnect);
-      socket.off('current-score');
-      socket.off('goal-scored');
-      socket.off('player-assignment');
-      socket.off('game-over');
-      socket.off('game-timer');
-      socket.off('pause-pending');
-      socket.off('game-paused');
-      Matter.Render.stop(render);
-      Matter.Engine.clear(engine);
+      cleanupEvents();
+      if (engineRef.current) {
+        Matter.Render.stop(render);
+        Matter.Engine.clear(engineRef.current);
+      }
       if (render.canvas) render.canvas.remove();
     };
-  }, [isSearching]);
+  }, [cleanupEvents, isSearching]);
 
   const clearGameVisuals = () => {
-    if (!engineRef.current) return;
+    const engine = engineRef.current;
+    if (!engine) return;
 
     Object.keys(visualBodiesRef.current).forEach(id => {
-      Matter.World.remove(engineRef.current!.world, visualBodiesRef.current[id]);
+      Matter.World.remove(engine.world, visualBodiesRef.current[id]);
       delete visualBodiesRef.current[id];
     });
+
+    visualBodiesRef.current = {};
   };
 
   const handlePlayAgain = () => {
