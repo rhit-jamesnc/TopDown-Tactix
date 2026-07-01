@@ -18,6 +18,8 @@ const TARGET_HEIGHT = 900;
 
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
+  const engineRef = useRef<Matter.Engine | null>(null);
+  const visualBodiesRef = useRef<Record<string, Matter.Body>>({});
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
   const [isPausePending, setIsPausePending] = useState(false);
@@ -57,22 +59,25 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     if (isSearching || !sceneRef.current) return;
 
     const engine = Matter.Engine.create({ gravity: { x: 0, y: 0 } });
+    engineRef.current = engine;
+    
     const render = Matter.Render.create({
       element: sceneRef.current,
       engine: engine,
       options: { width: TARGET_WIDTH, height: TARGET_HEIGHT, wireframes: false, background: 'transparent' }
     });
 
-    const visualBodies: Record<string, Matter.Body> = { 
+    visualBodiesRef.current = { 
       ball: Matter.Bodies.circle(TARGET_WIDTH / 2, TARGET_HEIGHT / 2, 15, { isStatic: true, render: { fillStyle: '#ffffff' } }) 
     };
-    Matter.World.add(engine.world, visualBodies.ball);
+
+    Matter.World.add(engine.world, visualBodiesRef.current.ball);
     Matter.Render.run(render);
 
     const createVisual = (id: string, color: string, radius: number) => {
       const body = Matter.Bodies.circle(TARGET_WIDTH / 2, TARGET_HEIGHT / 2, radius, { isStatic: true });
       body.render.fillStyle = color;
-      visualBodies[id] = body;
+      visualBodiesRef.current[id] = body;
       Matter.World.add(engine.world, body);
     };
 
@@ -82,29 +87,29 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       const playerIds = Object.keys(state.players);
       if (!playerIds.includes(socket.id)) return;
 
-      if (state.ball && visualBodies['ball']) Matter.Body.setPosition(visualBodies['ball'], state.ball);
+      if (state.ball && visualBodiesRef.current['ball']) Matter.Body.setPosition(visualBodiesRef.current['ball'], state.ball);
       
       Object.entries(state.players).forEach(([id, data]) => {
-        if (!visualBodies[id]) createVisual(id, (id === socket.id) ? 'blue' : 'red', 25);
-        if (visualBodies[id]) {
-          Matter.Body.setPosition(visualBodies[id], data.position);
-          visualBodies[id].render.fillStyle = id === socket.id ? 'blue' : 'red';
+        if (!visualBodiesRef.current[id]) createVisual(id, (id === socket.id) ? 'blue' : 'red', 25);
+        if (visualBodiesRef.current[id]) {
+          Matter.Body.setPosition(visualBodiesRef.current[id], data.position);
+          visualBodiesRef.current[id].render.fillStyle = id === socket.id ? 'blue' : 'red';
         }
       });
       
       const serverIds = Object.keys(state.players);
-      Object.keys(visualBodies).forEach(id => {
+      Object.keys(visualBodiesRef.current).forEach(id => {
         if (id !== 'ball' && !serverIds.includes(id)) {
-          Matter.World.remove(engine.world, visualBodies[id]);
-          delete visualBodies[id];
+          Matter.World.remove(engine.world, visualBodiesRef.current[id]);
+          delete visualBodiesRef.current[id];
         }
       });
     };
 
     const handleDisconnect = (id: string) => {
-      if (visualBodies[id]) {
-        Matter.World.remove(engine.world, visualBodies[id]);
-        delete visualBodies[id];
+      if (visualBodiesRef.current[id]) {
+        Matter.World.remove(engine.world, visualBodiesRef.current[id]);
+        delete visualBodiesRef.current[id];
       }
     };
 
@@ -238,7 +243,17 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     };
   }, [isSearching]);
 
+  const clearGameVisuals = () => {
+    if (!engineRef.current) return;
+
+    Object.keys(visualBodiesRef.current).forEach(id => {
+      Matter.World.remove(engineRef.current!.world, visualBodiesRef.current[id]);
+      delete visualBodiesRef.current[id];
+    });
+  };
+
   const handlePlayAgain = () => {
+    clearGameVisuals();
     setIsGameOverSignal(false);
     setGameOver(null);
     setScores({ home: 0, away: 0 });

@@ -161,6 +161,12 @@ io.on('connection', (socket) => {
         }
       });
 
+      const remainingPlayerId = gameData.players.find(id => id !== socket.id);
+      if (remainingPlayerId) {
+        const remainingSocket = io.sockets.sockets.get(remainingPlayerId);
+        if (remainingSocket) remainingSocket.leave(roomId);
+      }
+
       clearInterval(gameData.instance.loop);
 
       if (gameData.instance.countdownTimeout) {
