@@ -16,8 +16,16 @@ const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;
 
+const GAME_EVENTS = [
+  'match-found', 'game-state', 'player-disconnected', 'current-score',
+  'goal-scored', 'player-assignment', 'game-over', 'game-timer',
+  'pause-pending', 'game-paused'
+];
+
 export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isSearching, setIsSearching] = useState(true);
+  const engineRef = useRef<Matter.Engine | null>(null);
+  const visualBodiesRef = useRef<Record<string, Matter.Body>>({});
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
   const [isPausePending, setIsPausePending] = useState(false);
@@ -39,6 +47,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [isCountdown, setIsCountdown] = useState(false);
   const isCountdownRef = useRef(false);
 
+  const cleanupEvents = useCallback(() => {
+    GAME_EVENTS.forEach(event => socket.off(event));
+  }, []);
+
   useEffect(() => {
     const updateScale = () => {
       const scaleX = window.innerWidth / TARGET_WIDTH;
@@ -57,22 +69,25 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     if (isSearching || !sceneRef.current) return;
 
     const engine = Matter.Engine.create({ gravity: { x: 0, y: 0 } });
+    engineRef.current = engine;
+    
     const render = Matter.Render.create({
       element: sceneRef.current,
       engine: engine,
       options: { width: TARGET_WIDTH, height: TARGET_HEIGHT, wireframes: false, background: 'transparent' }
     });
 
-    const visualBodies: Record<string, Matter.Body> = { 
+    visualBodiesRef.current = { 
       ball: Matter.Bodies.circle(TARGET_WIDTH / 2, TARGET_HEIGHT / 2, 15, { isStatic: true, render: { fillStyle: '#ffffff' } }) 
     };
-    Matter.World.add(engine.world, visualBodies.ball);
+
+    Matter.World.add(engine.world, visualBodiesRef.current.ball);
     Matter.Render.run(render);
 
     const createVisual = (id: string, color: string, radius: number) => {
       const body = Matter.Bodies.circle(TARGET_WIDTH / 2, TARGET_HEIGHT / 2, radius, { isStatic: true });
       body.render.fillStyle = color;
-      visualBodies[id] = body;
+      visualBodiesRef.current[id] = body;
       Matter.World.add(engine.world, body);
     };
 
@@ -82,7 +97,11 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       const playerIds = Object.keys(state.players);
       if (!playerIds.includes(socket.id)) return;
 
-      if (state.ball && visualBodies['ball']) Matter.Body.setPosition(visualBodies['ball'], state.ball);
+      if (!engineRef.current) return;
+      const engine = engineRef.current;
+      const visualBodies = visualBodiesRef.current;
+
+      if (state.ball && visualBodies['ball']) Matter.Body.setPosition(visualBodiesRef.current['ball'], state.ball);
       
       Object.entries(state.players).forEach(([id, data]) => {
         if (!visualBodies[id]) createVisual(id, (id === socket.id) ? 'blue' : 'red', 25);
@@ -102,9 +121,9 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     };
 
     const handleDisconnect = (id: string) => {
-      if (visualBodies[id]) {
-        Matter.World.remove(engine.world, visualBodies[id]);
-        delete visualBodies[id];
+      if (visualBodiesRef.current[id]) {
+        Matter.World.remove(engine.world, visualBodiesRef.current[id]);
+        delete visualBodiesRef.current[id];
       }
     };
 
@@ -222,23 +241,29 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       clearInterval(interval);
-      socket.off('match-found', handleMatchFound);
-      socket.off('game-state', handleGameState);
-      socket.off('player-disconnected', handleDisconnect);
-      socket.off('current-score');
-      socket.off('goal-scored');
-      socket.off('player-assignment');
-      socket.off('game-over');
-      socket.off('game-timer');
-      socket.off('pause-pending');
-      socket.off('game-paused');
-      Matter.Render.stop(render);
-      Matter.Engine.clear(engine);
+      cleanupEvents();
+      if (engineRef.current) {
+        Matter.Render.stop(render);
+        Matter.Engine.clear(engineRef.current);
+      }
       if (render.canvas) render.canvas.remove();
     };
-  }, [isSearching]);
+  }, [cleanupEvents, isSearching]);
+
+  const clearGameVisuals = () => {
+    const engine = engineRef.current;
+    if (!engine) return;
+
+    Object.keys(visualBodiesRef.current).forEach(id => {
+      Matter.World.remove(engine.world, visualBodiesRef.current[id]);
+      delete visualBodiesRef.current[id];
+    });
+
+    visualBodiesRef.current = {};
+  };
 
   const handlePlayAgain = () => {
+    clearGameVisuals();
     setIsGameOverSignal(false);
     setGameOver(null);
     setScores({ home: 0, away: 0 });
