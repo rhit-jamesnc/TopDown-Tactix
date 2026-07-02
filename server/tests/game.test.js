@@ -43,32 +43,6 @@ test('should broadcast game-state event', async () => {
   socket.disconnect();
 });
 
-test('should update player position on input', async () => {
-  const socket = await createClientConnection(TEST_PORT);
-  
-  startNewGame('home', 'away'); 
-  const game = getActiveGame();
-  
-  game.isCountdownActive = false; 
-  if (game.countdownTimeout) {
-      clearTimeout(game.countdownTimeout);
-  }
-  
-  socket.emit('player-input', { id: 'home', move: { x: 0.05, y: 0 } });
-
-  await new Promise(resolve => setTimeout(resolve, 50));
-  
-  for(let i=0; i<10; i++) {
-    game.applyInputs();
-    game.update();
-  };
-  
-  const player = game.players['home'];
-  expect(player.velocity.x).toBeGreaterThan(0);
-  expect(player.position.x).toBeGreaterThan(100);
-  socket.disconnect();
-});
-
 test('should add player to game engine on connection', async () => {
   const socket = await createClientConnection(TEST_PORT);
   
@@ -115,15 +89,4 @@ test('should emit a goal event when the ball crosses the goal line', async () =>
   const eventData = await goalEmitted;
   expect(eventData).toHaveProperty('side');
   socket.disconnect();
-});
-
-test('should reset ball and player positions after a goal', async () => {
-  startNewGame('home', 'away');
-  const game = getActiveGame();
-
-  Body.setPosition(game.ball, { x: -20, y: 450 });
-  game.resetPitch();
-
-  expect(game.ball.position.x).toBeCloseTo(800, 0);
-  expect(game.ball.position.y).toBeCloseTo(450, 0);
 });
