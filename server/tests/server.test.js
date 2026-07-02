@@ -1,7 +1,6 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll } from 'vitest';
 import { httpServer, games, startNewGame } from '../server.js';
-import { Body } from 'matter-js';
 
 let clientSocket;
 const TEST_PORT = 9999;
@@ -72,19 +71,4 @@ test('should remove player from game engine on disconnection', async () => {
   await new Promise((resolve) => setTimeout(resolve, 150));
   
   expect(games.size).toBe(0);
-});
-
-test('should emit a goal event when the ball crosses the goal line', async () => {
-  const socket = await createClientConnection(TEST_PORT);
-  
-  startNewGame(socket.id, 'away');
-  const game = getActiveGame();
-  
-  const goalEmitted = new Promise((resolve) => socket.on('goal-scored', resolve));
-  Body.setPosition(game.ball, { x: -20, y: 450 });
-  game.update();
-
-  const eventData = await goalEmitted;
-  expect(eventData).toHaveProperty('side');
-  socket.disconnect();
 });

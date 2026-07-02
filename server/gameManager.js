@@ -1,4 +1,3 @@
-
 import Matter from 'matter-js';
 import { GamePhysicsEngine } from './physicsEngine.js';
 import { checkGoalWin, checkTimeExpiry } from '../shared/gameEndConditions.js';
@@ -77,12 +76,12 @@ export class GameManager {
         if (x + radius - 1 < 0) {
             this.isGoalTriggered = true;
             this.scores.away += 1;
-            if (this.goalCallback) this.goalCallback('away', this.scores);
+            this.goalCallback('away', this.scores);
             this.resetPitch();
         } else if (x - radius + 1 > this.physics.width) {
             this.isGoalTriggered = true;
             this.scores.home += 1;
-            if (this.goalCallback) this.goalCallback('home', this.scores);
+            this.goalCallback('home', this.scores);
             this.resetPitch();
         }
     }
