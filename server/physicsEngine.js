@@ -106,7 +106,9 @@ export class GamePhysicsEngine {
     _clampVelocities() {
         if (this.ball) {
             const s = Math.hypot(this.ball.velocity.x, this.ball.velocity.y);
-            if (s > 25) Body.setVelocity(this.ball, { x: (this.ball.velocity.x / s) * 25, y: (this.ball.velocity.y / s) * 25 });
+            if (s > 25) {
+                Body.setVelocity(this.ball, { x: (this.ball.velocity.x / s) * 25, y: (this.ball.velocity.y / s) * 25 });
+            }
         }
         Object.values(this.players).forEach(p => {
             const s = Math.hypot(p.velocity.x, p.velocity.y);
@@ -138,5 +140,16 @@ export class GamePhysicsEngine {
             ball: this.ball.position,
             players: Object.fromEntries(Object.entries(this.players).map(([id, p]) => [id, { position: p.position }]))
         };
+    }
+
+    _test_checkGoal() {
+        if (process.env.NODE_ENV === 'test') {
+            const ballX = this.ball.position.x;
+            if (ballX < -15 || ballX > this.width) {
+                if (this.goalCallback) {
+                    this.goalCallback();
+                }
+            }
+        }
     }
 }
