@@ -24,6 +24,7 @@ A high-performance, real-time 2D multiplayer soccer engine designed to solve the
 *   **Deterministic Physics:** Implemented gravity-free rigid bodies and custom collision sensors to ensure consistent game states across all connected clients.
 *   **Authoritative State:** Built a robust server-side loop to handle goal detection and pitch-reset logic, ensuring a single source of truth for all game events.
 *   **Synchronization:** Optimized the client-server communication protocol to maintain a consistent gameplay loop.
+*   **Reliability & QA:** Developed a comprehensive suite of unit and integration tests using Vitest, featuring deterministic time-simulations to validate complex asynchronous game loops without relying on wall-clock time.
 
 ## Technical Documentation
 For a deeper look into the architectural decisions, physics synchronization logic, system design, and AI logic, please refer to the [**/docs directory**](https://github.com/rhit-jamesnc/TopDown-Tactix/tree/main/docs). 
@@ -31,8 +32,14 @@ For a deeper look into the architectural decisions, physics synchronization logi
 * **[ARCHITECTURE.md](/docs/ARCHITECTURE.md):** Monorepo structure and data flow.
 * **[PHYSICS.md](/docs/PHYSICS.md):** Deterministic time-stepping and collision masking.
 * **[SYNC.md](/docs/SYNC.md):** Server-authoritative state resolution.
-* **[TESTING.md](/docs/TESTING.md):** QA and reliability standards.
+* **[TESTING.md](/docs/TESTING.md):** Quality Assurance standards, covering physics isolation, network integration, and our time-based loop testing methodology.
 * **[AI_CONTROLLER.md](/docs/AI_CONTROLLER.md):** Difficulty scaling and movement logic for the CPU.
+
+## Testing & Reliability
+### We employ a test-first approach to ensure a stable engine. Our suite covers:
+* Physics Unit Tests: Mathematical verification of collision and motion.
+* Integration Tests: End-to-end socket lifecycle and state synchronization validation.
+* Temporal Testing: Usage of virtualized timers to simulate server-side game loops, ensuring precise event timing and state transitions.
 
 ## Development Roadmap
 
