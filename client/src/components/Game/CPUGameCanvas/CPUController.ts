@@ -79,15 +79,11 @@ export const calculateCpuImpulse = (
             y: (cpuToBallY / distToBall) * moveForce
         };
         return lastImpulse;
-    }
-
-    if (distToTarget > 10) {
+    } else {
         lastImpulse = {
             x: (cpuToTargetX / distToTarget) * moveForce,
             y: (cpuToTargetY / distToTarget) * moveForce
         };
         return lastImpulse;
     }
-
-    return { x: 0, y: 0 };
 }
