@@ -10,16 +10,21 @@ export const AdminPasswordModal = ({ onVerify, onClose }: { onVerify: (password:
   };
 
   return (
-    <div className="admin-password-modal">
-      <input 
-        type="password" 
-        value={password} 
-        onChange={(e) => setPassword(e.target.value)} 
-        placeholder="Enter password" 
-      />
+    <div className="modal-overlay" onClick={onClose}>
+        <div className="admin-password-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Administrator Access</h3>
+            <input 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                placeholder="Enter password" 
+            />
 
-      <button onClick={handleEnter}>Enter</button>
-      <button onClick={onClose}>Cancel</button>
+            <div className="button-group">
+                <button className="enter-btn" onClick={handleEnter}>Enter</button>
+                <button className="cancel-btn" onClick={onClose}>Cancel</button>
+            </div>
+        </div>
     </div>
   );
 };
