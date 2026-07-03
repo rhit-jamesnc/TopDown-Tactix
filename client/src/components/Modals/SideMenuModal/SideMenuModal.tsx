@@ -1,30 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { BugReportModal } from '../BugReportModal/BugReport';
-import { AdminPasswordModal } from '../AdminPasswordModal/AdminPasswordModal';
-import { FeedbackModal } from '../FeedbackModal/FeedbackModal';
-import { ADMIN_CONFIG } from '../../../../../shared/config/adminConfig'
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
-export const SideMenu = ({ isOpen }: SideMenuProps) => {
+export const SideMenu = ({ isOpen, onOpenAdmin }: SideMenuProps & { onOpenAdmin: () => void }) => {
     const [lastUpdated, setLastUpdated] = useState('Loading...');
     const [showBugModal, setShowBugModal] = useState(false);
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
-    const navigate = useNavigate();
-
-    const handleVerify = (password: string) => {
-        if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
-            sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
-            navigate('/admin');
-        } else if (password === ADMIN_CONFIG.PASSWORDS.OTHER) {
-            sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OTHER);
-            navigate('/admin');
-        } else {
-            setFeedback({ show: true, message: 'Incorrect password. Access denied.' });
-        }
-    };
 
     useEffect(() => {
         fetch('/version.json')
@@ -41,23 +22,9 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
                 onClose={() => setShowBugModal(false)} 
             />
         }
-            
-        {showPasswordModal && (
-            <AdminPasswordModal 
-                onClose={() => setShowPasswordModal(false)} 
-                onVerify={handleVerify}
-            />
-        )}
-
-        {feedback.show && (
-            <FeedbackModal 
-                message={feedback.message} 
-                onClose={() => setFeedback({ show: false, message: '' })} 
-            />
-        )}
 
         <nav className="menu-items">
-            <button onClick={() => setShowPasswordModal(true)}>
+            <button onClick={onOpenAdmin}>
                 Admin Board
             </button>
 
