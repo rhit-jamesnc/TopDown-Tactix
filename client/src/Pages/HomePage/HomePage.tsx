@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { InDevelopmentModal } from '../../components/Modals/InDevelopmentModal/InDevelopmentModal';
+import { SideMenu } from '../../components/Modals/SideMenu/SideMenu'
 import { HelpModal } from '../../components/Modals/HelpModal/HelpModal';
 import { DifficultySelection } from '../../components/Modals/DifficultySelection/DifficultySelection';
 import type { HomePageProps } from "../../../../shared/types/props"
@@ -7,6 +8,7 @@ import './HomePage.css';
 
 export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePageProps) => {
   const [showHelp, setShowHelp] = useState(false);
+  const [showSideMenu, setShowSideMenu] = useState(false);
   const [showDevModal, setShowDevModal] = useState(true);
   const [showDifficulty, setShowDifficulty] = useState(false);
   
@@ -21,7 +23,18 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
       
       {showDevModal && <InDevelopmentModal onClose={() => setShowDevModal(false)} />}
 
-      <button className="help-btn" onClick={() => setShowHelp(true)}>?</button>
+      <button 
+        className={`menu-trigger-btn ${showSideMenu ? 'pushed' : ''}`} 
+        onClick={() => setShowSideMenu(!showSideMenu)}
+      >
+        ☰
+      </button>
+
+      <SideMenu isOpen={showSideMenu} />
+
+      <button className="help-btn" onClick={() => setShowHelp(true)}>
+        ?
+      </button>
       
       {showHelp && <HelpModal initialView="main" onClose={() => setShowHelp(false)} />}
 
@@ -39,10 +52,6 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
       <button className="preview-btn" onClick={() => setShowDifficulty(true)}>
           Play CPU
       </button>
-
-      <a href="https://github.com/rhit-jamesnc/TopDown-Tactix" target="_blank" rel="noreferrer">
-          GitHub Repository
-      </a>
     </div>
   )
 };
