@@ -34,7 +34,3 @@ jobs:
           git push -u origin $BRANCH_NAME
           
           PR_URL=$(gh pr create --title "chore: update build date" --body "Automatically updating the build date.")
-          
-          gh pr review $PR_URL --approve
-          
-          gh pr merge $PR_URL --merge --auto
