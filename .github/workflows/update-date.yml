@@ -27,10 +27,16 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           
-          BRANCH_NAME="update-build-date-$(date +%s)"
-          git checkout -b $BRANCH_NAME
-          git add public/version.json
-          git commit -m "chore: auto-update last build date"
-          git push -u origin $BRANCH_NAME
-          
-          PR_URL=$(gh pr create --title "chore: update build date" --body "Automatically updating the build date.")
+          # Only proceed if there are actual changes to commit
+          if [[ -n $(git status --porcelain) ]]; then
+            BRANCH_NAME="update-build-date-$(date +%s)"
+            git checkout -b $BRANCH_NAME
+            git add public/version.json
+            git commit -m "chore: auto-update last build date"
+            git push -u origin $BRANCH_NAME
+            
+            PR_URL=$(gh pr create --title "chore: update build date" --body "Automatically updating the build date.")
+            echo "Created PR: $PR_URL"
+          else
+            echo "No changes detected, skipping PR creation."
+          fi
