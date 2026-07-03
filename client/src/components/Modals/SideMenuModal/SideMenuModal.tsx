@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BugReportModal } from '../BugReportModal/BugReport';
 import { AdminPasswordModal } from '../AdminPasswordModal/AdminPasswordModal';
+import { AdminDashboardModal } from '../AdminDashboardModal/AdminDashboardModal';
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
@@ -8,6 +9,20 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
     const [lastUpdated, setLastUpdated] = useState('Loading...');
     const [showBugModal, setShowBugModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [showDashboard, setShowDashboard] = useState(false);
+    const [adminType, setAdminType] = useState<'owner' | 'other' | null>(null);
+
+    const handleVerify = (password: string) => {
+        if (password === 'OWNER_PASSWORD') {
+            setAdminType('owner');
+            setShowDashboard(true);
+            setShowPasswordModal(false);
+        } else if (password === 'OTHER_PASSWORD') {
+            setAdminType('other');
+            setShowDashboard(true);
+            setShowPasswordModal(false);
+        }
+    };
 
     useEffect(() => {
         fetch('/version.json')
@@ -29,6 +44,13 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
             <AdminPasswordModal 
                 onClose={() => setShowPasswordModal(false)} 
                 onVerify={(password) => { /* logic to be added later */ }} 
+            />
+        )}
+
+        {showDashboard && (
+            <AdminDashboardModal 
+                isAdmin={adminType === 'owner'} 
+                onClose={() => setShowDashboard(false)} 
             />
         )}
 
