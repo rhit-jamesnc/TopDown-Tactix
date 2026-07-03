@@ -1,6 +1,22 @@
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import './AdminDashboardPage.css';
 
 export const AdminDashboardPage = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const adminType = sessionStorage.getItem('adminType');
+    if (!adminType) {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const handleClose = () => {
+    sessionStorage.removeItem('adminType');
+    navigate('/');
+  };
+
   return (
     <div className="admin-dashboard">
       <header className="header-section">
@@ -10,7 +26,7 @@ export const AdminDashboardPage = () => {
         </div>
         <div className="header-right">
           <button>Switch View</button>
-          <button>Close</button>
+          <button onClick={handleClose}>Close</button>
         </div>
       </header>
 
