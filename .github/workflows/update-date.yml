@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,10 +20,12 @@ jobs:
           mkdir -p public
           echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > public/version.json
 
-      - name: Commit and push changes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add public/version.json
-          git commit -m "chore: auto-update last build date" || echo "No changes to commit"
-          git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: auto-update last build date"
+          title: "chore: update build date"
+          branch: "update-build-date"
+          base: "main"
+          body: "This PR automatically updates the last build date metadata."
+          delete-branch: true
