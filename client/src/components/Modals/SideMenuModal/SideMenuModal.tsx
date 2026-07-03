@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BugReportModal } from '../BugReportModal/BugReport';
 import type { SideMenuProps } from '../../../../../shared/types/props';
-import './SideMenu.css';
+import './SideMenuModal.css';
 
 export const SideMenu = ({ isOpen }: SideMenuProps) => {
     const [lastUpdated, setLastUpdated] = useState('Loading...');

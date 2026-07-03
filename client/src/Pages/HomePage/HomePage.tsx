@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { InDevelopmentModal } from '../../components/Modals/InDevelopmentModal/InDevelopmentModal';
-import { SideMenu } from '../../components/Modals/SideMenu/SideMenu'
+import { SideMenu } from '../../components/Modals/SideMenuModal/SideMenuModal'
 import { HelpModal } from '../../components/Modals/HelpModal/HelpModal';
 import { DifficultySelection } from '../../components/Modals/DifficultySelection/DifficultySelection';
 import type { HomePageProps } from "../../../../shared/types/props"
