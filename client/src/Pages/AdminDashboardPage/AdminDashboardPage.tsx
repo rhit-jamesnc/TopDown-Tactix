@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 import './AdminDashboardPage.css';
@@ -8,6 +8,12 @@ export const AdminDashboardPage = () => {
   const navigate = useNavigate();
   const adminType = localStorage.getItem('adminType');
   const stopGame = "Force Stop Game"
+
+  useEffect(() => {
+    if (!adminType) {
+      navigate('/');
+    }
+  }, [adminType, navigate]);
 
   return (
     <div className="admin-dashboard">
