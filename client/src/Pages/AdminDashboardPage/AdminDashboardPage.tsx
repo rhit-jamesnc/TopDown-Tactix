@@ -6,7 +6,8 @@ import './AdminDashboardPage.css';
 export const AdminDashboardPage = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const navigate = useNavigate();
-  const adminType = localStorage.getItem('adminType'); 
+  const adminType = localStorage.getItem('adminType');
+  const stopGame = "Force Stop Game"
 
   return (
     <div className="admin-dashboard">
@@ -14,10 +15,10 @@ export const AdminDashboardPage = () => {
       <h3>{adminType} view</h3>
       
       {adminType === 'owner' ? (
-        <button>Force Stop Game</button>
+        <button>{stopGame}</button>
       ) : (
         <button title="Must Have Owner Permissions" onClick={() => setShowFeedback(true)}>
-          Force Stop Game
+          {stopGame}
         </button>
       )}
 
