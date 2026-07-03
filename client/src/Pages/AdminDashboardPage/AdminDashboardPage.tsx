@@ -8,6 +8,7 @@ export const AdminDashboardPage = () => {
   return (
     <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>
+      <h3>{adminType} view</h3>
       
       {adminType === 'owner' ? (
         <button>Force Stop Game</button>
