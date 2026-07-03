@@ -23,8 +23,8 @@ export const AdminDashboardPage = () => {
       sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
       setShowPasswordModal(false);
       window.location.reload(); 
-    } else if (password === ADMIN_CONFIG.PASSWORDS.OTHER) {
-      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OTHER);
+    } else if (password === ADMIN_CONFIG.PASSWORDS.ADMIN) {
+      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.ADMIN);
       setShowPasswordModal(false);
       window.location.reload();
     } else {

@@ -23,8 +23,8 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
         sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
         navigate('/admin');
-    } else if (password === ADMIN_CONFIG.PASSWORDS.OTHER) {
-        sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OTHER);
+    } else if (password === ADMIN_CONFIG.PASSWORDS.ADMIN) {
+        sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.ADMIN);
         navigate('/admin');
     } else {
         setFeedback({ show: true, message: 'Incorrect password. Access denied.' });
