@@ -17,7 +17,7 @@ jobs:
       - name: Create version file
         run: |
           mkdir -p public
-          echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > public/versionData.json
+          echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > public/version.json
 
       - name: Commit and push changes
         run: |
