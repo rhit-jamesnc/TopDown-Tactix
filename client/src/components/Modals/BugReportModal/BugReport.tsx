@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './BugReportModal.css';
 
 export const BugReportModal = ({ onClose }: { onClose: () => void }) => {
@@ -8,12 +8,28 @@ export const BugReportModal = ({ onClose }: { onClose: () => void }) => {
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         
-        const bugData = { email, description, timestamp: new Date().toISOString() };
+        const bugData = { 
+            email, 
+            description, 
+            timestamp: new Date().toISOString() 
+        };
         
-        console.log('Sending bug report:', bugData);
-        
-        alert('Bug reported successfully! (Pending API connection)');
-        onClose();
+        try {
+            await fetch('https://script.google.com/macros/s/AKfycbwUGBeh5pKiVRl0wpWPWBFhopSulMdmfycEor_McPI6k9GgNNzScdcwmUNZuWqGKTNgQQ/exec', {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bugData)
+            });
+            
+            alert('Bug reported successfully!');
+            onClose();
+        } catch (error) {
+            console.error('Submission failed:', error);
+            alert('Failed to send report. Please try again later.');
+        }
     };
     
     return (
