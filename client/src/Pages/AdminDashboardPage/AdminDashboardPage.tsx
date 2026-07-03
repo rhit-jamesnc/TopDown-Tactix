@@ -1,4 +1,6 @@
-export const AdminDashboardModal = ({ isAdmin, onClose }: { isAdmin: boolean, onClose: () => void }) => {
+import './AdminDashboardPage.css'
+
+export const AdminDashboardPage = ({ isAdmin, onClose }: { isAdmin: boolean, onClose: () => void }) => {
   return (
     <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>

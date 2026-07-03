@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BugReportModal } from '../BugReportModal/BugReport';
 import { AdminPasswordModal } from '../AdminPasswordModal/AdminPasswordModal';
-import { AdminDashboardModal } from '../AdminDashboardModal/AdminDashboardModal';
+import { AdminDashboardPage } from '../../../Pages/AdminDashboardPage/AdminDashboardPage';
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
@@ -48,7 +48,7 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
         )}
 
         {showDashboard && (
-            <AdminDashboardModal 
+            <AdminDashboardPage 
                 isAdmin={adminType === 'owner'} 
                 onClose={() => setShowDashboard(false)} 
             />
