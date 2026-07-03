@@ -1,20 +1,47 @@
+/* Overlay stays the same to dim the screen */
 .feedback-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 1000;
 }
 
+/* Style the content box to match the parent BugReportModal */
 .feedback-modal-content {
-    background: #2a2a2a;
-    padding: 20px;
-    border-radius: 8px;
+    background: #1a1a1a; /* Dark gray */
+    color: #e0e0e0; /* Light text */
+    padding: 30px;
+    border-radius: 12px;
     text-align: center;
-    border: 1px solid #444;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333; /* Subtle border */
+    font-family: inherit; /* Ensure font consistency */
+    min-width: 250px;
+}
+
+.feedback-modal-content p {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+}
+
+/* Style the OK button to match the theme */
+.feedback-modal-content button {
+    padding: 8px 25px;
+    background: #444; /* Medium gray button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.feedback-modal-content button:hover {
+    background: #555; /* Lighter gray on hover */
 }
