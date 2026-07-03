@@ -7,6 +7,11 @@ export interface HomePageProps {
   onStartCpu: (difficulty: 'academy' | 'reserves' | 'first-team') => void;
 }
 
+export interface SideMenuProps {
+    isOpen: boolean;
+}
+
+
 export interface MatchmakingModalProps {
   socket: Socket;
   onCancel: () => void;
