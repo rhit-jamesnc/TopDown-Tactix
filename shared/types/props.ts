@@ -11,6 +11,10 @@ export interface SideMenuProps {
     isOpen: boolean;
 }
 
+export interface FeedbackModalProps {
+    message: string;
+    onClose: () => void;
+}
 
 export interface MatchmakingModalProps {
   socket: Socket;
