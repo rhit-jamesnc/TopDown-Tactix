@@ -260,7 +260,7 @@ describe('_test_checkGoal functionality', () => {
     
     expect(goalTriggered).toBe(false);
     
-    process.env.NODE_ENV = originalEnv; // Reset env
+    process.env.NODE_ENV = originalEnv;
   });
 
   test('should do nothing if no callback is registered', () => {

@@ -9,7 +9,7 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
         fetch('/version.json')
         .then((res) => res.json())
         .then((data) => setLastUpdated(data.lastUpdated))
-        .catch(() => setLastUpdated('July 02, 2026')); // Fallback
+        .catch(() => setLastUpdated('July 02, 2026'));
     }, []);
 
     return (
