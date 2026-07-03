@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BugReportModal } from '../BugReportModal/BugReport';
 import { AdminPasswordModal } from '../AdminPasswordModal/AdminPasswordModal';
 import { FeedbackModal } from '../FeedbackModal/FeedbackModal';
+import { ADMIN_CONFIG } from '../../../../../shared/config/adminConfig'
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
@@ -14,11 +15,11 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
     const navigate = useNavigate();
 
     const handleVerify = (password: string) => {
-        if (password === 'OWNER_PASSWORD') {
-            localStorage.setItem('adminType', 'owner');
+        if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
+            sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
             navigate('/admin');
-        } else if (password === 'OTHER_PASSWORD') {
-            localStorage.setItem('adminType', 'other');
+        } else if (password === ADMIN_CONFIG.PASSWORDS.OTHER) {
+            sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OTHER);
             navigate('/admin');
         } else {
             setFeedback({ show: true, message: 'Incorrect password. Access denied.' });

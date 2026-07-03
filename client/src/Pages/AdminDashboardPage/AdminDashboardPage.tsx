@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
+import { logoutAdmin } from '../../../../shared/utils/auth'
 import './AdminDashboardPage.css';
 
 export const AdminDashboardPage = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const navigate = useNavigate();
-  const adminType = localStorage.getItem('adminType');
+  const adminType = sessionStorage.getItem('adminType');
   const stopGame = "Force Stop Game"
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export const AdminDashboardPage = () => {
       )}
 
       <button onClick={() => {
-          localStorage.removeItem('adminType');
+          logoutAdmin();
           navigate('/');
         }}>
         Close
