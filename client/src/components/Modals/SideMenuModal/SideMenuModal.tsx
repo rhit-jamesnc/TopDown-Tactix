@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BugReportModal } from '../BugReportModal/BugReport';
 import { AdminPasswordModal } from '../AdminPasswordModal/AdminPasswordModal';
+import { FeedbackModal } from '../FeedbackModal/FeedbackModal';
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
@@ -9,6 +10,7 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
     const [lastUpdated, setLastUpdated] = useState('Loading...');
     const [showBugModal, setShowBugModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
     const navigate = useNavigate();
 
     const handleVerify = (password: string) => {
@@ -18,6 +20,8 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
         } else if (password === 'OTHER_PASSWORD') {
             localStorage.setItem('adminType', 'other');
             navigate('/admin');
+        } else {
+            setFeedback({ show: true, message: 'Incorrect password. Access denied.' });
         }
     };
 
@@ -41,6 +45,13 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
             <AdminPasswordModal 
                 onClose={() => setShowPasswordModal(false)} 
                 onVerify={handleVerify}
+            />
+        )}
+
+        {feedback.show && (
+            <FeedbackModal 
+                message={feedback.message} 
+                onClose={() => setFeedback({ show: false, message: '' })} 
             />
         )}
 
