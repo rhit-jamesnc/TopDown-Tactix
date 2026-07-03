@@ -43,7 +43,7 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
         {showPasswordModal && (
             <AdminPasswordModal 
                 onClose={() => setShowPasswordModal(false)} 
-                onVerify={(password) => { /* logic to be added later */ }} 
+                onVerify={handleVerify}
             />
         )}
 
