@@ -6,17 +6,30 @@ import { logoutAdmin } from '../../../../shared/utils/auth';
 import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
 import './AdminDashboardPage.css';
 
+const LoadingSpinner = () => (
+  <div className="loading-container">
+    <div className="spinner"></div>
+    <p>Loading...</p>
+  </div>
+);
+
 export const AdminDashboardPage = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
+  const adminType = sessionStorage.getItem('adminType')
   const navigate = useNavigate();
-  const adminType = sessionStorage.getItem('adminType');
 
   useEffect(() => {
     if (!adminType) {
       navigate('/');
     }
   }, [adminType, navigate]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleVerify = (password: string) => {
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
@@ -66,17 +79,23 @@ export const AdminDashboardPage = () => {
 
       <section className="panel left-panel">
         <h3 className="panel-title">Active Games</h3>
-        <div className="panel-content"></div>
+        <div className="panel-content">
+          {isLoading ? <LoadingSpinner /> : <LoadingSpinner />}
+        </div>
       </section>
 
       <section className="right-panel-container">
         <div className="panel">
           <h3 className="panel-title">Game Statistics</h3>
-          <div className="panel-content"></div>
+          <div className="panel-content">
+            {isLoading ? <LoadingSpinner /> : <LoadingSpinner />}
+          </div>
         </div>
         <div className="panel">
           <h3 className="panel-title">Reported Bugs</h3>
-          <div className="panel-content"></div>
+          <div className="panel-content">
+            {isLoading ? <LoadingSpinner /> : <LoadingSpinner />}
+          </div>
         </div>
       </section>
     </div>
