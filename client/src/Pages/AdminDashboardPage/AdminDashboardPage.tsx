@@ -4,14 +4,9 @@ import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/A
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 import { logoutAdmin } from '../../../../shared/utils/auth';
 import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
+import  { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
+import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import './AdminDashboardPage.css';
-
-const LoadingSpinner = () => (
-  <div className="loading-container">
-    <div className="spinner"></div>
-    <p>Loading...</p>
-  </div>
-);
 
 export const AdminDashboardPage = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -80,7 +75,7 @@ export const AdminDashboardPage = () => {
       <section className="panel left-panel">
         <h3 className="panel-title">Active Games</h3>
         <div className="panel-content">
-          {isLoading ? <LoadingSpinner /> : <LoadingSpinner />}
+          {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
         </div>
       </section>
 
@@ -88,13 +83,13 @@ export const AdminDashboardPage = () => {
         <div className="panel">
           <h3 className="panel-title">Game Statistics</h3>
           <div className="panel-content">
-            {isLoading ? <LoadingSpinner /> : <LoadingSpinner />}
+            {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
           </div>
         </div>
         <div className="panel">
           <h3 className="panel-title">Reported Bugs</h3>
           <div className="panel-content">
-            {isLoading ? <LoadingSpinner /> : <LoadingSpinner />}
+            {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
           </div>
         </div>
       </section>
