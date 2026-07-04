@@ -19,8 +19,8 @@ jobs:
 
       - name: Create version file
         run: |
-          mkdir -p public
-          echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > public/version.json
+          mkdir -p client/public
+          echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > client/public.json
 
       - name: Create and Approve Pull Request
         run: |
@@ -30,7 +30,7 @@ jobs:
           if [[ -n $(git status --porcelain) ]]; then
             BRANCH_NAME="update-build-date-$(date +%s)"
             git checkout -b $BRANCH_NAME
-            git add public/version.json
+            git add client/public/version.json
             git commit -m "chore: auto-update last build date"
             git push -u origin $BRANCH_NAME
             
