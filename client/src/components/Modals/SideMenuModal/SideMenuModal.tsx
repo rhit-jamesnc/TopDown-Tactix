@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { BugReportModal } from '../BugReportModal/BugReport';
 import type { SideMenuProps } from '../../../../../shared/types/props';
-import './SideMenu.css';
+import './SideMenuModal.css';
 
-export const SideMenu = ({ isOpen }: SideMenuProps) => {
+export const SideMenu = ({ isOpen, onOpenAdmin }: SideMenuProps & { onOpenAdmin: () => void }) => {
     const [lastUpdated, setLastUpdated] = useState('Loading...');
     const [showBugModal, setShowBugModal] = useState(false);
 
@@ -17,13 +17,21 @@ export const SideMenu = ({ isOpen }: SideMenuProps) => {
     return (
         <div className={`side-menu ${isOpen ? 'open' : ''}`}>
 
-        {showBugModal && <BugReportModal onClose={() => setShowBugModal(false)} />}
+        {showBugModal && 
+            <BugReportModal 
+                onClose={() => setShowBugModal(false)} 
+            />
+        }
 
         <nav className="menu-items">
-            <button>Admin Board</button>
+            <button onClick={onOpenAdmin}>
+                Admin Board
+            </button>
+
             <button onClick={() => setShowBugModal(true)}>
                 Report a Bug
             </button>
+
             <button onClick={() => window.open('https://github.com/rhit-jamesnc/TopDown-Tactix', '_blank')}>
             GitHub Repo
             </button>
