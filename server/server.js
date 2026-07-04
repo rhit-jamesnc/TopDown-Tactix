@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -7,7 +6,6 @@ import { GameManager } from './gameManager.js';
 
 const app = express();
 const httpServer = createServer(app);
-app.use(express.json());
 
 export const waitingQueue = [];
 export const games = new Map();
@@ -25,21 +23,6 @@ const io = new Server(httpServer, {
 
 app.get('/', (req, res) => {
   res.send('TopDown Tactix Server is running smoothly.');
-});
-
-app.post('/api/verify-admin', (req, res) => {
-  const { password } = req.body;
-  
-  const ownerPass = process.env.TOPDOWN_TACTIX_OWNER_PASSWORD;
-  const adminPass = process.env.TOPDOWN_TACTIX_ADMIN_PASSWORD;
-
-  if (password === ownerPass) {
-    return res.json({ authorized: true, type: 'owner' });
-  } else if (password === adminPass) {
-    return res.json({ authorized: true, type: 'admin' });
-  } else {
-    return res.status(401).json({ authorized: false, message: 'Incorrect password' });
-  }
 });
 
 io.on('connection', (socket) => {
