@@ -4,7 +4,8 @@ import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/A
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 import { logoutAdmin } from '../../../../shared/utils/auth';
 import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
-import  { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
+import { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
+import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper';
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
@@ -78,7 +79,9 @@ export const AdminDashboardPage = () => {
         <h3 className="panel-title">Active Games</h3>
         <div className="panel-content">
           <ErrorBoundary fallbackMessage="Failed to load Active Games.">
-            {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+            <PanelWrapper>
+              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+            </PanelWrapper>
           </ErrorBoundary>
         </div>
       </section>
@@ -88,7 +91,9 @@ export const AdminDashboardPage = () => {
           <h3 className="panel-title">Game Statistics</h3>
           <div className="panel-content">
             <ErrorBoundary fallbackMessage="Failed to load Statistics.">
-              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+              <PanelWrapper>
+                {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+              </PanelWrapper>
             </ErrorBoundary>
           </div>
         </div>
@@ -96,7 +101,9 @@ export const AdminDashboardPage = () => {
           <h3 className="panel-title">Reported Bugs</h3>
           <div className="panel-content">
             <ErrorBoundary fallbackMessage="Failed to load Reported Bugs.">
-              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+              <PanelWrapper>
+                {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+              </PanelWrapper>
             </ErrorBoundary>
           </div>
         </div>
