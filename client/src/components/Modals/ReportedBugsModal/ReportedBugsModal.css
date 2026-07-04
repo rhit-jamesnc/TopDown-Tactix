@@ -1,0 +1,17 @@
+.reported-bugs-list {
+  padding: 15px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.bug-item {
+  background: #374151;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.status-active { color: #F87171; }
+.status-in-progress { color: #FBBF24; }
+.status-closed { color: #34D399; }
