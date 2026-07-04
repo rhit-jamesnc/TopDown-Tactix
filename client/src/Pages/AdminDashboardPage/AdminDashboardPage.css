@@ -63,3 +63,20 @@
   min-height: 0;
   overflow: hidden;
 }
+
+.panel-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.panel-header-wrapper .panel-title {
+  margin: 0;
+}
+
+.panel-header-wrapper button {
+  font-size: 0.95rem;
+  padding: 6px 15px;
+  cursor: pointer;
+}

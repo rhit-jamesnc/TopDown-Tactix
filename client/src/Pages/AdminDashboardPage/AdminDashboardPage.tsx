@@ -22,6 +22,37 @@ export const AdminDashboardPage = () => {
   const adminType = sessionStorage.getItem('adminType')
   const navigate = useNavigate();
 
+  const handleVerify = (password: string) => {
+    if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
+      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
+      setShowPasswordModal(false);
+      window.location.reload(); 
+    } else if (password === ADMIN_CONFIG.PASSWORDS.ADMIN) {
+      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.ADMIN);
+      setShowPasswordModal(false);
+      window.location.reload();
+    } else {
+      setFeedback({ show: true, message: 'Incorrect password.' });
+    }
+  };
+
+  const handleClose = () => {
+    logoutAdmin();
+    navigate('/');
+  };
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchReportedBugs();
+      setBugs(data);
+    } catch (e) {
+      console.error("Failed to refresh bugs", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!adminType) {
       navigate('/');
@@ -47,25 +78,6 @@ export const AdminDashboardPage = () => {
     const interval = setInterval(getBugs, 30000);
     return () => clearInterval(interval);
   }, []);
-
-  const handleVerify = (password: string) => {
-    if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
-      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
-      setShowPasswordModal(false);
-      window.location.reload(); 
-    } else if (password === ADMIN_CONFIG.PASSWORDS.ADMIN) {
-      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.ADMIN);
-      setShowPasswordModal(false);
-      window.location.reload();
-    } else {
-      setFeedback({ show: true, message: 'Incorrect password.' });
-    }
-  };
-
-  const handleClose = () => {
-    logoutAdmin();
-    navigate('/');
-  };
 
   return (
     <div className="admin-dashboard">
@@ -117,7 +129,10 @@ export const AdminDashboardPage = () => {
           </div>
         </div>
         <div className="panel">
-          <h3 className="panel-title">Reported Bugs</h3>
+          <div className="panel-header-wrapper">
+            <h3 className="panel-title">Reported Bugs</h3>
+            <button onClick={handleRefresh}>Refresh</button>
+          </div>
           <div className="panel-content">
             <ErrorBoundary fallbackMessage="Failed to load Reported Bugs.">
               <PanelWrapper>
