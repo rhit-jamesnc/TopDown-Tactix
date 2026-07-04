@@ -6,7 +6,7 @@ export const fetchReportedBugs = async () => {
     const text = await response.text();
     const json = JSON.parse(text.substring(47, text.length - 2));
   
-    return json.table.rows.map((row: any, index: number) => {
+    return json.table.rows.slice(1).map((row: any, index: number) => {
         const rawDate = row.c[0]?.v;
         let formattedDate = rawDate;
 
