@@ -14,7 +14,7 @@ export const fetchReportedBugs = async () => {
             const dateParts = rawDate.match(/\d+/g)?.map(Number);
             if (dateParts) {
                 const d = new Date(dateParts[0], dateParts[1], dateParts[2], dateParts[3], dateParts[4], dateParts[5]);
-                formattedDate = d.toLocaleString(); // Or use d.toLocaleDateString() for just the date
+                formattedDate = d.toLocaleString();
             }
         }
 
