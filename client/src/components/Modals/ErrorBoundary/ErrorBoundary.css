@@ -1,0 +1,10 @@
+.error-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #ef4444;
+  text-align: center;
+  padding: 10px;
+  background: #1f2937;
+}

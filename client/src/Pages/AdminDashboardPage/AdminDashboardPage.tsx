@@ -5,7 +5,9 @@ import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackMod
 import { logoutAdmin } from '../../../../shared/utils/auth';
 import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
 import  { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
+import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
+import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
 import './AdminDashboardPage.css';
 
 export const AdminDashboardPage = () => {
@@ -75,7 +77,9 @@ export const AdminDashboardPage = () => {
       <section className="panel left-panel">
         <h3 className="panel-title">Active Games</h3>
         <div className="panel-content">
-          {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+          <ErrorBoundary fallbackMessage="Failed to load Active Games.">
+            {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+          </ErrorBoundary>
         </div>
       </section>
 
@@ -83,13 +87,17 @@ export const AdminDashboardPage = () => {
         <div className="panel">
           <h3 className="panel-title">Game Statistics</h3>
           <div className="panel-content">
-            {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+            <ErrorBoundary fallbackMessage="Failed to load Statistics.">
+              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+            </ErrorBoundary>
           </div>
         </div>
         <div className="panel">
           <h3 className="panel-title">Reported Bugs</h3>
           <div className="panel-content">
-            {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+            <ErrorBoundary fallbackMessage="Failed to load Reported Bugs.">
+              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+            </ErrorBoundary>
           </div>
         </div>
       </section>
