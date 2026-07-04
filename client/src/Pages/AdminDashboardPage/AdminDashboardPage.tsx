@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/AdminPasswordModal';
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 import { logoutAdmin } from '../../../../shared/utils/auth';
-import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
 import { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
 import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper';
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
@@ -29,17 +28,26 @@ export const AdminDashboardPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleVerify = (password: string) => {
-    if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
-      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
-      setShowPasswordModal(false);
-      window.location.reload(); 
-    } else if (password === ADMIN_CONFIG.PASSWORDS.ADMIN) {
-      sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.ADMIN);
-      setShowPasswordModal(false);
-      window.location.reload();
-    } else {
-      setFeedback({ show: true, message: 'Incorrect password.' });
+  const handleVerify = async (password: string) => {
+    try {
+      const API_BASE = import.meta.env.VITE_API_BASE_URL || ''; 
+      const response = await fetch(`${API_BASE}/api/verify-admin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+
+      if (data.authorized) {
+        sessionStorage.setItem('adminType', data.type);
+        setShowPasswordModal(false);
+      } else {
+        setFeedback({ show: true, message: data.message });
+      }
+    } catch (error) {
+      console.log('Error connecting to server: ' + error);
+      setFeedback({ show: true, message: 'Error connecting to server.' });
     }
   };
 
