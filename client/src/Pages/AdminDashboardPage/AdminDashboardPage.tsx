@@ -7,6 +7,8 @@ import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
 import { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
 import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper';
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
+import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
+
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
 import './AdminDashboardPage.css';
@@ -102,7 +104,14 @@ export const AdminDashboardPage = () => {
           <div className="panel-content">
             <ErrorBoundary fallbackMessage="Failed to load Reported Bugs.">
               <PanelWrapper>
-                {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+                {isLoading ? (
+                  <LoadingSymbol />
+                ) : (
+                  <ReportedBugsModal 
+                    bugs={[]}
+                    isAdmin={adminType === 'owner'}
+                  />
+                )}
               </PanelWrapper>
             </ErrorBoundary>
           </div>

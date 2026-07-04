@@ -1,17 +1,29 @@
 import './ReportedBugsModal.css';
 
-interface ReportedBugsModalProps {
-  onClose: () => void;
+interface Bug {
+  id: string;
+  timestamp: string;
+  email: string;
+  bug: string;
+  status: 'active' | 'in-progress' | 'closed';
 }
 
-export const ReportedBugsModal = ({ onClose }: ReportedBugsModalProps) => {
+interface ReportedBugsModalProps {
+  bugs: Bug[];
+  isAdmin: boolean;
+}
+
+export const ReportedBugsModal = ({ bugs, isAdmin }: ReportedBugsModalProps) => {
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Reported Bugs</h2>
-        {/* We will add the list/table here in the next step */}
-        <button onClick={onClose}>Close</button>
-      </div>
+    <div className="reported-bugs-list">
+      {bugs.map(bug => (
+        <div key={bug.id} className="bug-item">
+          <span>{bug.timestamp}</span>
+          {isAdmin && <span>{bug.email}</span>}
+          <p>{bug.bug}</p>
+          <span className={`status-${bug.status}`}>{bug.status}</span>
+        </div>
+      ))}
     </div>
   );
 };
