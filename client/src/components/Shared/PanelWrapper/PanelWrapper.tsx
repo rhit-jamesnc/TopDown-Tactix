@@ -1,9 +1,6 @@
-import React from 'react';
+import type { PanelWrapperProps } from '../../../../../shared/types/props';
 import './PanelWrapper.css';
 
-interface PanelWrapperProps {
-  children: React.ReactNode;
-}
 
 export const PanelWrapper = ({ children }: PanelWrapperProps) => {
   return (

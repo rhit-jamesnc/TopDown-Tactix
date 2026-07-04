@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io-client';
 import type { GameScores } from './game';
+import type { ReactNode } from 'react';
 
 export interface HomePageProps {
   onStartOffline: () => void;
@@ -71,4 +72,30 @@ export interface HelpModalProps {
 export interface DifficultySelectionProps {
   onSelect: (difficulty: 'academy' | 'reserves' | 'first-team') => void;
   onBack: () => void;
+}
+
+interface Bug {
+  id: string;
+  timestamp: string;
+  email: string;
+  bug: string;
+  status: 'active' | 'in-progress' | 'closed';
+}
+
+export interface ReportedBugsModalProps {
+  bugs: Bug[];
+  isAdmin: boolean;
+}
+
+export interface ErrorBoundaryProp {
+  children: ReactNode;
+  fallbackMessage: string;
+}
+
+export interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+export interface PanelWrapperProps {
+  children: React.ReactNode;
 }

@@ -1,19 +1,12 @@
 import { Component } from 'react';
-import type { ErrorInfo, ReactNode } from 'react';
+import type { ErrorInfo, } from 'react';
+import type { ErrorBoundaryState, ErrorBoundaryProp } from '../../../../../shared/types/props';
 
-interface Props {
-  children: ReactNode;
-  fallbackMessage: string;
-}
 
-interface State {
-  hasError: boolean;
-}
+export class ErrorBoundary extends Component<ErrorBoundaryProp, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = { hasError: false };
 
-export class ErrorBoundary extends Component<Props, State> {
-  public state: State = { hasError: false };
-
-  public static getDerivedStateFromError(error: Error): State {
+  public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     console.log('Error: ' + error);
     return { hasError: true };
   }
