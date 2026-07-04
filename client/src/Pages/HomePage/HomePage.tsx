@@ -4,10 +4,11 @@ import { InDevelopmentModal } from '../../components/Modals/InDevelopmentModal/I
 import { SideMenu } from '../../components/Modals/SideMenuModal/SideMenuModal'
 import { HelpModal } from '../../components/Modals/HelpModal/HelpModal';
 import { DifficultySelection } from '../../components/Modals/DifficultySelection/DifficultySelection';
-import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/AdminPasswordModal'
-import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
+import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/AdminPasswordModal'; // Ensure correct path
+import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig'; // Adjust path
 import type { HomePageProps } from "../../../../shared/types/props"
 import './HomePage.css';
+import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 
 export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePageProps) => {
   const [showHelp, setShowHelp] = useState(false);
@@ -18,27 +19,15 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const navigate = useNavigate();
 
-  const handleVerify = async (password: string) => {
-    try {
-      const API_BASE = import.meta.env.VITE_API_BASE_URL || ''; 
-      const response = await fetch(`${API_BASE}/api/verify-admin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      });
-
-      const data = await response.json();
-
-      if (data.authorized) {
-        sessionStorage.setItem('adminType', data.type);
-        setShowPasswordModal(false);
+  const handleVerify = (password: string) => {
+    if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
+        sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.OWNER);
         navigate('/admin');
-      } else {
-        setFeedback({ show: true, message: data.message });
-      }
-    } catch (error) {
-      console.log('Error connecting to server: ' + error);
-      setFeedback({ show: true, message: 'Error connecting to server.' });
+    } else if (password === ADMIN_CONFIG.PASSWORDS.ADMIN) {
+        sessionStorage.setItem('adminType', ADMIN_CONFIG.TYPES.ADMIN);
+        navigate('/admin');
+    } else {
+        setFeedback({ show: true, message: 'Incorrect password. Access denied.' });
     }
   };
   
