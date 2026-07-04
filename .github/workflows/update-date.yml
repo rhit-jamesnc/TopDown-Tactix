@@ -20,7 +20,7 @@ jobs:
       - name: Create version file
         run: |
           mkdir -p client/public
-          echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > client/public.json
+          echo "{\"lastUpdated\": \"$(date +'%B %d, %Y')\"}" > client/public/version.json
 
       - name: Create and Approve Pull Request
         run: |
