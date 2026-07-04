@@ -6,10 +6,12 @@ export const ReportedBugsModal = ({ bugs, isAdmin }: ReportedBugsModalProps) => 
     <div className="reported-bugs-list">
       {bugs.map(bug => (
         <div key={bug.id} className="bug-item">
-          <span>{bug.timestamp}</span>
-          {isAdmin && <span>{bug.email}</span>}
-          <p>{bug.bug}</p>
-          <span className={`status-${bug.status}`}>{bug.status}</span>
+          <div className="bug-header">
+            <span className="timestamp">{bug.timestamp}</span>
+            {isAdmin && <span className="email">{bug.email}</span>}
+          </div>
+          <p className="bug-description">{bug.bug}</p>
+          <span className="status-active">{bug.status}</span>
         </div>
       ))}
     </div>
