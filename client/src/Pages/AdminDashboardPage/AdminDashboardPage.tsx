@@ -8,6 +8,7 @@ import { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
 import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper';
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
 import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
+import { fetchReportedBugs } from '../../../../shared/utils/googleSheets'
 
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
@@ -16,6 +17,7 @@ import './AdminDashboardPage.css';
 export const AdminDashboardPage = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [bugs, setBugs] = useState([]);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const adminType = sessionStorage.getItem('adminType')
   const navigate = useNavigate();
@@ -29,6 +31,21 @@ export const AdminDashboardPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const getBugs = async () => {
+      try {
+        const data = await fetchReportedBugs();
+        setBugs(data);
+      } catch (e) {
+        console.error("Failed to fetch bugs", e);
+      }
+    };
+
+    getBugs();
+    const interval = setInterval(getBugs, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleVerify = (password: string) => {
@@ -108,7 +125,7 @@ export const AdminDashboardPage = () => {
                   <LoadingSymbol />
                 ) : (
                   <ReportedBugsModal 
-                    bugs={[]}
+                    bugs={bugs}
                     isAdmin={adminType === 'owner'}
                   />
                 )}
