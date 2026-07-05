@@ -26,6 +26,21 @@
   flex-shrink: 0;
 }
 
+.game-mode-badge {
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #94a3b8;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.game-text-wrapper {
+    display: flex;
+    align-items: center;
+}
+
 .game-info {
   display: flex;
   align-items: center;

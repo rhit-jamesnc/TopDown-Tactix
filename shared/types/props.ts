@@ -111,4 +111,5 @@ export interface ActiveGameProps {
   roomId: string;
   players: string[];
   status: string;
+  gameType: string;
 }

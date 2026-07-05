@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
       roomId,
       players: data.players,
       status: 'online',
+      gameType: data.gameType || 'online'
     }));
     socket.emit('active-games-update', activeGamesList);
   });
@@ -200,7 +201,7 @@ if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(PORT, () => console.log(`Server running on ${PORT}`));
 }
 
-export const startNewGame = (player1Id, player2Id) => {
+export const startNewGame = (player1Id, player2Id, type = 'online') => {
   const roomId = `game_${player1Id}_${player2Id}`;
   const newGame = new GameManager(PHYSICS_WIDTH, PHYSICS_HEIGHT);
   
@@ -283,7 +284,8 @@ export const startNewGame = (player1Id, player2Id) => {
   games.set(roomId, { 
     instance: newGame, 
     players: [player1Id, player2Id],
-    loop: loop
+    loop: loop,
+    gameType: type
   });
 
   playerToRoom.set(player1Id, roomId);
@@ -300,6 +302,7 @@ const getActiveGamesList = () => {
   return Array.from(games.entries()).map(([roomId, data]) => ({
     roomId,
     players: data.players,
+    gameType: data.gameType || 'online',
   }));
 };
 

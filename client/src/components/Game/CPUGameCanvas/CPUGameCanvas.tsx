@@ -155,7 +155,7 @@ export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserve
       Matter.Engine.clear(physics.engine)
       render.canvas.remove()
     }
-  }, [gameKey])
+  }, [difficulty, gameKey])
 
   const handlePlayAgain = () => {
     setGameOver(null);
