@@ -91,6 +91,7 @@ export interface BugDetailsModalProps {
     bug: Bug;
     isAdmin: boolean;
     onClose: () => void;
+    onStatusChange?: (id: number | string, newStatus: string) => void;
 }
 
 export interface ErrorBoundaryProp {

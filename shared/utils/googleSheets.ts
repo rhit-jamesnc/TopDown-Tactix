@@ -4,9 +4,15 @@ export const fetchReportedBugs = async () => {
   
     const response = await fetch(url);
     const text = await response.text();
+
+    if (text.trim().startsWith('<')) {
+        console.error("Received HTML instead of JSON. Ensure the Google Sheet is set to 'Anyone with the link can view'.");
+        return []; 
+    }
+
     const json = JSON.parse(text.substring(47, text.length - 2));
   
-    return json.table.rows.slice(1).map((row: any, index: number) => {
+    return json.table.rows.map((row: any, index: number) => {
         const rawDate = row.c[0]?.v;
         let formattedDate = rawDate;
 
@@ -25,5 +31,22 @@ export const fetchReportedBugs = async () => {
             bug: row.c[2]?.v || '',
             status: row.c[3]?.v || 'Active'
         };
+    });
+};
+
+export const updateBugStatus = async (id: number, newStatus: string) => {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAeGmjbhYBwrCg8AgtDgu6nplcK3rlXGmBn3-VUmWk3DpLzmwO7s8c2km749zl85uh/exec';
+    
+    await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+        },
+        body: JSON.stringify({
+            action: 'update_status',
+            id: id,
+            status: newStatus
+        })
     });
 };

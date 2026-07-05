@@ -17,11 +17,11 @@ export const BugReportModal = ({ onClose }: { onClose: () => void }) => {
         };
         
         try {
-            await fetch('https://script.google.com/macros/s/AKfycbwooPxpjytvzOqUTzfc_BMmcU19GXzUB77tlcXxX43wDFF1PHr7rM0sWqJSagpqGINaxQ/exec', {
+            await fetch('https://script.google.com/macros/s/AKfycbxAeGmjbhYBwrCg8AgtDgu6nplcK3rlXGmBn3-VUmWk3DpLzmwO7s8c2km749zl85uh/exec', {
                 method: 'POST',
                 mode: 'no-cors', 
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'text/plain;charset=utf-8',
                 },
                 body: JSON.stringify(bugData)
             });

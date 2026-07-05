@@ -1,10 +1,19 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BugDetailsModalProps } from '../../../../../shared/types/props'
 import { formatLocalizedDate } from '../../../../../shared/utils/dateFormatter'
 import './BugDetailsModal.css'
 
-export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps) => {
+export const BugDetailsModal = ({ bug, isAdmin, onClose, onStatusChange }: BugDetailsModalProps) => {
+    const [isEditing, setIsEditing] = useState(false);
     const { t, i18n } = useTranslation();
+
+    const handleStatusSelect = (newStatus: string) => {
+        if (onStatusChange) {
+            onStatusChange(bug.id, newStatus);
+        }
+        setIsEditing(false);
+    };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -15,12 +24,29 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps)
 
             <p>
                 <strong className='status-header'>Status:</strong> 
-                <span 
-                    className="status-pill" 
-                    data-status={bug.status}
-                >
-                    {bug.status.charAt(0).toUpperCase() + bug.status.slice(1)}
-                </span>
+                {isAdmin && isEditing ? (
+                    <select 
+                        className="status-dropdown"
+                        value={bug.status}
+                        onChange={(e) => handleStatusSelect(e.target.value)}
+                        onBlur={() => setIsEditing(false)}
+                        autoFocus
+                    >
+                        <option value="Active">Active</option>
+                        <option value="In-Progress">In-Progress</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                ) : (
+                    <span 
+                        className="status-pill" 
+                        data-status={bug.status} 
+                        onClick={() => isAdmin && setIsEditing(true)}
+                        style={{ cursor: isAdmin ? 'pointer' : 'default' }}
+                        title={isAdmin ? "Click to change status" : ""}
+                    >
+                        {bug.status.charAt(0).toUpperCase() + bug.status.slice(1)}
+                    </span>
+                )}
             </p>
 
             <p><strong>{t('Description')}:</strong></p>
