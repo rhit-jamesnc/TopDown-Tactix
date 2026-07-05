@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
 import Matter from 'matter-js';
+import { socket } from '../../Shared/utils/socket'
 import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
@@ -10,8 +10,6 @@ import type { GameState, GameResult } from "../../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
 import '../GameCanvas.css';
 import '../../Modals/MatchmakingModal/MatchmakingModal.css'
-
-const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;

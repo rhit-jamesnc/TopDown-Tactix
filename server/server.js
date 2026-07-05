@@ -28,6 +28,15 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
+  socket.on('request-active-games', () => {
+    const activeGamesList = Array.from(games.entries()).map(([roomId, data]) => ({
+      roomId,
+      players: data.players,
+      status: 'online',
+    }));
+    socket.emit('active-games-update', activeGamesList);
+  });
+
   socket.on('request-my-team', () => {
     const roomId = playerToRoom.get(socket.id);
     const gameData = games.get(roomId);
@@ -179,6 +188,8 @@ io.on('connection', (socket) => {
       
       gameData.players.forEach(pid => playerToRoom.delete(pid));
       games.delete(roomId);
+
+      io.emit('active-games-update', getActiveGamesList());
     }
     console.log(`User disconnected and cleaned up: ${socket.id}`);
   });
@@ -281,7 +292,15 @@ export const startNewGame = (player1Id, player2Id) => {
   io.sockets.sockets.get(player1Id)?.join(roomId);
   io.sockets.sockets.get(player2Id)?.join(roomId);
 
+  io.emit('active-games-update', getActiveGamesList());
   io.to(roomId).emit('match-found');
+};
+
+const getActiveGamesList = () => {
+  return Array.from(games.entries()).map(([roomId, data]) => ({
+    roomId,
+    players: data.players,
+  }));
 };
 
 export { app, httpServer, io };
