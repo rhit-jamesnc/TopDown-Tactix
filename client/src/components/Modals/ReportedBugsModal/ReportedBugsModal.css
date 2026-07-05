@@ -46,3 +46,10 @@
   padding: 2px 8px;
   border-radius: 4px;
 }
+
+.email-hidden {
+  font-family: monospace;
+  letter-spacing: 2px;
+  color: #9CA3AF;
+  font-size: 0.8rem;
+}

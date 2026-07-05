@@ -12,7 +12,11 @@ export const ReportedBugsModal = ({ bugs, isAdmin }: ReportedBugsModalProps) => 
             <div key={bug.id} className="bug-item">
             <div className="bug-header">
                 <span className="timestamp">{bug.timestamp}</span>
-                {isAdmin && <span className="email">{bug.email}</span>}
+                {isAdmin ? (
+                    <span className="email">{bug.email}</span>
+                ) : (
+                    <span className="email-hidden">••••••••••••</span>
+                )}
             </div>
             <p className="bug-description">{bug.bug}</p>
             <span className="status-active">{bug.status}</span>
