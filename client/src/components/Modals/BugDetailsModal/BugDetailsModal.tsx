@@ -23,7 +23,7 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps)
                 </span>
             </p>
 
-            <p><strong>{t('description')}:</strong></p>
+            <p><strong>{t('Description')}:</strong></p>
             <div className="full-description">
                 <p>{bug.bug}</p>
             </div>

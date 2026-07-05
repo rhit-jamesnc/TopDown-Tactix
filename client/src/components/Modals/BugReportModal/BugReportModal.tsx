@@ -17,7 +17,7 @@ export const BugReportModal = ({ onClose }: { onClose: () => void }) => {
         };
         
         try {
-            await fetch('https://script.google.com/macros/s/AKfycbwUGBeh5pKiVRl0wpWPWBFhopSulMdmfycEor_McPI6k9GgNNzScdcwmUNZuWqGKTNgQQ/exec', {
+            await fetch('https://script.google.com/macros/s/AKfycbwooPxpjytvzOqUTzfc_BMmcU19GXzUB77tlcXxX43wDFF1PHr7rM0sWqJSagpqGINaxQ/exec', {
                 method: 'POST',
                 mode: 'no-cors', 
                 headers: {
