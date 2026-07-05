@@ -27,7 +27,12 @@ export const ReportedBugsModal = ({ bugs, isAdmin }: ReportedBugsModalProps) => 
                 </div>
                 <p className="bug-description">{bug.bug}</p>
                 <div className="bug-footer">
-                    <span className="status-active">{bug.status}</span>
+                    <span 
+                        className="status-pill" 
+                        data-status={bug.status}
+                    >
+                        {bug.status.charAt(0).toUpperCase() + bug.status.slice(1)}
+                    </span>
                     <button className="view-details-btn" onClick={() => setSelectedBug(bug)}>
                         {t('View Details')}
                     </button>

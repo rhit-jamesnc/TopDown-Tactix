@@ -61,12 +61,29 @@
   margin-top: 5px;
 }
 
-.status-active {
+.status-pill {
   align-self: flex-start;
   font-size: 0.75rem;
+  margin-left: 0;
   background: #059669;
   padding: 2px 8px;
   border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.status-pill[data-status="Active"] {
+  background-color: #059669;
+}
+
+.status-pill[data-status="In-Progress"] {
+  background-color: #D97706;
+}
+
+.status-pill[data-status="Closed"] {
+  background-color: #4B5563;
 }
 
 .view-details-btn {

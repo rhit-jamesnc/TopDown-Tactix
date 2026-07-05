@@ -6,7 +6,6 @@ import './BugDetailsModal.css'
 export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps) => {
     const { t, i18n } = useTranslation();
 
-    console.log("Bug Status Value:", `"${bug.status}"`);
     return (
         <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>

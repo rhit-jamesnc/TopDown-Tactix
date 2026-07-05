@@ -23,14 +23,11 @@
 
 .status-pill {
   padding: 4px 12px; 
-  /* Increased font size for better readability */
   font-size: 0.9rem;
-  /* Added a bit more radius for a softer look */
   border-radius: 6px;
   margin-left: 10px;
   color: white;
   display: inline-block;
-  /* Ensures vertical alignment is consistent */
   line-height: 1.2; 
   font-weight: 500;
 }
