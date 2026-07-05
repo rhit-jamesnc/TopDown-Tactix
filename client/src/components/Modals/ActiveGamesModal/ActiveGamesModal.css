@@ -1,0 +1,85 @@
+.active-games-container {
+  height: 100%;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.active-games-container::-webkit-scrollbar {
+  width: 6px;
+}
+.active-games-container::-webkit-scrollbar-thumb {
+  background: #4B5563;
+  border-radius: 4px;
+}
+
+.active-game-card {
+  background: #374151;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-indicator.online { 
+  background-color: #10B981; 
+}
+
+.status-indicator.offline { 
+  background-color: #9CA3AF; 
+}
+
+.game-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.game-actions button {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+}
+
+.details-btn {
+  background-color: #4B5563;
+  color: white;
+}
+
+.details-btn:hover {
+  background-color: #6B7280;
+}
+
+.stop-btn {
+  background-color: #EF4444;
+  color: white;
+}
+
+.stop-btn:hover {
+  background-color: #DC2626;
+}

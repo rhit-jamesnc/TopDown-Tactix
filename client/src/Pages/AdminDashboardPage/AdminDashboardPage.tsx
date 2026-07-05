@@ -9,6 +9,7 @@ import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper'
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
 import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
 import { fetchReportedBugs } from '../../../../shared/utils/googleSheets'
+import { ActiveGamesModal } from '../../components/Modals/ActiveGamesModal/ActiveGamesModal';
 
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
@@ -111,7 +112,7 @@ export const AdminDashboardPage = () => {
         <div className="panel-content">
           <ErrorBoundary fallbackMessage="Failed to load Active Games.">
             <PanelWrapper>
-              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+              {isLoading ? <LoadingSymbol /> : <ActiveGamesModal />}
             </PanelWrapper>
           </ErrorBoundary>
         </div>
