@@ -21,6 +21,10 @@
   text-align: left; 
 }
 
+.status-header {
+  margin-right: 10px;
+}
+
 .status-pill {
   padding: 4px 12px; 
   font-size: 0.9rem;

@@ -14,7 +14,7 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps)
             <p><strong>{t('Email')}:</strong> {isAdmin ? bug.email : "••••••••••••"}</p>
 
             <p>
-                <strong>Status:</strong> 
+                <strong className='status-header'>Status:</strong> 
                 <span 
                     className="status-pill" 
                     data-status={bug.status}
