@@ -106,3 +106,9 @@ export interface ErrorBoundaryState {
 export interface PanelWrapperProps {
   children: React.ReactNode;
 }
+
+export interface ActiveGameProps {
+  roomId: string;
+  players: string[];
+  status: string;
+}

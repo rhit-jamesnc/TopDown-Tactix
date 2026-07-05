@@ -1,20 +1,15 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../../Shared/utils/socket';
 import './ActiveGamesModal.css';
-
-interface ActiveGame {
-  roomId: string;
-  players: string[];
-  status: string;
-}
+import type { ActiveGameProps } from '../../../../../shared/types/props';
 
 export const ActiveGamesModal = () => {
-  const [games, setGames] = useState<ActiveGame[]>([]);
+  const [games, setGames] = useState<ActiveGameProps[]>([]);
 
   useEffect(() => {
     socket.emit('request-active-games');
 
-    const handleUpdate = (data: ActiveGame[]) => setGames(data);
+    const handleUpdate = (data: ActiveGameProps[]) => setGames(data);
     socket.on('active-games-update', handleUpdate);
 
     const interval = setInterval(() => {
