@@ -10,10 +10,10 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps)
         <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>{t('Details')}</h3>
-            <p><strong>{t('Timestamp:')}</strong> {formatLocalizedDate(bug.timestamp, i18n.language)}</p>
-            <p><strong>{t('Email:')}</strong> {isAdmin ? bug.email : "••••••••••••"}</p>
+            <p><strong>{t('Timestamp')}:</strong> {formatLocalizedDate(bug.timestamp, i18n.language)}</p>
+            <p><strong>{t('Email')}:</strong> {isAdmin ? bug.email : "••••••••••••"}</p>
             <div className="full-description">
-                <strong>{t('Description:')}</strong>
+                <strong>{t('Description')}:</strong>
                 <p>{bug.bug}</p>
             </div>
             <button onClick={onClose}>{t('Close')}</button>
