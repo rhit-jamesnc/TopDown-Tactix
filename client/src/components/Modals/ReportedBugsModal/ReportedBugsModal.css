@@ -37,6 +37,14 @@
 .bug-description {
   margin: 0;
   font-weight: 500;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .status-active {
