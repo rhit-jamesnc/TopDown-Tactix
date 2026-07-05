@@ -1,0 +1,124 @@
+.no-bugs-message {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.reported-bugs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.bug-item {
+  background: #374151;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bug-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+}
+
+.bug-description {
+  margin: 0;
+  font-weight: 500;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.email-hidden {
+  font-family: monospace;
+  letter-spacing: 2px;
+  color: #9CA3AF;
+  font-size: 0.8rem;
+}
+
+.bug-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.status-pill {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  margin-left: 0;
+  background: #059669;
+  padding: 2px 8px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.status-pill[data-status="Active"] {
+  background-color: #059669;
+}
+
+.status-pill[data-status="In-Progress"] {
+  background-color: #D97706;
+}
+
+.status-pill[data-status="Closed"] {
+  background-color: #4B5563;
+}
+
+.status-dropdown {
+  background: #374151;
+  color: white;
+  border: 1px solid #4B5563;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  outline: none;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.status-dropdown:focus {
+  border-color: #9CA3AF;
+}
+
+.status-dropdown option {
+  background: #1F2937;
+  color: white;
+}
+
+.view-details-btn {
+  background-color: #4B5563;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.view-details-btn:hover {
+  background-color: #6B7280;
+}

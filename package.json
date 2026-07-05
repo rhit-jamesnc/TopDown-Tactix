@@ -47,6 +47,9 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "i18next": "^26.3.4",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "react-i18next": "^17.0.8",
     "react-router-dom": "^7.18.1"
   }
 }

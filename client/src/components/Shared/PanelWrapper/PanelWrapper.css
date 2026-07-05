@@ -1,7 +1,5 @@
 .panel-container {
   height: 100%;
   width: 100%;
-  overflow-y: auto;
-  padding: 15px;
-  box-sizing: border-box;
+  min-height: 0;
 }

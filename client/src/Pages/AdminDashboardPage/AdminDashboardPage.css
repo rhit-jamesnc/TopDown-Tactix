@@ -30,12 +30,17 @@
   font-size: 1.1rem;
 }
 
-.left-panel { grid-row: 2; }
+.left-panel { 
+  grid-row: 2; 
+}
+
 .right-panel-container { 
   grid-row: 2; 
   display: flex; 
   flex-direction: column; 
   gap: 20px; 
+  min-height: 0;
+  overflow: hidden;
 }
 
 .panel {
@@ -56,4 +61,22 @@
   background: #1f2937;
   border-radius: 12px;
   min-height: 0;
+  overflow: hidden;
+}
+
+.panel-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.panel-header-wrapper .panel-title {
+  margin: 0;
+}
+
+.panel-header-wrapper button {
+  font-size: 0.95rem;
+  padding: 6px 15px;
+  cursor: pointer;
 }

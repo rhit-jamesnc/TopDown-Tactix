@@ -7,6 +7,9 @@ import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
 import { LoadingSymbol } from '../../../../shared/LoadingSymbol/LoadingSymbol'
 import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper';
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
+import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
+import { fetchReportedBugs } from '../../../../shared/utils/googleSheets'
+
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
 import './AdminDashboardPage.css';
@@ -14,20 +17,10 @@ import './AdminDashboardPage.css';
 export const AdminDashboardPage = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [bugs, setBugs] = useState([]);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const adminType = sessionStorage.getItem('adminType')
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!adminType) {
-      navigate('/');
-    }
-  }, [adminType, navigate]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleVerify = (password: string) => {
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
@@ -47,6 +40,44 @@ export const AdminDashboardPage = () => {
     logoutAdmin();
     navigate('/');
   };
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchReportedBugs();
+      setBugs(data);
+    } catch (e) {
+      console.error("Failed to refresh bugs", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!adminType) {
+      navigate('/');
+    }
+  }, [adminType, navigate]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const getBugs = async () => {
+      try {
+        const data = await fetchReportedBugs();
+        setBugs(data);
+      } catch (e) {
+        console.error("Failed to fetch bugs", e);
+      }
+    };
+
+    getBugs();
+    const interval = setInterval(getBugs, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="admin-dashboard">
@@ -98,11 +129,21 @@ export const AdminDashboardPage = () => {
           </div>
         </div>
         <div className="panel">
-          <h3 className="panel-title">Reported Bugs</h3>
+          <div className="panel-header-wrapper">
+            <h3 className="panel-title">Reported Bugs</h3>
+            <button onClick={handleRefresh}>Refresh</button>
+          </div>
           <div className="panel-content">
             <ErrorBoundary fallbackMessage="Failed to load Reported Bugs.">
               <PanelWrapper>
-                {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+                {isLoading ? (
+                  <LoadingSymbol />
+                ) : (
+                  <ReportedBugsModal 
+                    bugs={bugs}
+                    isAdmin={adminType === 'owner'}
+                  />
+                )}
               </PanelWrapper>
             </ErrorBoundary>
           </div>

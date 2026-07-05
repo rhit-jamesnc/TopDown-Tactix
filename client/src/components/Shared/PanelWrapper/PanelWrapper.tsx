@@ -1,13 +1,10 @@
-import React from 'react';
+import type { PanelWrapperProps } from '../../../../../shared/types/props';
 import './PanelWrapper.css';
 
-interface PanelWrapperProps {
-  children: React.ReactNode;
-}
 
 export const PanelWrapper = ({ children }: PanelWrapperProps) => {
   return (
-    <div className="panel-container">
+    <div style={{ height: '100%', width: '100%', minHeight: 0 }}>
       {children}
     </div>
   );

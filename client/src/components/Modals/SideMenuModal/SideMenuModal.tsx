@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BugReportModal } from '../BugReportModal/BugReport';
+import { BugReportModal } from '../BugReportModal/BugReportModal';
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
