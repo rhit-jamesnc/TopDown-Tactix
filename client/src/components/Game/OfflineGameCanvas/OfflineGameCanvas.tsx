@@ -5,6 +5,7 @@ import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
 import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay'
+import { socket } from '../../Shared/utils/socket';
 import type { GameResult } from "../../../../../shared/types/game"
 
 import '../GameCanvas.css'
@@ -28,6 +29,14 @@ export const OfflineGameCanvas = () => {
     setCountdownKey(prev => prev + 1);
     }
   };
+
+  useEffect(() => {
+    socket.emit('register-offline-game', { type: 'local' });
+    
+    return () => {
+        socket.emit('unregister-offline-game');
+    };
+  }, []);
 
   useEffect(() => {
     if (!sceneRef.current) return
