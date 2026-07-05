@@ -23,7 +23,7 @@ export const fetchReportedBugs = async () => {
             timestamp: formattedDate,
             email: row.c[1]?.v || '',
             bug: row.c[2]?.v || '',
-            status: 'Active',
+            status: row.c[3]?.v || ''
         };
     });
 };
