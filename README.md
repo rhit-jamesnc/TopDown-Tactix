@@ -50,6 +50,10 @@ For a deeper look into the architectural decisions, physics synchronization logi
 - [x] Implement forfeit/win-screen logic for player disconnections.
 
 ### Feature Roadmap (TopDown Games)
+- [ ] **Admin Dashboard:** 
+    - [ ] **Active Matches:** Real-time monitoring of live Socket.io rooms, server tick rates, and concurrent player connections.
+    - [ ] **Game Statistics:** Aggregated telemetry for global match outcomes, player retention, and server performance metrics.
+    - [x] **Reported Bugs:** Custom ticketing interface featuring optimistic state management and live remote-sheet synchronization for seamless issue triaging.
 - [ ] **Game Modes:**
     - [x] **vs. Computer:** Implemented three difficulty tiers (Academy, Reserves, First-Team) with reactive AI.
     - [ ] **Ranked Matches:** Server-authoritative competitive matchmaking.
