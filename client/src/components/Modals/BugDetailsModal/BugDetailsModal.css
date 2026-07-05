@@ -21,6 +21,32 @@
   text-align: left; 
 }
 
+.status-pill {
+  padding: 4px 12px; 
+  /* Increased font size for better readability */
+  font-size: 0.9rem;
+  /* Added a bit more radius for a softer look */
+  border-radius: 6px;
+  margin-left: 10px;
+  color: white;
+  display: inline-block;
+  /* Ensures vertical alignment is consistent */
+  line-height: 1.2; 
+  font-weight: 500;
+}
+
+.status-pill[data-status="Active"] {
+  background-color: #059669;
+}
+
+.status-pill[data-status="In-Progress"] {
+  background-color: #D97706;
+}
+
+.status-pill[data-status="Closed"] {
+  background-color: #4B5563;
+}
+
 .full-description {
   overflow-y: auto;
   padding-right: 10px;
