@@ -12,8 +12,9 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose }: BugDetailsModalProps)
             <h3>{t('Details')}</h3>
             <p><strong>{t('Timestamp')}:</strong> {formatLocalizedDate(bug.timestamp, i18n.language)}</p>
             <p><strong>{t('Email')}:</strong> {isAdmin ? bug.email : "••••••••••••"}</p>
+
+            <p><strong>{t('description')}:</strong></p>
             <div className="full-description">
-                <strong>{t('Description')}:</strong>
                 <p>{bug.bug}</p>
             </div>
             <button onClick={onClose}>{t('Close')}</button>
