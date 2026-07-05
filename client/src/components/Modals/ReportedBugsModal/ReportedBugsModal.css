@@ -47,6 +47,20 @@
   white-space: normal;
 }
 
+.email-hidden {
+  font-family: monospace;
+  letter-spacing: 2px;
+  color: #9CA3AF;
+  font-size: 0.8rem;
+}
+
+.bug-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
 .status-active {
   align-self: flex-start;
   font-size: 0.75rem;
@@ -55,9 +69,18 @@
   border-radius: 4px;
 }
 
-.email-hidden {
-  font-family: monospace;
-  letter-spacing: 2px;
-  color: #9CA3AF;
-  font-size: 0.8rem;
+.view-details-btn {
+  background-color: #4B5563;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.view-details-btn:hover {
+  background-color: #6B7280;
 }

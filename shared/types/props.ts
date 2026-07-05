@@ -74,7 +74,7 @@ export interface DifficultySelectionProps {
   onBack: () => void;
 }
 
-interface Bug {
+export interface Bug {
   id: string;
   timestamp: string;
   email: string;
@@ -85,6 +85,12 @@ interface Bug {
 export interface ReportedBugsModalProps {
   bugs: Bug[];
   isAdmin: boolean;
+}
+
+export interface BugDetailsModalProps {
+    bug: Bug;
+    isAdmin: boolean;
+    onClose: () => void;
 }
 
 export interface ErrorBoundaryProp {
