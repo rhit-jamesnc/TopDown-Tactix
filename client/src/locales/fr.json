@@ -10,7 +10,7 @@
     "Failed to load Active Games.": "Échec du chargement des jeux actifs.",
     "Failed to load Statistics.": "Échec du chargement des statistiques.",
     "Failed to load Reported Bugs.": "Échec du chargement des bugs signalés.",
-    "No active games.": "Aucun jeu actif.",
+    "No Active Games": "Aucun Jeu Actif",
     "Game {{number}}": "Partie {{number}}",
     "players": "joueurs",
     "Details": "Détails",

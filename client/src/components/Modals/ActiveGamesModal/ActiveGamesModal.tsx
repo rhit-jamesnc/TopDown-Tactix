@@ -31,7 +31,9 @@ export const ActiveGamesModal = ({ isAdmin }: ActiveGamesModalProps) => {
     <>
         <div className="active-games-container">
             {games.length === 0 ? (
-                <p>{t('No active games.')}</p>
+                <div className="no-games-message">
+                    <p>{t('No Active Games')}</p>
+                </div>
             ) : (
                 games.map((game, index) => (
                     <div key={game.roomId} className="active-game-card">

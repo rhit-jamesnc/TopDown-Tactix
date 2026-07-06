@@ -16,6 +16,21 @@
   border-radius: 4px;
 }
 
+.no-games-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.no-games-message p {
+    font-size: 1.5rem;
+    color: #6B7280;
+    font-weight: 600;
+    margin: 0;
+}
+
 .active-game-card {
   background: #374151;
   border-radius: 8px;

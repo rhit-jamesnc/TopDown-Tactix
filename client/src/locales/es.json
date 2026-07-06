@@ -10,7 +10,7 @@
     "Failed to load Active Games.": "Error al cargar juegos activos.",
     "Failed to load Statistics.": "Error al cargar estadísticas.",
     "Failed to load Reported Bugs.": "Error al cargar errores reportados.",
-    "No active games.": "No hay juegos activos.",
+    "No Active Games": "No Hay Juegos Activos",
     "Game {{number}}": "Juego {{number}}",
     "players": "jugadores",
     "Details": "Detalles",
