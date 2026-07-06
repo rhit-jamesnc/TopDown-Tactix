@@ -94,7 +94,7 @@ export const GameStatisticsModal = () => {
         <div className="stat-card">
           <h4>{t('Active Players (vs CPU)')}</h4>
           <div className="stat-row">
-            <span>{t('Academys')}:</span>
+            <span>{t('Academy')}:</span>
             <span>{stats.cpu.academy}</span>
           </div>
           <div className="stat-row">
