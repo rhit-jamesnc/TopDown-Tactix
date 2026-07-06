@@ -76,6 +76,37 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('admin-force-stop', (roomId) => {
+    const gameData = onlineSessions.get(roomId);
+    if (!gameData) return;
+
+    const { home, away } = gameData.instance.scores;
+    let winner = 'draw';
+    if (home > away) winner = 'home';
+    else if (away > home) winner = 'away';
+
+    io.to(roomId).emit('game-over', {
+      winner: winner,
+      reason: 'Admin forced game stop',
+      players: {
+        [gameData.players[0]]: 'home',
+        [gameData.players[1]]: 'away'
+      }
+    });
+
+    clearInterval(gameData.loop);
+    if (gameData.instance.countdownTimeout) clearTimeout(gameData.instance.countdownTimeout);
+
+    gameData.players.forEach(pid => {
+      playerToRoom.delete(pid);
+      const playerSocket = io.sockets.sockets.get(pid);
+      if (playerSocket) playerSocket.leave(roomId);
+    });
+
+    onlineSessions.delete(roomId);
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
   socket.on('admin-force-action', ({ roomId, action, targetPlayer }) => {
     const gameData = onlineSessions.get(roomId);
     

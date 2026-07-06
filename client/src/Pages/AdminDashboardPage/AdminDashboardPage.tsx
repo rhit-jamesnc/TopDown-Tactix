@@ -112,7 +112,11 @@ export const AdminDashboardPage = () => {
         <div className="panel-content">
           <ErrorBoundary fallbackMessage="Failed to load Active Games.">
             <PanelWrapper>
-              {isLoading ? <LoadingSymbol /> : <ActiveGamesModal />}
+              {isLoading ? ( 
+                <LoadingSymbol /> 
+              ) : ( 
+                <ActiveGamesModal isAdmin={adminType === 'owner'}/>
+              )}
             </PanelWrapper>
           </ErrorBoundary>
         </div>

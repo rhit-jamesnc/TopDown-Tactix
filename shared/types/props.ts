@@ -107,6 +107,10 @@ export interface PanelWrapperProps {
   children: React.ReactNode;
 }
 
+export interface ActiveGamesModalProps {
+  isAdmin: boolean;
+}
+
 export interface ActiveGameProps {
   roomId: string;
   players: string[];

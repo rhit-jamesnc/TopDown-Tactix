@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../../Shared/utils/socket';
 import { ActiveGameDetailsModal } from '../ActiveGameDetailsModal/ActiveGameDetailsModal';
-import type { ActiveGameProps } from '../../../../../shared/types/props';
+import type { ActiveGameProps, ActiveGamesModalProps } from '../../../../../shared/types/props';
 import './ActiveGamesModal.css';
 
-export const ActiveGamesModal = () => {
+export const ActiveGamesModal = ({ isAdmin }: ActiveGamesModalProps) => {
   const [games, setGames] = useState<ActiveGameProps[]>([]);
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
@@ -55,7 +55,13 @@ export const ActiveGamesModal = () => {
                             >
                                 Details
                             </button>
-                            <button className="stop-btn">Force Stop</button>
+                            <button 
+                                className={`stop-btn ${!isAdmin ? 'disabled' : ''}`}
+                                disabled={!isAdmin}
+                                onClick={() => socket.emit('admin-force-stop', game.roomId)}
+                            >
+                                Force Stop
+                            </button>
                         </div>
                     </div>
                 ))
