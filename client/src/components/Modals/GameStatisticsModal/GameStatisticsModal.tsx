@@ -14,9 +14,10 @@ export const GameStatisticsModal = () => {
     await new Promise(resolve => setTimeout(resolve, 800));
     
     return {
-      server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
-      cpu: { academy: 150, reserves: 430, first: 210 },
-      activityTrend: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100))
+        server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
+        cpu: { academy: 150, reserves: 430, first: 210 },
+        modes: { offline: Math.floor(Math.random() * 1000), online: Math.floor(Math.random() * 500), cpu: Math.floor(Math.random() * 200) },
+        activityTrend: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100))
     };
   };
 
@@ -87,6 +88,22 @@ export const GameStatisticsModal = () => {
           <div className="stat-row">
             <span>{t('Uptime')}:</span>
             <span>{stats.server.uptime}</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <h4>{t('Active Players (Modes)')}</h4>
+          <div className="stat-row">
+            <span>{t('1v1 Offline')}:</span>
+            <span>{stats.modes.offline}</span>
+          </div>
+          <div className="stat-row">
+            <span>{t('1v1 Online')}:</span>
+            <span>{stats.modes.online}</span>
+          </div>
+          <div className="stat-row">
+            <span>{t('vs CPU')}:</span>
+            <span>{stats.modes.cpu}</span>
           </div>
         </div>
 

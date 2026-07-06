@@ -138,6 +138,7 @@ export interface AdminActionEvent {
 export interface GameStats {
   server: { ping: number; uptime: string; status: string };
   cpu: { academy: number; reserves: number; first: number };
+  modes: { offline: number; online: number; cpu: number };
   activityTrend: number[];
 }
 
