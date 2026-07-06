@@ -138,5 +138,10 @@ export interface AdminActionEvent {
 export interface GameStats {
   server: { ping: number; uptime: string; status: string };
   cpu: { academy: number; reserves: number; first: number };
-  heatmap: number[][];
+  activityTrend: number[];
+}
+
+export interface SmoothLineChartProps {
+  data: number[];
+  color?: string;
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LoadingSymbol } from '../../../../../shared/LoadingSymbol/LoadingSymbol';
 import type { GameStats } from '../../../../../shared/types/props';
+import { SmoothLineChart } from './SmoothLineChart';
 import './GameStatisticsModal.css';
 
 export const GameStatisticsModal = () => {
@@ -15,9 +16,7 @@ export const GameStatisticsModal = () => {
     return {
       server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
       cpu: { academy: 150, reserves: 430, first: 210 },
-      heatmap: Array.from({ length: 7 }, () => 
-        Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
-      )
+      activityTrend: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100))
     };
   };
 
@@ -108,28 +107,9 @@ export const GameStatisticsModal = () => {
         </div>
       </div>
 
-      <div className="stat-card">
-        <h4>{t('Activity Heatmap (7 Days, 4-Hour Blocks)')}</h4>
-        <div className="heatmap-container">
-          {stats.heatmap.map((day, dayIndex) => (
-            <div key={`day-${dayIndex}`} className="heatmap-row">
-              {day.map((value, timeIndex) => {
-                const opacity = Math.max(0.1, value / 100);
-                const timeLabel = `${timeIndex * 4}:00 - ${(timeIndex + 1) * 4}:00`;
-                const dayLabel = [t('Sun'), t('Mon'), t('Tue'), t('Wed'), t('Thu'), t('Fri'), t('Sat')][dayIndex];
-                
-                return (
-                  <div 
-                    key={`time-${timeIndex}`}
-                    className="heatmap-cell"
-                    style={{ backgroundColor: `rgba(16, 185, 129, ${opacity})` }}
-                    title={`${dayLabel} ${timeLabel} | ${t('Activity')}: ${value}%`}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
+      <div className="chart-card">
+        <h4>{t('Daily Activity Trend (Past 24h)')}</h4>
+        <SmoothLineChart data={stats.activityTrend} />
       </div>
     </div>
   );
