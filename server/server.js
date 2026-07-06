@@ -419,7 +419,7 @@ const getActiveGamesList = () => {
       roomId: `offline_${socketId}`,
       players: ['Local Player'],
       status: 'offline',
-      gameType: data.type,
+      gameType: data.gameType || data.type || 'offline',
       difficulty: null
   }));
 
@@ -427,7 +427,7 @@ const getActiveGamesList = () => {
       roomId: `cpu_${socketId}`,
       players: ['Player', 'CPU'],
       status: 'cpu',
-      gameType: data.type,
+      gameType: data.gameType || data.type || 'cpu',
       difficulty: data.difficulty
   }));
   
