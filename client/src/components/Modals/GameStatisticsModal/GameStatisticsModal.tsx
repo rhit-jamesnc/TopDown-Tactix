@@ -15,7 +15,7 @@ export const GameStatisticsModal = () => {
     return {
       server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
       modes: { casual: Math.floor(Math.random() * 1000), ranked: Math.floor(Math.random() * 500), custom: Math.floor(Math.random() * 200) },
-      cpu: { easy: 150, medium: 430, hard: 210 },
+      cpu: { academy: 150, reserves: 430, first: 210 },
       heatmap: Array.from({ length: 7 }, () => 
         Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
       )
