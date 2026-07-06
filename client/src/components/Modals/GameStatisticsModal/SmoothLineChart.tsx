@@ -61,15 +61,13 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
         <svg 
             viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} 
             className="stats-line-chart"
-            preserveAspectRatio="none" // Stretches to container width
+            preserveAspectRatio="none"
         >
-            {/* Area fill under line */}
             <path 
             d={areaFillPath} 
             className="chart-area-fill" 
-            style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }} // fallback
+            style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }}
             />
-            {/* The main line */}
             <path 
             d={linePath} 
             className="chart-line" 
@@ -81,7 +79,6 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
             )}
         </svg>
         
-        {/* X-Axis Labels (Assuming 4-hour blocks over 24 hours for now) */}
         {hoveredPoint && (
             <div className="chart-tooltip" style={{ 
             left: `${(hoveredPoint.x / VIEWBOX_WIDTH) * 100}%`,
