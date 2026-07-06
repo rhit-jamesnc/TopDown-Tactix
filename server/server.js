@@ -97,13 +97,18 @@ io.on('connection', (socket) => {
         }
       });
 
-      clearInterval(gameData.instance.loop);
+      clearInterval(gameData.loop);
       
       if (gameData.instance.countdownTimeout) {
         clearTimeout(gameData.instance.countdownTimeout);
       }
 
-      gameData.players.forEach(pid => playerToRoom.delete(pid));
+      gameData.players.forEach(pid => {
+        playerToRoom.delete(pid);
+        const playerSocket = io.sockets.sockets.get(pid);
+        if (playerSocket) playerSocket.leave(roomId);
+      });
+
       onlineSessions.delete(roomId);
 
       io.emit('active-games-update', getActiveGamesList());
@@ -249,7 +254,7 @@ io.on('connection', (socket) => {
         if (remainingSocket) remainingSocket.leave(roomId);
       }
 
-      clearInterval(gameData.instance.loop);
+      clearInterval(gameData.loop);
 
       if (gameData.instance.countdownTimeout) {
         clearTimeout(gameData.instance.countdownTimeout);
