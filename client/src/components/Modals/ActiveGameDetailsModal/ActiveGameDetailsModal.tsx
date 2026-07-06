@@ -3,6 +3,12 @@ import { socket } from '../../Shared/utils/socket';
 import type { ActiveGameDetailsProp, GameDetails } from '../../../../../shared/types/props'
 import './ActiveGameDetailsModal.css';
 
+const formatTime = (totalSeconds: number) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
 export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsProp) => {
     const [details, setDetails] = useState<GameDetails | null>(null);
     const adminType = sessionStorage.getItem('adminType');
@@ -54,7 +60,7 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
                 <div className="details-info">
                     <p><strong>Room ID:</strong> {roomId}</p>
                     <p><strong>Status:</strong> <span className={`status-text ${details.status}`}>{details.status.toUpperCase()}</span></p>
-                    <p><strong>Time Left:</strong> {details.timeLeft !== null ? `${Math.floor(details.timeLeft)}s` : 'Local Engine'}</p>
+                    <p><strong>Time Left:</strong> {details.timeLeft !== null ? formatTime(details.timeLeft) : 'Local Engine'}</p>
                     <p><strong>Score:</strong> {details.score ? `Home ${details.score.home} - ${details.score.away} Away` : 'Local Engine'}</p>
                 </div>
                 
