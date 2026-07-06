@@ -11,6 +11,7 @@ import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBounda
 import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
 import { fetchReportedBugs } from '../../../../shared/utils/googleSheets'
 import { ActiveGamesModal } from '../../components/Modals/ActiveGamesModal/ActiveGamesModal';
+import { GameStatisticsModal } from '../../components/Modals/GameStatisticsModal/GameStatisticsModal';
 
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
@@ -130,7 +131,7 @@ export const AdminDashboardPage = () => {
           <div className="panel-content">
             <ErrorBoundary fallbackMessage={t('Failed to load Statistics.')}>
               <PanelWrapper>
-                {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+                {isLoading ? <LoadingSymbol /> : <GameStatisticsModal />}
               </PanelWrapper>
             </ErrorBoundary>
           </div>

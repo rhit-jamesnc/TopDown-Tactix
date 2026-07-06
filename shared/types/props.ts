@@ -134,3 +134,10 @@ export interface GameDetails {
 export interface AdminActionEvent {
   action: 'draw' | 'stop' | 'kick';
 }
+
+export interface GameStats {
+  server: { ping: number; uptime: string; status: string };
+  modes: { casual: number; ranked: number; custom: number };
+  cpu: { easy: number; medium: number; hard: number };
+  heatmap: number[][];
+}
