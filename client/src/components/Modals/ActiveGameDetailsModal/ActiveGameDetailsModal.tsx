@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { socket } from '../../Shared/utils/socket';
 import type { ActiveGameDetailsProp, GameDetails } from '../../../../../shared/types/props'
 import './ActiveGameDetailsModal.css';
@@ -13,6 +14,7 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
     const [details, setDetails] = useState<GameDetails | null>(null);
     const adminType = sessionStorage.getItem('adminType');
     const isOwner = adminType === 'owner';
+    const { t } = useTranslation();
 
     useEffect(() => {
         socket.emit('admin-request-game-details', roomId);
@@ -44,7 +46,7 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
     if (!details) {
         return (
             <div className="admin-modal-overlay">
-                <div className="admin-modal-content loading">Loading...</div>
+                <div className="admin-modal-content loading">{t('Loading...')}</div>
             </div>
         );
     }
@@ -53,33 +55,49 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
         <div className="admin-modal-overlay">
             <div className="admin-modal-content">
                 <div className="modal-header">
-                    <h3>Game Details</h3>
+                    <h3>{t('Game Details')}</h3>
                     <button className="close-icon" onClick={onClose}>&times;</button>
                 </div>
                 
                 <div className="details-info">
-                    <p><strong>Room ID:</strong> {roomId}</p>
-                    <p><strong>Status:</strong> <span className={`status-text ${details.status}`}>{details.status.toUpperCase()}</span></p>
-                    <p><strong>Time Left:</strong> {details.timeLeft !== null ? formatTime(details.timeLeft) : 'Local Engine'}</p>
-                    <p><strong>Score:</strong> {details.score ? `Home ${details.score.home} - ${details.score.away} Away` : 'Local Engine'}</p>
+                    <p>
+                        <strong>{t('Room ID:')}</strong> {roomId}
+                    </p>
+                    <p>
+                        <strong>{t('Status:')}</strong> 
+                        <span className={`status-text ${details.status}`}>
+                            {details.status.toUpperCase()}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>{t('Time Left:')}</strong> 
+                        {details.timeLeft !== null ? formatTime(details.timeLeft) : 'Local Engine'}
+                    </p>
+                    <p>
+                        <strong>{t('Score:')}</strong> 
+                        {details.score ? `${t('Home')} ${details.score.home} - ${details.score.away} ${t('Away')}` : t('Local Engine')}
+                    </p>
                 </div>
                 
                 <div className="player-list">
-                    <h4>Players</h4>
+                    <h4>{t('Players')}</h4>
                     {details.players.map((playerId, idx) => {
-                        const team = idx === 0 ? 'Home' : 'Away';
+                        const team = idx === 0 ? t('Home') : t('Away');
                         const isKickable = details.status === 'online';
                         
                         return (
                             <div key={playerId || idx} className="player-row">
-                                <span><strong>{team}:</strong> {playerId || 'Local/CPU'}</span>
+                                <span>
+                                    <strong>{team}:</strong> 
+                                    {playerId || t('Local/CPU')}
+                                </span>
                                 {isKickable && (
                                     <button 
                                         className="kick-btn"
                                         disabled={!isOwner}
                                         onClick={() => handleAction('kick', playerId)}
                                     >
-                                        Kick (Opponent Wins)
+                                        {t('Kick (Opponent Wins)')}
                                     </button>
                                 )}
                             </div>
@@ -93,9 +111,9 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
                         disabled={!isOwner || details.status !== 'online'}
                         onClick={() => handleAction('draw')}
                     >
-                        Force Draw
+                        {t('Force Draw')}
                     </button>
-                    <button className="close-btn" onClick={onClose}>Close</button>
+                    <button className="close-btn" onClick={onClose}>{t('Close')}</button>
                 </div>
             </div>
         </div>
