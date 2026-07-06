@@ -31,7 +31,7 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose, onStatusChange }: BugDe
             <p><strong>{t('Email')}:</strong> {isAdmin ? bug.email : "••••••••••••"}</p>
 
             <p>
-                <strong className='status-header'>Status:</strong> 
+                <strong className='status-header'>{t('Status: ')}</strong> 
                 {isAdmin && isEditing ? (
                     <select 
                         className="status-dropdown"

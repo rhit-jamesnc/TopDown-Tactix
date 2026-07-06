@@ -73,17 +73,17 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
                         <strong>{t('Room ID:')}</strong> {roomId}
                     </p>
                     <p>
-                        <strong>{t('Status:')}</strong> 
+                        <strong>{t('Status: ')}</strong> 
                         <span className={`status-text ${details.status}`}>
                             {t(details.status.toUpperCase())}
                         </span>
                     </p>
                     <p>
                         <strong>{t('Time Left:')}</strong> 
-                        {details.timeLeft !== null ? formatTime(details.timeLeft) : 'Local Engine'}
+                        {details.timeLeft !== null ? formatTime(details.timeLeft) : ' Local Engine'}
                     </p>
                     <p>
-                        <strong>{t('Score:')}</strong> 
+                        <strong>{t('Score: ')}</strong> 
                         {details.score ? `${t('Home')} ${details.score.home} - ${details.score.away} ${t('Away')}` : t('Local Engine')}
                     </p>
                 </div>
@@ -97,7 +97,7 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
                         return (
                             <div key={playerId || idx} className="player-row">
                                 <span>
-                                    <strong>{team}:</strong> 
+                                    <strong>{team}: </strong> 
                                     {playerId || t('Local/CPU')}
                                 </span>
                                 {isKickable && (
