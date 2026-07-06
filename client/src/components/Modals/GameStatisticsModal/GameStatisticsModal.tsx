@@ -71,8 +71,8 @@ export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) =
     if (error) {
         return (
             <div className="error-container">
-            <p>{error}</p>
-            <button onClick={handleManualUpdate}>{t('Retry')}</button>
+                <p>{error}</p>
+                <button onClick={handleManualUpdate}>{t('Retry')}</button>
             </div>
         );
     }
