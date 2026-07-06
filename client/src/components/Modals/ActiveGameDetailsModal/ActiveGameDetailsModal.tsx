@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { socket } from '../../Shared/utils/socket';
 import type { ActiveGameDetailsProp, GameDetails } from '../../../../../shared/types/props'
 import './ActiveGameDetailsModal.css';
+import { ADMIN_CONFIG } from '../../../../../shared/config/adminConfig';
 
 const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -13,7 +14,7 @@ const formatTime = (totalSeconds: number) => {
 export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsProp) => {
     const [details, setDetails] = useState<GameDetails | null>(null);
     const adminType = sessionStorage.getItem('adminType');
-    const isOwner = adminType === 'owner';
+    const isOwner = adminType === ADMIN_CONFIG.TYPES.OWNER;
     const { t } = useTranslation();
 
     useEffect(() => {

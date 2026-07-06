@@ -117,7 +117,7 @@ export const AdminDashboardPage = () => {
               {isLoading ? ( 
                 <LoadingSymbol /> 
               ) : ( 
-                <ActiveGamesModal isAdmin={adminType === 'owner'}/>
+                <ActiveGamesModal isAdmin={adminType === ADMIN_CONFIG.TYPES.OWNER}/>
               )}
             </PanelWrapper>
           </ErrorBoundary>
@@ -148,7 +148,7 @@ export const AdminDashboardPage = () => {
                 ) : (
                   <ReportedBugsModal 
                     bugs={bugs}
-                    isAdmin={adminType === 'owner'}
+                    isAdmin={adminType === ADMIN_CONFIG.TYPES.OWNER}
                   />
                 )}
               </PanelWrapper>
