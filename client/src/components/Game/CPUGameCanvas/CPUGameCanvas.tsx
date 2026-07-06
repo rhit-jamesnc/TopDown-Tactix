@@ -38,7 +38,7 @@ export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserve
     return () => {
         socket.emit('unregister-cpu-game');
     };
-  }, [difficulty]);
+  }, [difficulty, gameKey]);
 
   useEffect(() => {
     socket.emit('join-room', `cpu_${socket.id}`);
