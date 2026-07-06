@@ -11,8 +11,8 @@ export const waitingQueue = [];
 export const onlineSessions = new Map();
 export const playerToRoom = new Map();
 
-const offlineSessions = new Map();
-const cpuSessions = new Map();
+export const offlineSessions = new Map();
+export const cpuSessions = new Map();
 
 const PHYSICS_WIDTH = 1600;
 const PHYSICS_HEIGHT = 900;

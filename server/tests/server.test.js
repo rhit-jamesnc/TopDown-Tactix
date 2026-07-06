@@ -1,6 +1,6 @@
 import { io as clientIO } from 'socket.io-client';
 import { expect, test, beforeAll, afterAll, beforeEach, afterEach, vi, describe } from 'vitest';
-import { httpServer, games, playerToRoom, waitingQueue, startNewGame } from '../server.js';
+import { httpServer, onlineSessions, playerToRoom, waitingQueue, startNewGame } from '../server.js';
 import { GamePhysicsEngine } from '../physicsEngine.js';
 
 const waitFor = async (condition, timeout = 1000) => {
@@ -58,7 +58,7 @@ afterAll(() => {
 
 beforeEach(() => {
   waitingQueue.length = 0;
-  games.clear();
+  onlineSessions.clear();
   playerToRoom.clear();
   vi.clearAllMocks();
 });
@@ -126,7 +126,7 @@ describe('Server - Lobby and Matchmaking', () => {
     clientSocket1.emit('find-match');
     clientSocket2.emit('find-match');
     
-    await waitFor(() => games.size === 1);
+    await waitFor(() => onlineSessions.size === 1);
     
     expect(waitingQueue.length).toBe(0);
     expect(playerToRoom.has(clientSocket1.id)).toBe(true);
@@ -145,7 +145,7 @@ describe('Server - Lobby and Matchmaking', () => {
     clientSocket1.emit('find-match');
     await opponentDisconnectPromise;
 
-    expect(games.size).toBe(0);
+    expect(onlineSessions.size).toBe(0);
     expect(playerToRoom.has(clientSocket2.id)).toBe(false);
   });
 });
@@ -194,7 +194,7 @@ describe('Server - Player Inputs and Pausing', () => {
     startNewGame(clientSocket1.id, clientSocket2.id);
     
     const roomId = playerToRoom.get(clientSocket1.id);
-    const game = games.get(roomId).instance;
+    const game = onlineSessions.get(roomId).instance;
     GamePhysicsEngine.isValidMove.mockReturnValue(true);
     
     clientSocket1.emit('player-input', { id: clientSocket1.id, move: { x: 1, y: 0 } });
@@ -209,7 +209,7 @@ describe('Server - Player Inputs and Pausing', () => {
     startNewGame(clientSocket1.id, clientSocket2.id);
     
     const roomId = playerToRoom.get(clientSocket1.id);
-    const game = games.get(roomId).instance;
+    const game = onlineSessions.get(roomId).instance;
 
     clientSocket1.emit('pause-game', true);
     await waitFor(() => game.isPausePending === true);
@@ -227,7 +227,7 @@ describe('Server - Player Inputs and Pausing', () => {
     startNewGame(clientSocket1.id, clientSocket2.id);
     
     const roomId = playerToRoom.get(clientSocket1.id);
-    const game = games.get(roomId).instance;
+    const game = onlineSessions.get(roomId).instance;
 
     clientSocket1.emit('pause-game', true);
     await waitFor(() => game.isPausePending === true);
@@ -251,7 +251,7 @@ describe('Server - Game Loop and Internal Callbacks', () => {
 
     startNewGame(clientSocket1.id, clientSocket2.id);
     const roomId = playerToRoom.get(clientSocket1.id);
-    const game = games.get(roomId).instance;
+    const game = onlineSessions.get(roomId).instance;
     game.isCountdownActive = false; 
 
     await statePromise;
@@ -269,7 +269,7 @@ describe('Server - Game Loop and Internal Callbacks', () => {
 
     startNewGame(clientSocket1.id, clientSocket2.id);
     const roomId = playerToRoom.get(clientSocket1.id);
-    const game = games.get(roomId).instance;
+    const game = onlineSessions.get(roomId).instance;
     
     game.isPaused = true;
     
@@ -296,7 +296,7 @@ describe('Server - Disconnects', () => {
     
     startNewGame(clientSocket1.id, clientSocket2.id);
     const roomId = playerToRoom.get(clientSocket1.id);
-    const game = games.get(roomId).instance;
+    const game = onlineSessions.get(roomId).instance;
 
     const gameOverPromise = new Promise(resolve => {
       clientSocket1.on('game-over', resolve);
@@ -306,7 +306,7 @@ describe('Server - Disconnects', () => {
     
     const gameOverData = await gameOverPromise;
     expect(gameOverData.winner).toBe('home');
-    expect(games.size).toBe(0);
+    expect(onlineSessions.size).toBe(0);
   });
 
   test('should handle forfeit on disconnect', async () => {
@@ -322,6 +322,6 @@ describe('Server - Disconnects', () => {
     
     const gameOverData = await gameOverPromise;
     expect(gameOverData.reason).toBe('forfeit');
-    expect(games.size).toBe(0);
+    expect(onlineSessions.size).toBe(0);
   });
 });
