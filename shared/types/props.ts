@@ -112,4 +112,5 @@ export interface ActiveGameProps {
   players: string[];
   status: string;
   gameType: 'online' | 'local' | 'cpu';
+  difficulty: string | null;
 }

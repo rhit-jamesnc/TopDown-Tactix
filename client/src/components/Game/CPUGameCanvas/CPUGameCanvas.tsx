@@ -6,6 +6,7 @@ import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
 import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay'
+import { socket } from '../../Shared/utils/socket';
 import type { GameResult } from "../../../../../shared/types/game"
 
 import '../GameCanvas.css'
@@ -29,6 +30,17 @@ export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserve
         setCountdownKey(prev => prev + 1);
     }
   };
+
+  useEffect(() => {
+    socket.emit('register-cpu-game', { 
+        type: 'cpu', 
+        difficulty 
+    });
+    
+    return () => {
+        socket.emit('unregister-cpu-game');
+    };
+  }, [difficulty]);
 
   useEffect(() => {
     if (!sceneRef.current) return

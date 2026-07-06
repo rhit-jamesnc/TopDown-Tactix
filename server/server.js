@@ -12,6 +12,7 @@ export const onlineSessions = new Map();
 export const playerToRoom = new Map();
 
 const offlineSessions = new Map();
+const cpuSessions = new Map();
 
 const PHYSICS_WIDTH = 1600;
 const PHYSICS_HEIGHT = 900;
@@ -191,8 +192,13 @@ io.on('connection', (socket) => {
     }
 
     if (offlineSessions.has(socket.id)) {
-        offlineSessions.delete(socket.id);
-        io.emit('active-games-update', getActiveGamesList());
+      offlineSessions.delete(socket.id);
+      io.emit('active-games-update', getActiveGamesList());
+    }
+
+    if (cpuSessions.has(socket.id)) {
+      cpuSessions.delete(socket.id);
+      io.emit('active-games-update', getActiveGamesList());
     }
 
     console.log(`User disconnected and cleaned up: ${socket.id}`);
@@ -205,6 +211,16 @@ io.on('connection', (socket) => {
 
   socket.on('unregister-offline-game', () => {
     offlineSessions.delete(socket.id);
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('register-cpu-game', (data) => {
+    cpuSessions.set(socket.id, { ...data, lastSeen: Date.now() });
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('unregister-cpu-game', () => {
+    cpuSessions.delete(socket.id);
     io.emit('active-games-update', getActiveGamesList());
   });
 });
@@ -315,17 +331,28 @@ const getActiveGamesList = () => {
   const online = Array.from(onlineSessions.entries()).map(([roomId, data]) => ({
       roomId,
       players: data.players,
-      gameType: data.gameType || 'online'
+      status: 'online',
+      gameType: data.gameType || 'online',
+      difficulty: null
   }));
   
   const offline = Array.from(offlineSessions.entries()).map(([socketId, data]) => ({
       roomId: `offline_${socketId}`,
       players: ['Local Player'],
       status: 'offline',
-      gameType: data.type
+      gameType: data.type,
+      difficulty: null
+  }));
+
+  const cpu = Array.from(cpuSessions.entries()).map(([socketId, data]) => ({
+      roomId: `cpu_${socketId}`,
+      players: ['Player', 'CPU'],
+      status: 'cpu',
+      gameType: data.type,
+      difficulty: data.difficulty
   }));
   
-  return [...online, ...offline];
+  return [...online, ...offline, ...cpu];
 };
 
 export { app, httpServer, io };

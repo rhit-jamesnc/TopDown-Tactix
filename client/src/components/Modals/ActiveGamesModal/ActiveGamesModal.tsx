@@ -32,10 +32,17 @@ export const ActiveGamesModal = () => {
                     <div className="game-info">
                         <span className={`status-indicator ${game.status}`}></span>
                         <div className="game-text-wrapper">
-                            <h4>Game {index + 1} ({game.players.length} players)</h4>
-                            <span className="game-mode-badge">
-                                {(game.gameType || 'Undefined').toUpperCase()}
-                            </span>
+                            <h4>Game {index + 1} ({game.players?.length || 0} players)</h4>
+                            <div className="badge-wrapper">
+                                <span className="game-mode-badge">
+                                    {(game.gameType || 'Undefined').toUpperCase()}
+                                </span>
+                                {game.difficulty && (
+                                    <span className={`difficulty-badge ${game.difficulty.toLowerCase()}`}>
+                                        {game.difficulty.toUpperCase()}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                     <div className="game-actions">

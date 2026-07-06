@@ -31,7 +31,7 @@ export const OfflineGameCanvas = () => {
   };
 
   useEffect(() => {
-    socket.emit('register-offline-game', { type: 'local' });
+    socket.emit('register-offline-game');
     
     return () => {
         socket.emit('unregister-offline-game');
