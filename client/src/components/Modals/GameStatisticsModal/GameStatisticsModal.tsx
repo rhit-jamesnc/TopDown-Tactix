@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LoadingSymbol } from '../../../../../shared/LoadingSymbol/LoadingSymbol';
-import type { GameStats } from '../../../../../shared/types/props';
+import type { GameStats, GameStatisticsModalProps } from '../../../../../shared/types/props';
 import { SmoothLineChart } from './SmoothLineChart';
 import './GameStatisticsModal.css';
 
@@ -17,7 +17,7 @@ const fetchMockData = async (): Promise<GameStats> => {
     };
 };
 
-export const GameStatisticsModal = () => {
+export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) => {
     const { t } = useTranslation();
     const [stats, setStats] = useState<GameStats | null>(null);
     const [isUpdating, setIsUpdating] = useState(true); 
@@ -28,7 +28,11 @@ export const GameStatisticsModal = () => {
         setIsUpdating(true);
         try {
             setError(null);
-            const data = await fetchMockData();
+
+            const data = isLiveStats 
+                ? null
+                : await fetchMockData();
+            
             setStats(data);
             setLastUpdated(new Date());
         } catch (err) {
@@ -36,7 +40,7 @@ export const GameStatisticsModal = () => {
         } finally {
             setIsUpdating(false);
         }
-    }, [t]);
+    }, [isLiveStats, t]);
 
     const handleManualUpdate = async () => {
         await performUpdate();
@@ -57,7 +61,11 @@ export const GameStatisticsModal = () => {
     }
 
     if (!stats) {
-        return <div>{t('Failed to load statistics data.')}</div>;
+        return (
+            <div className="error-message-centered">
+                {t('Failed to load statistics data.')}
+            </div>
+        );
     }
 
     if (error) {

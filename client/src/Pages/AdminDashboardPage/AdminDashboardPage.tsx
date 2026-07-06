@@ -17,14 +17,15 @@ import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
 import './AdminDashboardPage.css';
 
-export const AdminDashboardPage = () => {
+export const AdminDashboardPage = () => {  
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [bugs, setBugs] = useState([]);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const adminType = sessionStorage.getItem('adminType')
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+  const [useLiveStatsMode, setUseLiveStatsMode] = useState(false);
 
   const handleVerify = (password: string) => {
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
@@ -127,11 +128,21 @@ export const AdminDashboardPage = () => {
 
       <section className="right-panel-container">
         <div className="panel">
-          <h3 className="panel-title">{t('Game Statistics')}</h3>
+          <div className="panel-header-wrapper">
+            <h3 className="panel-title">{t('Game Statistics')}</h3>
+            {/* 2. Add the toggle button */}
+            <button onClick={() => setUseLiveStatsMode(!useLiveStatsMode)}>
+              {useLiveStatsMode ? t('Switch to Mock Data') : t('Switch to Live Data')}
+            </button>
+          </div>
           <div className="panel-content">
             <ErrorBoundary fallbackMessage={t('Failed to load Statistics.')}>
               <PanelWrapper>
-                {isLoading ? <LoadingSymbol /> : <GameStatisticsModal />}
+                {isLoading ? (
+                  <LoadingSymbol /> 
+                ) : (
+                  <GameStatisticsModal isLiveStats={useLiveStatsMode} />
+                )}
               </PanelWrapper>
             </ErrorBoundary>
           </div>

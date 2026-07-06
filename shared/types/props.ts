@@ -142,6 +142,10 @@ export interface GameStats {
   activityTrend: number[];
 }
 
+export interface GameStatisticsModalProps {
+  isLiveStats: boolean;
+}
+
 export interface SmoothLineChartProps {
   data: number[];
   color?: string;
