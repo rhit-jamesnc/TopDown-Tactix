@@ -63,11 +63,38 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
             className="stats-line-chart"
             preserveAspectRatio="none"
         >
+            {[25, 50, 75].map((yVal) => (
+                <line
+                    key={`h-line-${yVal}`}
+                    x1="0"
+                    y1={VIEWBOX_HEIGHT - yVal}
+                    x2={VIEWBOX_WIDTH}
+                    y2={VIEWBOX_HEIGHT - yVal}
+                    stroke="#374151"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                />
+            ))}
+
+            {[0.25, 0.5, 0.75].map((xRatio) => (
+                <line
+                    key={`v-line-${xRatio}`}
+                    x1={xRatio * VIEWBOX_WIDTH}
+                    y1="0"
+                    x2={xRatio * VIEWBOX_WIDTH}
+                    y2={VIEWBOX_HEIGHT}
+                    stroke="#374151"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                />
+            ))}
+
             <path 
             d={areaFillPath} 
             className="chart-area-fill" 
             style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }}
             />
+            
             <path 
             d={linePath} 
             className="chart-line" 
@@ -75,7 +102,7 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
             />
 
             {hoveredPoint && (
-            <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="15" fill={color} fillOpacity="0.3" />
+                <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="15" fill={color} fillOpacity="0.3" />
             )}
         </svg>
         
