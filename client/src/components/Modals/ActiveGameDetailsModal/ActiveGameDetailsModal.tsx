@@ -66,7 +66,7 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
                     <p>
                         <strong>{t('Status:')}</strong> 
                         <span className={`status-text ${details.status}`}>
-                            {details.status.toUpperCase()}
+                            {t(details.status.toUpperCase())}
                         </span>
                     </p>
                     <p>
