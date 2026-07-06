@@ -1,85 +1,95 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SmoothLineChartProps } from '../../../../../shared/types/props';
 import './GameStatisticsModal.css';
-
-// Helper function to generate smooth Bézier curve commands for SVG
-const getSvgPath = (points: number[], width: number, height: number): string => {
-  const n = points.length;
-  if (n < 2) return '';
-
-  // Calculate spacing between points on X-axis
-  const stepX = width / (n - 1);
-  
-  // Function to map data value (0-100) to SVG Y-coordinate (inverted)
-  const getY = (value: number) => height - (value / 100) * height;
-
-  // Start point
-  let path = `M 0 ${getY(points[0])}`;
-
-  // Generate Cubic Bézier curves for smoothness
-  // We loop through points to calculate control points
-  for (let i = 0; i < n - 1; i++) {
-    const x0 = i * stepX;
-    const y0 = getY(points[i]);
-    
-    const x1 = (i + 1) * stepX;
-    const y1 = getY(points[i + 1]);
-
-    // Define control points for smooth curve
-    // cpx1, cpy1 (control point for start), cpx2, cpy2 (control point for end)
-    const cpx1 = x0 + stepX / 2;
-    const cpy1 = y0;
-    const cpx2 = x0 + stepX / 2;
-    const cpy2 = y1;
-
-    path += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${x1} ${y1}`;
-  }
-
-  return path;
-};
 
 export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({ 
   data, 
   color = '#10B981' 
 }) => {
-  // Define viewbox dimensions. Internal coordinate system.
-  const VIEWBOX_WIDTH = 1000; 
-  const VIEWBOX_HEIGHT = 100;
+    const { t } = useTranslation();
 
-  const linePath = getSvgPath(data, VIEWBOX_WIDTH, VIEWBOX_HEIGHT);
-  
-  // Create a polygon path for the area fill by connecting end points back to base
-  const areaFillPath = `${linePath} L ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT} L 0 ${VIEWBOX_HEIGHT} Z`;
+    const [hoveredPoint, setHoveredPoint] = useState<{ x: number, y: number, value: number, time: string } | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  return (
-    <div className="stats-line-chart-wrapper">
-      <svg 
-        viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} 
-        className="stats-line-chart"
-        preserveAspectRatio="none" // Stretches to container width
-      >
-        {/* Area fill under line */}
-        <path 
-          d={areaFillPath} 
-          className="chart-area-fill" 
-          style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }} // fallback
-        />
-        {/* The main line */}
-        <path 
-          d={linePath} 
-          className="chart-line" 
-          style={{ stroke: color }}
-        />
-      </svg>
-      
-      {/* X-Axis Labels (Assuming 4-hour blocks over 24 hours for now) */}
-      <div className="chart-labels">
-        <span>00:00</span>
-        <span>06:00</span>
-        <span>12:00</span>
-        <span>18:00</span>
-        <span>24:00</span>
-      </div>
-    </div>
-  );
+    const VIEWBOX_WIDTH = 1000;
+    const VIEWBOX_HEIGHT = 100;
+
+    const getSvgPath = (points: number[], width: number, height: number): string => {
+        const n = points.length;
+        if (n < 2) return '';
+        const stepX = width / (n - 1);
+        const getY = (value: number) => height - (value / 100) * height;
+        let path = `M 0 ${getY(points[0])}`;
+        for (let i = 0; i < n - 1; i++) {
+        const x0 = i * stepX;
+        const y0 = getY(points[i]);
+        const x1 = (i + 1) * stepX;
+        const y1 = getY(points[i + 1]);
+        path += ` C ${x0 + stepX / 2} ${y0}, ${x0 + stepX / 2} ${y1}, ${x1} ${y1}`;
+        }
+        return path;
+    };
+
+    const linePath = getSvgPath(data, VIEWBOX_WIDTH, VIEWBOX_HEIGHT);
+    const areaFillPath = `${linePath} L ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT} L 0 ${VIEWBOX_HEIGHT} Z`;
+    
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!containerRef.current) return;
+        
+        const rect = containerRef.current.getBoundingClientRect();
+        const relX = e.clientX - rect.left;
+        const percentage = relX / rect.width;
+        
+        const index = Math.round(percentage * (data.length - 1));
+        const value = data[index];
+        
+        const x = (index / (data.length - 1)) * VIEWBOX_WIDTH;
+        const y = VIEWBOX_HEIGHT - (value / 100) * VIEWBOX_HEIGHT;
+
+        setHoveredPoint({ x, y, value, time: `${index}:00` });
+    };
+
+    return (
+        <div 
+        className="stats-line-chart-wrapper" 
+        ref={containerRef} 
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setHoveredPoint(null)}
+        style={{ position: 'relative' }}
+        >
+        <svg 
+            viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} 
+            className="stats-line-chart"
+            preserveAspectRatio="none" // Stretches to container width
+        >
+            {/* Area fill under line */}
+            <path 
+            d={areaFillPath} 
+            className="chart-area-fill" 
+            style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }} // fallback
+            />
+            {/* The main line */}
+            <path 
+            d={linePath} 
+            className="chart-line" 
+            style={{ stroke: color }}
+            />
+
+            {hoveredPoint && (
+            <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="15" fill={color} fillOpacity="0.3" />
+            )}
+        </svg>
+        
+        {/* X-Axis Labels (Assuming 4-hour blocks over 24 hours for now) */}
+        {hoveredPoint && (
+            <div className="chart-tooltip" style={{ 
+            left: `${(hoveredPoint.x / VIEWBOX_WIDTH) * 100}%`,
+            top: `${(hoveredPoint.y / VIEWBOX_HEIGHT) * 100}%`
+            }}>
+            {hoveredPoint.time} - {hoveredPoint.value}% {t('Activity')}
+            </div>
+        )}
+        </div>
+    );
 };

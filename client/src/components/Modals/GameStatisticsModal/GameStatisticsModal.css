@@ -115,7 +115,6 @@
   fill: rgba(16, 185, 129, 0.1);
 }
 
-/* Axis Labels */
 .chart-labels {
   display: flex;
   justify-content: space-between;
@@ -123,4 +122,24 @@
   font-size: 0.75rem;
   margin-top: 8px;
   padding: 0 10px;
+}
+
+.stats-line-chart-wrapper {
+  position: relative;
+  cursor: crosshair;
+}
+
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -120%);
+  background: #111827;
+  color: white;
+  padding: 6px 10px;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  z-index: 20;
 }
