@@ -1,60 +1,56 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LoadingSymbol } from '../../../../../shared/LoadingSymbol/LoadingSymbol';
 import type { GameStats } from '../../../../../shared/types/props';
 import { SmoothLineChart } from './SmoothLineChart';
 import './GameStatisticsModal.css';
 
+const fetchMockData = async (): Promise<GameStats> => {
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    
+    return {
+        server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
+        cpu: { academy: 150, reserves: 430, first: 210 },
+        modes: { offline: Math.floor(Math.random() * 1000), online: Math.floor(Math.random() * 500), cpu: Math.floor(Math.random() * 200) },
+        activityTrend: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100))
+    };
+};
+
 export const GameStatisticsModal = () => {
     const { t } = useTranslation();
     const [stats, setStats] = useState<GameStats | null>(null);
     const [isUpdating, setIsUpdating] = useState(true); 
     const [error, setError] = useState<string | null>(null);
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-    const fetchMockData = async (): Promise<GameStats> => {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        return {
-            server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
-            cpu: { academy: 150, reserves: 430, first: 210 },
-            modes: { offline: Math.floor(Math.random() * 1000), online: Math.floor(Math.random() * 500), cpu: Math.floor(Math.random() * 200) },
-            activityTrend: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100))
-        };
-    };
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const loadInitialData = async () => {
-            try {
-                setError(null);
-                const data = await fetchMockData();
-                if (isMounted) setStats(data);
-            } catch (error) {
-                if (isMounted) setError(t('Failed to load statistics. Error: ') + error);
-            } finally {
-                if (isMounted) setIsUpdating(false);
-            }
-        };
-
-        loadInitialData();
-
-        return () => {
-            isMounted = false; 
-        };
-    }, [t]);
-
-    const handleManualUpdate = async () => {
+    const performUpdate = useCallback(async () => {
         setIsUpdating(true);
         try {
+            setError(null);
             const data = await fetchMockData();
             setStats(data);
-        } catch (error) {
-            console.error("Failed to update game statistics", error);
+            setLastUpdated(new Date());
+        } catch (err) {
+            setError(t('Failed to load statistics. Error: ') + err);
         } finally {
             setIsUpdating(false);
         }
+    }, [t]);
+
+    const handleManualUpdate = async () => {
+        await performUpdate();
     };
+
+    useEffect(() => {
+        const init = async () => {
+            await performUpdate();
+        };
+
+        init();
+
+        return () => {};
+    }, [performUpdate]);
 
     if (!stats && isUpdating) {
         return <LoadingSymbol />;
@@ -77,6 +73,11 @@ export const GameStatisticsModal = () => {
         <div className="game-statistics-container">
             <div className="stats-header">
                 <span>{t('Live Game Telemetry')}</span>
+                {lastUpdated && (
+                    <span className="last-updated">
+                    {t('Updated')}: {lastUpdated.toLocaleTimeString()}
+                    </span>
+                )}
                 <button 
                 className="update-btn" 
                 onClick={handleManualUpdate} 
