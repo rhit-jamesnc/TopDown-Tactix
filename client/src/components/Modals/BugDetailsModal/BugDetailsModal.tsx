@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BugDetailsModalProps } from '../../../../../shared/types/props'
 import { formatLocalizedDate } from '../../../../../shared/utils/dateFormatter'
@@ -15,6 +15,14 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose, onStatusChange }: BugDe
         setIsEditing(false);
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
     return (
         <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -23,7 +31,7 @@ export const BugDetailsModal = ({ bug, isAdmin, onClose, onStatusChange }: BugDe
             <p><strong>{t('Email')}:</strong> {isAdmin ? bug.email : "••••••••••••"}</p>
 
             <p>
-                <strong className='status-header'>Status:</strong> 
+                <strong className='status-header'>{t('Status: ')}</strong> 
                 {isAdmin && isEditing ? (
                     <select 
                         className="status-dropdown"

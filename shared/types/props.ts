@@ -106,3 +106,31 @@ export interface ErrorBoundaryState {
 export interface PanelWrapperProps {
   children: React.ReactNode;
 }
+
+export interface ActiveGamesModalProps {
+  isAdmin: boolean;
+}
+
+export interface ActiveGameProps {
+  roomId: string;
+  players: string[];
+  status: string;
+  gameType: 'online' | 'local' | 'cpu';
+  difficulty: string | null;
+}
+
+export interface ActiveGameDetailsProp {
+    roomId: string;
+    onClose: () => void;
+}
+
+export interface GameDetails {
+    players: string[];
+    score: { home: number; away: number } | null;
+    timeLeft: number | null;
+    status: string;
+}
+
+export interface AdminActionEvent {
+  action: 'draw' | 'stop' | 'kick';
+}

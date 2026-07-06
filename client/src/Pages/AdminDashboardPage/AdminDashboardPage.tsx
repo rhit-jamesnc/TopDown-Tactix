@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/AdminPasswordModal';
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 import { logoutAdmin } from '../../../../shared/utils/auth';
@@ -9,6 +10,7 @@ import { PanelWrapper } from '../../components/Shared/PanelWrapper/PanelWrapper'
 import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBoundary';
 import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
 import { fetchReportedBugs } from '../../../../shared/utils/googleSheets'
+import { ActiveGamesModal } from '../../components/Modals/ActiveGamesModal/ActiveGamesModal';
 
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
@@ -21,6 +23,7 @@ export const AdminDashboardPage = () => {
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const adminType = sessionStorage.getItem('adminType')
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleVerify = (password: string) => {
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
@@ -32,7 +35,7 @@ export const AdminDashboardPage = () => {
       setShowPasswordModal(false);
       window.location.reload();
     } else {
-      setFeedback({ show: true, message: 'Incorrect password.' });
+      setFeedback({ show: true, message: t('Incorrect password.') });
     }
   };
 
@@ -97,21 +100,25 @@ export const AdminDashboardPage = () => {
 
       <header className="header-section">
         <div className="header-left">
-          <h2>Admin Dashboard</h2>
-          <h3>{adminType ? adminType.charAt(0).toUpperCase() + adminType.slice(1) : ''} View</h3>
+          <h2>{t('Admin Dashboard')}</h2>
+          <h3>{adminType ? adminType.charAt(0).toUpperCase() + adminType.slice(1) : ''} {t('View')}</h3>
         </div>
         <div className="header-right">
-          <button onClick={() => setShowPasswordModal(true)}>Switch View</button>
-          <button onClick={handleClose}>Close</button>
+          <button onClick={() => setShowPasswordModal(true)}>{t('Switch View')}</button>
+          <button onClick={handleClose}>{t('Close')}</button>
         </div>
       </header>
 
       <section className="panel left-panel">
-        <h3 className="panel-title">Active Games</h3>
+        <h3 className="panel-title">{t('Active Games')}</h3>
         <div className="panel-content">
-          <ErrorBoundary fallbackMessage="Failed to load Active Games.">
+          <ErrorBoundary fallbackMessage={t('Failed to load Active Games.')}>
             <PanelWrapper>
-              {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+              {isLoading ? ( 
+                <LoadingSymbol /> 
+              ) : ( 
+                <ActiveGamesModal isAdmin={adminType === ADMIN_CONFIG.TYPES.OWNER}/>
+              )}
             </PanelWrapper>
           </ErrorBoundary>
         </div>
@@ -119,9 +126,9 @@ export const AdminDashboardPage = () => {
 
       <section className="right-panel-container">
         <div className="panel">
-          <h3 className="panel-title">Game Statistics</h3>
+          <h3 className="panel-title">{t('Game Statistics')}</h3>
           <div className="panel-content">
-            <ErrorBoundary fallbackMessage="Failed to load Statistics.">
+            <ErrorBoundary fallbackMessage={t('Failed to load Statistics.')}>
               <PanelWrapper>
                 {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
               </PanelWrapper>
@@ -130,18 +137,18 @@ export const AdminDashboardPage = () => {
         </div>
         <div className="panel">
           <div className="panel-header-wrapper">
-            <h3 className="panel-title">Reported Bugs</h3>
-            <button onClick={handleRefresh}>Refresh</button>
+            <h3 className="panel-title">{t('Reported Bugs')}</h3>
+            <button onClick={handleRefresh}>{t('Refresh')}</button>
           </div>
           <div className="panel-content">
-            <ErrorBoundary fallbackMessage="Failed to load Reported Bugs.">
+            <ErrorBoundary fallbackMessage={t('Failed to load Reported Bugs.')}>
               <PanelWrapper>
                 {isLoading ? (
                   <LoadingSymbol />
                 ) : (
                   <ReportedBugsModal 
                     bugs={bugs}
-                    isAdmin={adminType === 'owner'}
+                    isAdmin={adminType === ADMIN_CONFIG.TYPES.OWNER}
                   />
                 )}
               </PanelWrapper>

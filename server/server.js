@@ -8,8 +8,11 @@ const app = express();
 const httpServer = createServer(app);
 
 export const waitingQueue = [];
-export const games = new Map();
+export const onlineSessions = new Map();
 export const playerToRoom = new Map();
+
+export const offlineSessions = new Map();
+export const cpuSessions = new Map();
 
 const PHYSICS_WIDTH = 1600;
 const PHYSICS_HEIGHT = 900;
@@ -28,9 +31,106 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
+  socket.on('request-active-games', () => {
+    const activeGamesList = getActiveGamesList();
+    socket.emit('active-games-update', activeGamesList);
+  });
+
+  socket.on('admin-request-game-details', (roomId) => {
+    const onlineGame = onlineSessions.get(roomId);
+    
+    if (onlineGame) {
+      socket.emit('admin-game-details-update', {
+        roomId,
+        details: {
+          players: onlineGame.players,
+          score: onlineGame.instance.scores,
+          timeLeft: onlineGame.instance.getRemainingTime(),
+          status: 'online'
+        }
+      });
+      return;
+    }
+
+    let offlineGame = null;
+    let status = '';
+    
+    if (roomId.startsWith('offline_')) {
+      offlineGame = offlineSessions.get(roomId.replace('offline_', ''));
+      status = 'offline';
+    } else if (roomId.startsWith('cpu_')) {
+      offlineGame = cpuSessions.get(roomId.replace('cpu_', ''));
+      status = 'cpu';
+    }
+
+    if (offlineGame) {
+      socket.emit('admin-game-details-update', {
+        roomId,
+        details: {
+          players: status === 'cpu' ? ['Player', 'CPU'] : ['Player 1', 'Player 2'],
+          score: null, 
+          timeLeft: null, 
+          status: status
+        }
+      });
+    }
+  });
+
+  socket.on('admin-force-action', ({ roomId, action, targetPlayer }) => {    
+    if (onlineSessions.has(roomId)) {      
+      const gameData = onlineSessions.get(roomId);
+
+      if (action === 'kick' && targetPlayer) {
+        io.to(targetPlayer).emit('kicked-by-admin', {
+          reason: 'You were kicked by an admin'
+        });
+      }
+
+      const { home, away } = gameData.instance.scores;
+      let winner = 'draw';
+      if (home > away) winner = 'home';
+      else if (away > home) winner = 'away';
+
+      io.to(roomId).emit('game-over', {
+        winner: action === 'stop' ? winner : 'draw',
+        reason: action === 'stop' ? 'Admin forced game stop' : 'Admin Forced Draw',
+        players: { [gameData.players[0]]: 'home', [gameData.players[1]]: 'away' }
+      });
+
+      clearInterval(gameData.loop);
+      if (gameData.instance.countdownTimeout) clearTimeout(gameData.instance.countdownTimeout);
+
+      gameData.players.forEach(pid => {
+        playerToRoom.delete(pid);
+        const playerSocket = io.sockets.sockets.get(pid);
+        if (playerSocket) playerSocket.leave(roomId);
+      });
+
+      onlineSessions.delete(roomId);
+    } 
+    else if (roomId.startsWith('offline_') || roomId.startsWith('cpu_')) {
+      io.to(roomId).emit('admin-action-triggered', { action });
+
+      if (roomId.startsWith('offline_')) {
+        const socketId = roomId.replace('offline_', '');
+        offlineSessions.delete(socketId);
+      } else {
+        const socketId = roomId.replace('cpu_', '');
+        cpuSessions.delete(socketId);
+      }
+    }
+
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('join-room', (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room: ${roomId}`);
+  });
+
   socket.on('request-my-team', () => {
     const roomId = playerToRoom.get(socket.id);
-    const gameData = games.get(roomId);
+    const gameData = onlineSessions.get(roomId);
 
     if (gameData && gameData.players) {
       const team = gameData.players.indexOf(socket.id) === 0 ? 'home' : 'away';
@@ -40,7 +140,7 @@ io.on('connection', (socket) => {
   
   socket.on('request-score', () => {
     const roomId = playerToRoom.get(socket.id);
-    const gameData = games.get(roomId);
+    const gameData = onlineSessions.get(roomId);
     
     if (gameData) {
       socket.emit('current-score', gameData.instance.scores);
@@ -59,12 +159,12 @@ io.on('connection', (socket) => {
   socket.on('find-match', () => {
     if (playerToRoom.has(socket.id)) {
       const roomId = playerToRoom.get(socket.id);
-      const gameData = games.get(roomId);
+      const gameData = onlineSessions.get(roomId);
       
       if (gameData) {
         clearInterval(gameData.instance.loop);
         gameData.players.forEach(pid => playerToRoom.delete(pid));
-        games.delete(roomId);
+        onlineSessions.delete(roomId);
         io.to(roomId).emit('opponent-disconnected');
       }
     }
@@ -87,7 +187,7 @@ io.on('connection', (socket) => {
     if (!data?.move || !data?.id) return;
 
     const roomId = playerToRoom.get(data.id);
-    const gameData = games.get(roomId);
+    const gameData = onlineSessions.get(roomId);
 
     if (gameData && gameData.instance.isCountdownActive) return;
 
@@ -98,7 +198,7 @@ io.on('connection', (socket) => {
 
   socket.on('pause-game', (isPaused) => {
     const roomId = playerToRoom.get(socket.id);
-    const gameData = games.get(roomId);
+    const gameData = onlineSessions.get(roomId);
     
     if (gameData) {
       if (isPaused) {
@@ -144,7 +244,7 @@ io.on('connection', (socket) => {
     if (index !== -1) waitingQueue.splice(index, 1);
 
     const roomId = playerToRoom.get(socket.id);
-    const gameData = games.get(roomId);
+    const gameData = onlineSessions.get(roomId);
 
     if (gameData) {
       const { home, away } = gameData.instance.scores;
@@ -167,7 +267,7 @@ io.on('connection', (socket) => {
         if (remainingSocket) remainingSocket.leave(roomId);
       }
 
-      clearInterval(gameData.instance.loop);
+      clearInterval(gameData.loop);
 
       if (gameData.instance.countdownTimeout) {
         clearTimeout(gameData.instance.countdownTimeout);
@@ -178,9 +278,42 @@ io.on('connection', (socket) => {
       gameData.instance.pauseRequestedBy = null;
       
       gameData.players.forEach(pid => playerToRoom.delete(pid));
-      games.delete(roomId);
+      onlineSessions.delete(roomId);
+
+      io.emit('active-games-update', getActiveGamesList());
     }
+
+    if (offlineSessions.has(socket.id)) {
+      offlineSessions.delete(socket.id);
+      io.emit('active-games-update', getActiveGamesList());
+    }
+
+    if (cpuSessions.has(socket.id)) {
+      cpuSessions.delete(socket.id);
+      io.emit('active-games-update', getActiveGamesList());
+    }
+
     console.log(`User disconnected and cleaned up: ${socket.id}`);
+  });
+
+  socket.on('register-offline-game', (data) => {
+    offlineSessions.set(socket.id, { ...data, lastSeen: Date.now() });
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('unregister-offline-game', () => {
+    offlineSessions.delete(socket.id);
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('register-cpu-game', (data) => {
+    cpuSessions.set(socket.id, { ...data, lastSeen: Date.now() });
+    io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('unregister-cpu-game', () => {
+    cpuSessions.delete(socket.id);
+    io.emit('active-games-update', getActiveGamesList());
   });
 });
 
@@ -189,7 +322,7 @@ if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(PORT, () => console.log(`Server running on ${PORT}`));
 }
 
-export const startNewGame = (player1Id, player2Id) => {
+export const startNewGame = (player1Id, player2Id, type = 'online') => {
   const roomId = `game_${player1Id}_${player2Id}`;
   const newGame = new GameManager(PHYSICS_WIDTH, PHYSICS_HEIGHT);
   
@@ -262,17 +395,18 @@ export const startNewGame = (player1Id, player2Id) => {
           }
         });
         
-        games.delete(roomId);
+        onlineSessions.delete(roomId);
         playerToRoom.delete(player1Id);
         playerToRoom.delete(player2Id);
         return; 
     }
   }, 1000 / 60);
 
-  games.set(roomId, { 
+  onlineSessions.set(roomId, { 
     instance: newGame, 
     players: [player1Id, player2Id],
-    loop: loop
+    loop: loop,
+    gameType: type
   });
 
   playerToRoom.set(player1Id, roomId);
@@ -281,7 +415,36 @@ export const startNewGame = (player1Id, player2Id) => {
   io.sockets.sockets.get(player1Id)?.join(roomId);
   io.sockets.sockets.get(player2Id)?.join(roomId);
 
+  io.emit('active-games-update', getActiveGamesList());
   io.to(roomId).emit('match-found');
+};
+
+const getActiveGamesList = () => {
+  const online = Array.from(onlineSessions.entries()).map(([roomId, data]) => ({
+      roomId,
+      players: data.players,
+      status: 'online',
+      gameType: data.gameType || 'online',
+      difficulty: null
+  }));
+  
+  const offline = Array.from(offlineSessions.entries()).map(([socketId, data]) => ({
+      roomId: `offline_${socketId}`,
+      players: ['Local Player'],
+      status: 'offline',
+      gameType: data.gameType || data.type || 'offline',
+      difficulty: null
+  }));
+
+  const cpu = Array.from(cpuSessions.entries()).map(([socketId, data]) => ({
+      roomId: `cpu_${socketId}`,
+      players: ['Player', 'CPU'],
+      status: 'cpu',
+      gameType: data.gameType || data.type || 'cpu',
+      difficulty: data.difficulty
+  }));
+  
+  return [...online, ...offline, ...cpu];
 };
 
 export { app, httpServer, io };

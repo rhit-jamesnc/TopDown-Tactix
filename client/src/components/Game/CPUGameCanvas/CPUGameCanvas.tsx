@@ -6,7 +6,9 @@ import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal'
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
 import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay'
-import type { GameResult } from "../../../../../shared/types/game"
+import { socket } from '../../Shared/utils/socket';
+import type { GameResult } from '../../../../../shared/types/game'
+import type { AdminActionEvent } from '../../../../../shared/types/props';
 
 import '../GameCanvas.css'
 
@@ -29,6 +31,31 @@ export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserve
         setCountdownKey(prev => prev + 1);
     }
   };
+
+  useEffect(() => {
+    socket.emit('register-cpu-game', { difficulty });
+    
+    return () => {
+        socket.emit('unregister-cpu-game');
+    };
+  }, [difficulty, gameKey]);
+
+  useEffect(() => {
+    socket.emit('join-room', `cpu_${socket.id}`);
+
+    const handleAdminAction = (payload: AdminActionEvent) => {
+        if (payload.action === 'draw' || payload.action === 'stop') {
+            setGameOver({ 
+                winner: 'draw', 
+                reason: `Admin Forced ${payload.action === 'draw' ? 'Draw' : 'Stop'}` 
+            });
+        }
+    };
+    socket.on('admin-action-triggered', handleAdminAction);
+    return () => { 
+        socket.off('admin-action-triggered', handleAdminAction); 
+    };
+  }, []);
 
   useEffect(() => {
     if (!sceneRef.current) return
@@ -155,7 +182,7 @@ export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserve
       Matter.Engine.clear(physics.engine)
       render.canvas.remove()
     }
-  }, [gameKey])
+  }, [difficulty, gameKey])
 
   const handlePlayAgain = () => {
     setGameOver(null);

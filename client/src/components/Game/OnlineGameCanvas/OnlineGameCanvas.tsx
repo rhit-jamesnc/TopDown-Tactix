@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
 import Matter from 'matter-js';
+import { socket } from '../../Shared/utils/socket'
 import { MatchmakingModal } from '../../Modals/MatchmakingModal/MatchmakingModal'
 import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
 import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay';
+import { FeedbackModal } from '../../Modals/FeedbackModal/FeedbackModal';
 import type { GameState, GameResult } from "../../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
 import '../GameCanvas.css';
 import '../../Modals/MatchmakingModal/MatchmakingModal.css'
-
-const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:4000');
 
 const TARGET_WIDTH = 1600;
 const TARGET_HEIGHT = 900;
@@ -46,6 +45,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [countdownDuration, setCountdownDuration] = useState(5);
   const [isCountdown, setIsCountdown] = useState(false);
   const isCountdownRef = useRef(false);
+  const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean; message: string } | null>(null);
 
   const cleanupEvents = useCallback(() => {
     GAME_EVENTS.forEach(event => socket.off(event));
@@ -214,6 +214,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     
 
     socket.on('game-over', (data) => {
+      const displayReason = data.reason === 'admin_kick' ? 'Player kicked by admin' : data.reason;
       setIsGameOverSignal(true);
       isCountdownFrozenRef.current = true;
 
@@ -230,9 +231,13 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
         setGameOver({
             winner: data.winner,
-            reason: data.reason
+            reason: displayReason
         });
       }, 2000);
+    });
+
+    socket.on('kicked-by-admin', (data) => {
+      setFeedbackModal({ isOpen: true, message: data.reason });
     });
 
     socket.on('game-timer', (time) => setTimeLeft(time));
@@ -320,6 +325,15 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           myTeam={myTeam}
           onPlayAgain={handlePlayAgain}
           onHome={() => window.location.href = '/'}
+        />
+      )}
+      {feedbackModal?.isOpen && (
+        <FeedbackModal 
+          message={feedbackModal.message} 
+          onClose={() => {
+              setFeedbackModal(null);
+              window.location.href = '/';
+          }} 
         />
       )}
       {isSearching ? (

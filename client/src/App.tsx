@@ -1,3 +1,4 @@
+import './i18n';
 import { useState } from 'react';
 import { HomePage } from './Pages/HomePage/HomePage.tsx';
 import { OfflineGameCanvas } from './components/Game/OfflineGameCanvas/OfflineGameCanvas.tsx'
