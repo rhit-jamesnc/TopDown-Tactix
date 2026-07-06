@@ -6,6 +6,7 @@ import { GameOverModal } from '../../Modals/GameOverModal/GameOverModal';
 import { PauseMenuModal } from '../../Modals/PauseMenuModal/PauseMenuModal';
 import { Scoreboard } from '../Scoreboard/Scoreboard';
 import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay';
+import { FeedbackModal } from '../../Modals/FeedbackModal/FeedbackModal';
 import type { GameState, GameResult } from "../../../../../shared/types/game"
 import type { OnlineGameCanvasProps} from "../../../../../shared/types/props"
 import '../GameCanvas.css';
@@ -44,6 +45,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
   const [countdownDuration, setCountdownDuration] = useState(5);
   const [isCountdown, setIsCountdown] = useState(false);
   const isCountdownRef = useRef(false);
+  const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean; message: string } | null>(null);
 
   const cleanupEvents = useCallback(() => {
     GAME_EVENTS.forEach(event => socket.off(event));
@@ -234,6 +236,10 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
       }, 2000);
     });
 
+    socket.on('kicked-by-admin', (data) => {
+      setFeedbackModal({ isOpen: true, message: data.reason });
+    });
+
     socket.on('game-timer', (time) => setTimeLeft(time));
 
     return () => {
@@ -319,6 +325,15 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
           myTeam={myTeam}
           onPlayAgain={handlePlayAgain}
           onHome={() => window.location.href = '/'}
+        />
+      )}
+      {feedbackModal?.isOpen && (
+        <FeedbackModal 
+          message={feedbackModal.message} 
+          onClose={() => {
+              setFeedbackModal(null);
+              window.location.href = '/';
+          }} 
         />
       )}
       {isSearching ? (

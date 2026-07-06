@@ -36,7 +36,6 @@ io.on('connection', (socket) => {
     socket.emit('active-games-update', activeGamesList);
   });
 
-  // 1. Send live game details to the admin
   socket.on('admin-request-game-details', (roomId) => {
     const onlineGame = onlineSessions.get(roomId);
     
@@ -80,39 +79,49 @@ io.on('connection', (socket) => {
   socket.on('admin-force-action', ({ roomId, action, targetPlayer }) => {
     const gameData = onlineSessions.get(roomId);
     
-    if (gameData) {
-      let winner = 'draw';
-      const reason = action === 'kick' ? 'admin_kick' : 'Owner Forced Draw';
-      
+    if (gameData) {      
       if (action === 'kick' && targetPlayer) {
-        const otherPlayer = gameData.players.find(id => id !== targetPlayer);
-        winner = gameData.players.indexOf(otherPlayer) === 0 ? 'home' : 'away';
+        io.to(targetPlayer).emit('kicked-by-admin', {
+          reason: 'You were kicked by an admin'
+        });
       }
 
+      const remainingPlayer = gameData.players.find(id => id !== targetPlayer);
+      if (remainingPlayer) {
+        io.to(remainingPlayer).emit('game-over', {
+          winner: gameData.players.indexOf(remainingPlayer) === 0 ? 'home' : 'away',
+          reason: 'Opponent kicked by admin',
+          players: {
+            [gameData.players[0]]: 'home',
+            [gameData.players[1]]: 'away'
+          }
+        });
+      }
+    } else if (action === 'draw') {
       io.to(roomId).emit('game-over', {
-        winner: winner,
-        reason: reason,
+        winner: 'draw',
+        reason: 'Admin Forced Draw',
         players: {
           [gameData.players[0]]: 'home',
           [gameData.players[1]]: 'away'
         }
       });
-
-      clearInterval(gameData.loop);
-      
-      if (gameData.instance.countdownTimeout) {
-        clearTimeout(gameData.instance.countdownTimeout);
-      }
-
-      gameData.players.forEach(pid => {
-        playerToRoom.delete(pid);
-        const playerSocket = io.sockets.sockets.get(pid);
-        if (playerSocket) playerSocket.leave(roomId);
-      });
-
-      onlineSessions.delete(roomId);
-      io.emit('active-games-update', getActiveGamesList());
     }
+
+    clearInterval(gameData.loop);
+      
+    if (gameData.instance.countdownTimeout) {
+      clearTimeout(gameData.instance.countdownTimeout);
+    }
+
+    gameData.players.forEach(pid => {
+      playerToRoom.delete(pid);
+      const playerSocket = io.sockets.sockets.get(pid);
+      if (playerSocket) playerSocket.leave(roomId);
+    });
+
+    onlineSessions.delete(roomId);
+    io.emit('active-games-update', getActiveGamesList());
   });
 
   socket.on('request-my-team', () => {
