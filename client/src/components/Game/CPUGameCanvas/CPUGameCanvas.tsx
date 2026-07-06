@@ -32,10 +32,7 @@ export const CPUGameCanvas = ({ difficulty }: { difficulty: 'academy' | 'reserve
   };
 
   useEffect(() => {
-    socket.emit('register-cpu-game', { 
-        type: 'cpu', 
-        difficulty 
-    });
+    socket.emit('register-cpu-game', { difficulty });
     
     return () => {
         socket.emit('unregister-cpu-game');
