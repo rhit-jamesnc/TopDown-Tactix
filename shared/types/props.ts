@@ -137,7 +137,6 @@ export interface AdminActionEvent {
 
 export interface GameStats {
   server: { ping: number; uptime: string; status: string };
-  modes: { casual: number; ranked: number; custom: number };
   cpu: { academy: number; reserves: number; first: number };
   heatmap: number[][];
 }
