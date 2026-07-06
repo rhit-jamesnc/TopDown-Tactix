@@ -36,6 +36,80 @@ io.on('connection', (socket) => {
     socket.emit('active-games-update', activeGamesList);
   });
 
+  // 1. Send live game details to the admin
+  socket.on('admin-request-game-details', (roomId) => {
+    const onlineGame = onlineSessions.get(roomId);
+    
+    if (onlineGame) {
+      socket.emit('admin-game-details-update', {
+        roomId,
+        details: {
+          players: onlineGame.players,
+          score: onlineGame.instance.scores,
+          timeLeft: onlineGame.instance.getRemainingTime(),
+          status: 'online'
+        }
+      });
+      return;
+    }
+
+    let offlineGame = null;
+    let status = '';
+    
+    if (roomId.startsWith('offline_')) {
+      offlineGame = offlineSessions.get(roomId.replace('offline_', ''));
+      status = 'offline';
+    } else if (roomId.startsWith('cpu_')) {
+      offlineGame = cpuSessions.get(roomId.replace('cpu_', ''));
+      status = 'cpu';
+    }
+
+    if (offlineGame) {
+      socket.emit('admin-game-details-update', {
+        roomId,
+        details: {
+          players: status === 'cpu' ? ['Player', 'CPU'] : ['Player 1', 'Player 2'],
+          score: null, 
+          timeLeft: null, 
+          status: status
+        }
+      });
+    }
+  });
+
+  socket.on('admin-force-action', ({ roomId, action, targetPlayer }) => {
+    const gameData = onlineSessions.get(roomId);
+    
+    if (gameData) {
+      let winner = 'draw';
+      
+      if (action === 'kick' && targetPlayer) {
+        const otherPlayer = gameData.players.find(id => id !== targetPlayer);
+        winner = gameData.players.indexOf(otherPlayer) === 0 ? 'home' : 'away';
+      }
+
+      io.to(roomId).emit('game-over', {
+        winner: winner,
+        reason: action === 'kick' ? 'admin_kick' : 'admin_draw',
+        players: {
+          [gameData.players[0]]: 'home',
+          [gameData.players[1]]: 'away'
+        }
+      });
+
+      clearInterval(gameData.instance.loop);
+      
+      if (gameData.instance.countdownTimeout) {
+        clearTimeout(gameData.instance.countdownTimeout);
+      }
+
+      gameData.players.forEach(pid => playerToRoom.delete(pid));
+      onlineSessions.delete(roomId);
+
+      io.emit('active-games-update', getActiveGamesList());
+    }
+  });
+
   socket.on('request-my-team', () => {
     const roomId = playerToRoom.get(socket.id);
     const gameData = onlineSessions.get(roomId);

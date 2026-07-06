@@ -114,3 +114,15 @@ export interface ActiveGameProps {
   gameType: 'online' | 'local' | 'cpu';
   difficulty: string | null;
 }
+
+export interface ActiveGameDetailsProp {
+    roomId: string;
+    onClose: () => void;
+}
+
+export interface GameDetails {
+    players: string[];
+    score: { home: number; away: number } | null;
+    timeLeft: number | null;
+    status: string;
+}
