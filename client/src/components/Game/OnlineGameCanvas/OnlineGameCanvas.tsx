@@ -212,6 +212,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
     
 
     socket.on('game-over', (data) => {
+      const displayReason = data.reason === 'admin_kick' ? 'Player kicked by admin' : data.reason;
       setIsGameOverSignal(true);
       isCountdownFrozenRef.current = true;
 
@@ -228,7 +229,7 @@ export const OnlineGameCanvas = ({ onExit }: OnlineGameCanvasProps) => {
 
         setGameOver({
             winner: data.winner,
-            reason: data.reason
+            reason: displayReason
         });
       }, 2000);
     });

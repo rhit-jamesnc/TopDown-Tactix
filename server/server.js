@@ -82,6 +82,7 @@ io.on('connection', (socket) => {
     
     if (gameData) {
       let winner = 'draw';
+      const reason = action === 'kick' ? 'admin_kick' : 'Owner Forced Draw';
       
       if (action === 'kick' && targetPlayer) {
         const otherPlayer = gameData.players.find(id => id !== targetPlayer);
@@ -90,7 +91,7 @@ io.on('connection', (socket) => {
 
       io.to(roomId).emit('game-over', {
         winner: winner,
-        reason: action === 'kick' ? 'admin_kick' : 'admin_draw',
+        reason: reason,
         players: {
           [gameData.players[0]]: 'home',
           [gameData.players[1]]: 'away'
@@ -110,7 +111,6 @@ io.on('connection', (socket) => {
       });
 
       onlineSessions.delete(roomId);
-
       io.emit('active-games-update', getActiveGamesList());
     }
   });

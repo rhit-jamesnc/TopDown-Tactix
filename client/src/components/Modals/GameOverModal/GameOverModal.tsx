@@ -29,7 +29,8 @@ export const GameOverModal = ({ winner, reason, scores, myTeam, onPlayAgain, onH
         
         <p className="reason-text">
           {reason === 'goal' ? 'Goal limit reached' : 
-           reason === 'forfeit' ? 'Opponent forfeited' : 'Full Time'}
+            reason === 'forfeit' ? 'Opponent forfeited' : 
+            reason === 'Full Time' ? 'Full Time' : reason}
         </p>
         
         <div className="modal-actions">
