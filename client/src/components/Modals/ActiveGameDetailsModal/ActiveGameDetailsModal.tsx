@@ -117,7 +117,7 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
                 <div className="modal-actions">
                     <button 
                         className="draw-btn"
-                        disabled={!isOwner || details.status !== 'online'}
+                        disabled={!isOwner}
                         onClick={() => handleAction('draw')}
                     >
                         {t('Force Draw')}

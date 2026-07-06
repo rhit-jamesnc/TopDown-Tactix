@@ -76,83 +76,56 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('admin-force-stop', (roomId) => {
-    const gameData = onlineSessions.get(roomId);
-    if (!gameData) return;
+  socket.on('admin-force-action', ({ roomId, action, targetPlayer }) => {    
+    if (onlineSessions.has(roomId)) {      
+      const gameData = onlineSessions.get(roomId);
 
-    const { home, away } = gameData.instance.scores;
-    let winner = 'draw';
-    if (home > away) winner = 'home';
-    else if (away > home) winner = 'away';
-
-    io.to(roomId).emit('game-over', {
-      winner: winner,
-      reason: 'Admin forced game stop',
-      players: {
-        [gameData.players[0]]: 'home',
-        [gameData.players[1]]: 'away'
-      }
-    });
-
-    clearInterval(gameData.loop);
-    if (gameData.instance.countdownTimeout) clearTimeout(gameData.instance.countdownTimeout);
-
-    gameData.players.forEach(pid => {
-      playerToRoom.delete(pid);
-      const playerSocket = io.sockets.sockets.get(pid);
-      if (playerSocket) playerSocket.leave(roomId);
-    });
-
-    onlineSessions.delete(roomId);
-    io.emit('active-games-update', getActiveGamesList());
-  });
-
-  socket.on('admin-force-action', ({ roomId, action, targetPlayer }) => {
-    const gameData = onlineSessions.get(roomId);
-    
-    if (gameData) {      
       if (action === 'kick' && targetPlayer) {
         io.to(targetPlayer).emit('kicked-by-admin', {
           reason: 'You were kicked by an admin'
         });
       }
 
-      const remainingPlayer = gameData.players.find(id => id !== targetPlayer);
-      if (remainingPlayer) {
-        io.to(remainingPlayer).emit('game-over', {
-          winner: gameData.players.indexOf(remainingPlayer) === 0 ? 'home' : 'away',
-          reason: 'Opponent kicked by admin',
-          players: {
-            [gameData.players[0]]: 'home',
-            [gameData.players[1]]: 'away'
-          }
-        });
-      }
-    } else if (action === 'draw') {
+      const { home, away } = gameData.instance.scores;
+      let winner = 'draw';
+      if (home > away) winner = 'home';
+      else if (away > home) winner = 'away';
+
       io.to(roomId).emit('game-over', {
-        winner: 'draw',
-        reason: 'Admin Forced Draw',
-        players: {
-          [gameData.players[0]]: 'home',
-          [gameData.players[1]]: 'away'
-        }
+        winner: action === 'stop' ? winner : 'draw',
+        reason: action === 'stop' ? 'Admin forced game stop' : 'Admin Forced Draw',
+        players: { [gameData.players[0]]: 'home', [gameData.players[1]]: 'away' }
       });
+
+      clearInterval(gameData.loop);
+      if (gameData.instance.countdownTimeout) clearTimeout(gameData.instance.countdownTimeout);
+
+      gameData.players.forEach(pid => {
+        playerToRoom.delete(pid);
+        const playerSocket = io.sockets.sockets.get(pid);
+        if (playerSocket) playerSocket.leave(roomId);
+      });
+
+      onlineSessions.delete(roomId);
+    } 
+    else if (roomId.startsWith('offline_') || roomId.startsWith('cpu_')) {
+      io.to(roomId).emit('admin-action-triggered', { action });
+
+      if (roomId.startsWith('offline_')) {
+        const socketId = roomId.replace('offline_', '');
+        offlineSessions.delete(socketId);
+      } else {
+        const socketId = roomId.replace('cpu_', '');
+        cpuSessions.delete(socketId);
+      }
     }
 
-    clearInterval(gameData.loop);
-      
-    if (gameData.instance.countdownTimeout) {
-      clearTimeout(gameData.instance.countdownTimeout);
-    }
-
-    gameData.players.forEach(pid => {
-      playerToRoom.delete(pid);
-      const playerSocket = io.sockets.sockets.get(pid);
-      if (playerSocket) playerSocket.leave(roomId);
-    });
-
-    onlineSessions.delete(roomId);
     io.emit('active-games-update', getActiveGamesList());
+  });
+
+  socket.on('join-room', (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room: ${roomId}`);
   });
 
   socket.on('request-my-team', () => {

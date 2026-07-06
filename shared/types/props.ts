@@ -130,3 +130,7 @@ export interface GameDetails {
     timeLeft: number | null;
     status: string;
 }
+
+export interface AdminActionEvent {
+  action: 'draw' | 'stop' | 'kick';
+}

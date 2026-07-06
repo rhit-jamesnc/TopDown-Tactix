@@ -61,7 +61,10 @@ export const ActiveGamesModal = ({ isAdmin }: ActiveGamesModalProps) => {
                             <button 
                                 className={`stop-btn ${!isAdmin ? 'disabled' : ''}`}
                                 disabled={!isAdmin}
-                                onClick={() => socket.emit('admin-force-stop', game.roomId)}
+                                onClick={() => socket.emit('admin-force-action', { 
+                                    roomId: game.roomId, 
+                                    action: 'stop' 
+                                })}
                             >
                                 {t('Force Stop')}
                             </button>

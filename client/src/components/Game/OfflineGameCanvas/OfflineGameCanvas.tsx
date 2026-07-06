@@ -7,6 +7,7 @@ import { Scoreboard } from '../Scoreboard/Scoreboard';
 import { CountdownOverlay } from '../CountdownOverlay/CountdownOverlay'
 import { socket } from '../../Shared/utils/socket';
 import type { GameResult } from "../../../../../shared/types/game"
+import type { AdminActionEvent } from '../../../../../shared/types/props';
 
 import '../GameCanvas.css'
 
@@ -35,6 +36,23 @@ export const OfflineGameCanvas = () => {
     
     return () => {
         socket.emit('unregister-offline-game');
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.emit('join-room', `offline_${socket.id}`);
+
+    const handleAdminAction = (payload: AdminActionEvent) => {
+        if (payload.action === 'draw' || payload.action === 'stop') {
+            setGameOver({ 
+                winner: 'draw', 
+                reason: `Admin Forced ${payload.action === 'draw' ? 'Draw' : 'Stop'}` 
+            });
+        }
+    };
+    socket.on('admin-action-triggered', handleAdminAction);
+    return () => { 
+        socket.off('admin-action-triggered', handleAdminAction); 
     };
   }, []);
 
