@@ -18,6 +18,14 @@ export const ActiveGameDetailsModal = ({ roomId, onClose }: ActiveGameDetailsPro
     const { t } = useTranslation();
 
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
+    useEffect(() => {
         socket.emit('admin-request-game-details', roomId);
 
         const handleUpdate = (data: { roomId: string, details: GameDetails }) => {
