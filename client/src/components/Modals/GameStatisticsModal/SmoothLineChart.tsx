@@ -43,16 +43,26 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
         if (!containerRef.current) return;
         
         const rect = containerRef.current.getBoundingClientRect();
-        const relX = e.clientX - rect.left;
-        const percentage = relX / rect.width;
+        let relX = (e.clientX - rect.left) / rect.width;
+        relX = Math.max(0, Math.min(1, relX)); // Clamp between 0 and 1
         
-        const index = Math.round(percentage * (data.length - 1));
+        const index = Math.round(relX * (data.length - 1));
         const value = data[index];
         
-        const x = (index / (data.length - 1)) * VIEWBOX_WIDTH;
+        const x = relX * VIEWBOX_WIDTH;
         const y = VIEWBOX_HEIGHT - (value / 100) * VIEWBOX_HEIGHT;
+        
+        const hoursAgo = (data.length - 1) - index;
+        const date = new Date();
+        date.setHours(date.getHours() - hoursAgo);
+        const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        setHoveredPoint({ x, y, value, time: `${index}:00` });
+        setHoveredPoint({ 
+            x: x,
+            y: y, 
+            value, 
+            time: timeString 
+        });
     };
 
     return (
@@ -63,62 +73,68 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
         onMouseLeave={() => setHoveredPoint(null)}
         style={{ position: 'relative' }}
         >
-        <svg 
-            viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} 
-            className="stats-line-chart"
-            preserveAspectRatio="none"
-        >
-            {[25, 50, 75].map((yVal) => (
-                <line
-                    key={`h-line-${yVal}`}
-                    x1="0"
-                    y1={VIEWBOX_HEIGHT - yVal}
-                    x2={VIEWBOX_WIDTH}
-                    y2={VIEWBOX_HEIGHT - yVal}
-                    stroke="#374151"
-                    strokeWidth="1"
-                    strokeDasharray="4 4"
+            <svg 
+                viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} 
+                className="stats-line-chart"
+                preserveAspectRatio="none"
+            >
+                {[25, 50, 75].map((yVal) => (
+                    <line
+                        key={`h-line-${yVal}`}
+                        x1="0"
+                        y1={VIEWBOX_HEIGHT - yVal}
+                        x2={VIEWBOX_WIDTH}
+                        y2={VIEWBOX_HEIGHT - yVal}
+                        stroke="#374151"
+                        strokeWidth="1"
+                        strokeDasharray="4 4"
+                    />
+                ))}
+
+                {[0.25, 0.5, 0.75].map((xRatio) => (
+                    <line
+                        key={`v-line-${xRatio}`}
+                        x1={xRatio * VIEWBOX_WIDTH}
+                        y1="0"
+                        x2={xRatio * VIEWBOX_WIDTH}
+                        y2={VIEWBOX_HEIGHT}
+                        stroke="#374151"
+                        strokeWidth="1"
+                        strokeDasharray="4 4"
+                    />
+                ))}
+
+                <path 
+                d={areaFillPath} 
+                className="chart-area-fill" 
+                style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }}
                 />
-            ))}
-
-            {[0.25, 0.5, 0.75].map((xRatio) => (
-                <line
-                    key={`v-line-${xRatio}`}
-                    x1={xRatio * VIEWBOX_WIDTH}
-                    y1="0"
-                    x2={xRatio * VIEWBOX_WIDTH}
-                    y2={VIEWBOX_HEIGHT}
-                    stroke="#374151"
-                    strokeWidth="1"
-                    strokeDasharray="4 4"
+                
+                <path 
+                d={linePath} 
+                className="chart-line" 
+                style={{ stroke: color }}
                 />
-            ))}
 
-            <path 
-            d={areaFillPath} 
-            className="chart-area-fill" 
-            style={{ fill: color.replace('rgb', 'rgba').replace(')', ', 0.1)') }}
-            />
-            
-            <path 
-            d={linePath} 
-            className="chart-line" 
-            style={{ stroke: color }}
-            />
+                {hoveredPoint && (
+                    <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="15" fill={color} fillOpacity="0.3" />
+                )}
+            </svg>
 
-            {hoveredPoint && (
-                <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="15" fill={color} fillOpacity="0.3" />
-            )}
-        </svg>
-        
-        {hoveredPoint && (
-            <div className="chart-tooltip" style={{ 
-            left: `${(hoveredPoint.x / VIEWBOX_WIDTH) * 100}%`,
-            top: `${(hoveredPoint.y / VIEWBOX_HEIGHT) * 100}%`
-            }}>
-            {hoveredPoint.time} - {hoveredPoint.value}% {t('Activity')}
+            <div className="chart-labels">
+                <span>{t('24h ago')}</span>
+                <span>{t('12h ago')}</span>
+                <span>{t('Now')}</span>
             </div>
-        )}
+        
+            {hoveredPoint && (
+                <div className="chart-tooltip" style={{ 
+                        left: `${(hoveredPoint.x / VIEWBOX_WIDTH) * 100}%`,
+                        top: `${(hoveredPoint.y / VIEWBOX_HEIGHT) * 100}%`
+                    }}>
+                    {hoveredPoint.time} - {hoveredPoint.value}% {t('Activity')}
+                </div>
+            )}
         </div>
     );
 };
