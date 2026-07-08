@@ -1,10 +1,18 @@
 import express from 'express';
+import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GamePhysicsEngine } from './physicsEngine.js';
 import { GameManager } from './gameManager.js';
 
 const app = express();
+
+app.use(cors({
+  origin: 'https://topdown-tactix.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 const httpServer = createServer(app);
 const serverStartTime = Date.now();
 
@@ -24,7 +32,8 @@ let lastSnapshotHour = new Date().getHours();
 const io = new Server(httpServer, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
   }
 });
 
