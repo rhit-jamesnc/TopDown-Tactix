@@ -6,6 +6,7 @@ import { GameManager } from './gameManager.js';
 
 const app = express();
 const httpServer = createServer(app);
+const serverStartTime = Date.now();
 
 export const waitingQueue = [];
 export const onlineSessions = new Map();
@@ -25,6 +26,11 @@ const io = new Server(httpServer, {
 });
 
 app.get('/api/stats', (req, res) => {
+  const uptimeSeconds = Math.floor((Date.now() - serverStartTime) / 1000);
+  const hours = Math.floor(uptimeSeconds / 3600);
+  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+  const uptime = `${hours}h ${minutes}m`;
+
   const onlineCount = onlineSessions.size * 2; // Assuming 2 players per online game
   const offlineCount = offlineSessions.size;
   const cpuCount = cpuSessions.size;
@@ -37,7 +43,7 @@ app.get('/api/stats', (req, res) => {
   const stats = {
     server: { 
       ping: 25,
-      uptime: process.uptime().toFixed(1) + 's', 
+      uptime: uptime, 
       status: 'Healthy' 
     },
     cpu: { 
