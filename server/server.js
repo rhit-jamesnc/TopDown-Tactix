@@ -24,6 +24,28 @@ const io = new Server(httpServer, {
   }
 });
 
+app.get('/api/stats', (req, res) => {
+  const stats = {
+    server: { 
+      ping: 25,
+      uptime: process.uptime().toFixed(1) + 's', 
+      status: 'Healthy' 
+    },
+    cpu: { 
+      academy: 0, 
+      reserves: 0, 
+      first: 0 
+    },
+    modes: { 
+      offline: offlineSessions.size, 
+      online: onlineSessions.size, 
+      cpu: cpuSessions.size 
+    }
+  };
+  
+  res.json(stats);
+});
+
 app.get('/', (req, res) => {
   res.send('TopDown Tactix Server is running smoothly.');
 });

@@ -7,10 +7,15 @@ export const SmoothLineChart: React.FC<SmoothLineChartProps> = ({
   data, 
   color = '#10B981' 
 }) => {
+    
     const { t } = useTranslation();
 
     const [hoveredPoint, setHoveredPoint] = useState<{ x: number, y: number, value: number, time: string } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    if (!data || !Array.isArray(data)) {
+        return null; 
+    }
 
     const VIEWBOX_WIDTH = 1000;
     const VIEWBOX_HEIGHT = 100;

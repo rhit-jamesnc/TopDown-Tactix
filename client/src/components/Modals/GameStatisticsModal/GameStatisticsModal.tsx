@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { LoadingSymbol } from '../../../../../shared/LoadingSymbol/LoadingSymbol';
 import type { GameStats, GameStatisticsModalProps } from '../../../../../shared/types/props';
 import { SmoothLineChart } from './SmoothLineChart';
+import { fetchLiveStats } from '../../Shared/utils/api';
 import './GameStatisticsModal.css';
 
 const fetchMockData = async (): Promise<GameStats> => {
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    
     return {
         server: { ping: Math.floor(Math.random() * 40) + 10, uptime: '99.9%', status: 'Healthy' },
         cpu: { academy: 150, reserves: 430, first: 210 },
@@ -30,7 +30,7 @@ export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) =
             setError(null);
 
             const data = isLiveStats 
-                ? null
+                ? await fetchLiveStats()
                 : await fetchMockData();
             
             setStats(data);
