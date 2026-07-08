@@ -36,6 +36,8 @@ app.get('/api/stats', (req, res) => {
   const cpuCount = cpuSessions.size;
   const totalActive = onlineCount + offlineCount + cpuCount;
 
+  const isHealthy = io && httpServer.listening;
+
   const activityTrend = Array.from({ length: 24 }, () => 
     Math.max(0, Math.floor(totalActive + (Math.random() * 20 - 10)))
   );
@@ -44,7 +46,7 @@ app.get('/api/stats', (req, res) => {
     server: { 
       ping: 0,
       uptime: uptime, 
-      status: 'Healthy' 
+      status: isHealthy ? 'Healthy' : 'Degraded'
     },
     cpu: { 
       academy: Array.from(cpuSessions.values()).filter(g => g.difficulty === 'academy').length, 
