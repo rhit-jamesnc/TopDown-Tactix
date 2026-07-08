@@ -130,7 +130,6 @@ export const AdminDashboardPage = () => {
         <div className="panel">
           <div className="panel-header-wrapper">
             <h3 className="panel-title">{t('Game Statistics')}</h3>
-            {/* 2. Add the toggle button */}
             <button onClick={() => setUseLiveStatsMode(!useLiveStatsMode)}>
               {useLiveStatsMode ? t('Switch to Mock Data') : t('Switch to Live Data')}
             </button>

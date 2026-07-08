@@ -25,6 +25,7 @@ export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) =
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
     const performUpdate = useCallback(async () => {
+        setStats(null);
         setIsUpdating(true);
         try {
             setError(null);
@@ -57,7 +58,12 @@ export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) =
     }, [performUpdate]);
 
     if (!stats && isUpdating) {
-        return <LoadingSymbol />;
+        return (
+            <div className="loading-container">
+                <LoadingSymbol />
+                <p>{isLiveStats ? t('Most Recent Live Statistics Loading...') : t('Most Recent Mock Statistics Loading...')}</p>
+            </div>
+        );
     }
 
     if (!stats) {

@@ -154,3 +154,22 @@
     text-align: center;
     padding: 20px;
 }
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px; 
+    width: 100%;
+    color: #9CA3AF;
+    padding: 10px; 
+    gap: 8px;
+}
+
+.loading-container p {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 0;
+    text-align: center;
+}
