@@ -8,7 +8,7 @@ import { GameManager } from './gameManager.js';
 const app = express();
 
 app.use(cors({
-  origin: 'https://topdown-tactix.vercel.app',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
