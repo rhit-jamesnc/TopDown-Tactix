@@ -1,6 +1,6 @@
 import type { GameStats } from "../../../../../shared/types/props";
 
-const API_URL = process.env.FRONTEND_URL;
+const API_URL = import.meta.env.VITE_SERVER_URL;
 
 export const fetchLiveStats = async (): Promise<GameStats> => {
     console.log("Debug: VITE_SERVER_URL is:", import.meta.env.VITE_SERVER_URL);
