@@ -42,7 +42,7 @@ app.get('/api/stats', (req, res) => {
 
   const stats = {
     server: { 
-      ping: 25,
+      ping: 0,
       uptime: uptime, 
       status: 'Healthy' 
     },
