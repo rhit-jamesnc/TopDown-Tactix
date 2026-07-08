@@ -25,7 +25,7 @@ export const AdminDashboardPage = () => {
   const [bugs, setBugs] = useState([]);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const adminType = sessionStorage.getItem('adminType')
-  const [useLiveStatsMode, setUseLiveStatsMode] = useState(false);
+  const [useLiveStatsMode, setUseLiveStatsMode] = useState(true);
 
   const handleVerify = (password: string) => {
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {

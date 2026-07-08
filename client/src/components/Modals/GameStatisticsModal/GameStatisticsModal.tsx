@@ -89,15 +89,15 @@ export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) =
                 <span>{t('Live Game Telemetry')}</span>
                 {lastUpdated && (
                     <span className="last-updated">
-                    {t('Updated')}: {lastUpdated.toLocaleTimeString()}
+                    {   t('Updated')}: {lastUpdated.toLocaleTimeString()}
                     </span>
                 )}
                 <button 
-                className="update-btn" 
-                onClick={handleManualUpdate} 
-                disabled={isUpdating}
+                    className="update-btn" 
+                    onClick={handleManualUpdate} 
+                    disabled={isUpdating}
                 >
-                {isUpdating ? t('Updating...') : t('Update Now')}
+                    {isUpdating ? t('Updating...') : t('Update Now')}
                 </button>
             </div>
         
