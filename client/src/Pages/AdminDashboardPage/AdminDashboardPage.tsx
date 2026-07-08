@@ -11,19 +11,21 @@ import { ErrorBoundary } from '../../components/Modals/ErrorBoundary/ErrorBounda
 import { ReportedBugsModal } from '../../components/Modals/ReportedBugsModal/ReportedBugsModal';
 import { fetchReportedBugs } from '../../../../shared/utils/googleSheets'
 import { ActiveGamesModal } from '../../components/Modals/ActiveGamesModal/ActiveGamesModal';
+import { GameStatisticsModal } from '../../components/Modals/GameStatisticsModal/GameStatisticsModal';
 
 import  '../../../../shared/LoadingSymbol/LoadingSymbol.css'
 import '../../components/Modals/ErrorBoundary/ErrorBoundary.css'
 import './AdminDashboardPage.css';
 
-export const AdminDashboardPage = () => {
+export const AdminDashboardPage = () => {  
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [bugs, setBugs] = useState([]);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
   const adminType = sessionStorage.getItem('adminType')
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+  const [useLiveStatsMode, setUseLiveStatsMode] = useState(true);
 
   const handleVerify = (password: string) => {
     if (password === ADMIN_CONFIG.PASSWORDS.OWNER) {
@@ -126,11 +128,20 @@ export const AdminDashboardPage = () => {
 
       <section className="right-panel-container">
         <div className="panel">
-          <h3 className="panel-title">{t('Game Statistics')}</h3>
+          <div className="panel-header-wrapper">
+            <h3 className="panel-title">{t('Game Statistics')}</h3>
+            <button onClick={() => setUseLiveStatsMode(!useLiveStatsMode)}>
+              {useLiveStatsMode ? t('Switch to Mock Data') : t('Switch to Live Data')}
+            </button>
+          </div>
           <div className="panel-content">
             <ErrorBoundary fallbackMessage={t('Failed to load Statistics.')}>
               <PanelWrapper>
-                {isLoading ? <LoadingSymbol /> : <LoadingSymbol />}
+                {isLoading ? (
+                  <LoadingSymbol /> 
+                ) : (
+                  <GameStatisticsModal isLiveStats={useLiveStatsMode} />
+                )}
               </PanelWrapper>
             </ErrorBoundary>
           </div>

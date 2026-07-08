@@ -134,3 +134,19 @@ export interface GameDetails {
 export interface AdminActionEvent {
   action: 'draw' | 'stop' | 'kick';
 }
+
+export interface GameStats {
+  server: { ping: number; uptime: string; status: string };
+  cpu: { academy: number; reserves: number; first: number };
+  modes: { offline: number; online: number; cpu: number };
+  activityTrend: number[];
+}
+
+export interface GameStatisticsModalProps {
+  isLiveStats: boolean;
+}
+
+export interface SmoothLineChartProps {
+  data: number[];
+  color?: string;
+}

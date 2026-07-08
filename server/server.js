@@ -6,6 +6,7 @@ import { GameManager } from './gameManager.js';
 
 const app = express();
 const httpServer = createServer(app);
+const serverStartTime = Date.now();
 
 export const waitingQueue = [];
 export const onlineSessions = new Map();
@@ -17,11 +18,67 @@ export const cpuSessions = new Map();
 const PHYSICS_WIDTH = 1600;
 const PHYSICS_HEIGHT = 900;
 
+const activityHistory = Array.from({ length: 24 }, () => 0);
+let lastSnapshotHour = new Date().getHours();
+
 const io = new Server(httpServer, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
     methods: ['GET', 'POST']
   }
+});
+
+const recordActivitySnapshot = () => {
+  const currentHour = new Date().getHours();
+  const totalActive = (onlineSessions.size * 2) + offlineSessions.size + cpuSessions.size;
+  
+  activityHistory.shift();
+  activityHistory.push(totalActive);
+  lastSnapshotHour = currentHour;
+};
+
+setInterval(() => {
+  if (new Date().getHours() !== lastSnapshotHour) {
+    recordActivitySnapshot();
+  }
+}, 5 * 60 * 1000);
+
+app.get('/api/stats', (req, res) => {
+  const uptimeSeconds = Math.floor((Date.now() - serverStartTime) / 1000);
+  const hours = Math.floor(uptimeSeconds / 3600);
+  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+  const uptime = `${hours}h ${minutes}m`;
+
+  const onlineCount = onlineSessions.size * 2; // Assuming 2 players per online game
+  const offlineCount = offlineSessions.size;
+  const cpuCount = cpuSessions.size;
+  const totalActive = onlineCount + offlineCount + cpuCount;
+
+  const isHealthy = io && httpServer.listening;
+
+  const currentTrend = [...activityHistory];
+  currentTrend[23] = totalActive;
+
+  const stats = {
+    server: { 
+      ping: 0,
+      uptime: uptime, 
+      status: isHealthy ? 'Healthy' : 'Degraded'
+    },
+    cpu: { 
+      academy: Array.from(cpuSessions.values()).filter(g => g.difficulty === 'academy').length, 
+      reserves: Array.from(cpuSessions.values()).filter(g => g.difficulty === 'reserves').length,
+      first: Array.from(cpuSessions.values()).filter(g => g.difficulty === 'first-team').length
+    },
+    modes: { 
+      offline: offlineCount, 
+      online: onlineCount, 
+      cpu: cpuCount 
+    },
+    activityTrend: currentTrend
+  };
+  
+  res.json(stats);
 });
 
 app.get('/', (req, res) => {

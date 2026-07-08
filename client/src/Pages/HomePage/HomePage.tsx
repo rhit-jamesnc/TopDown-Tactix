@@ -4,8 +4,8 @@ import { InDevelopmentModal } from '../../components/Modals/InDevelopmentModal/I
 import { SideMenu } from '../../components/Modals/SideMenuModal/SideMenuModal'
 import { HelpModal } from '../../components/Modals/HelpModal/HelpModal';
 import { DifficultySelection } from '../../components/Modals/DifficultySelection/DifficultySelection';
-import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/AdminPasswordModal'; // Ensure correct path
-import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig'; // Adjust path
+import { AdminPasswordModal } from '../../components/Modals/AdminPasswordModal/AdminPasswordModal';
+import { ADMIN_CONFIG } from '../../../../shared/config/adminConfig';
 import type { HomePageProps } from "../../../../shared/types/props"
 import './HomePage.css';
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
