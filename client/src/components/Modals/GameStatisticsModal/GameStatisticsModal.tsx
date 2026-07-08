@@ -107,8 +107,11 @@ export const GameStatisticsModal = ({ isLiveStats }: GameStatisticsModalProps) =
                     <div className="health-metric">{stats.server.ping} ms</div>
                     <div className="stat-row">
                         <span>{t('Status')}:</span>
-                        <span style={{ color: stats.server.status === 'Healthy' ? '#10B981' : '#f44336' }}>
-                        {t(stats.server.status)}
+                        <span className="status-container">
+                            <span className={`status-dot ${stats.server.status.toLowerCase()}`}></span>
+                            <span className={`status-text ${stats.server.status.toLowerCase()}`}>
+                                {t(stats.server.status)}
+                            </span>
                         </span>
                     </div>
                     <div className="stat-row">
