@@ -1,6 +1,6 @@
 import type { GameStats } from "../../../../../shared/types/props";
 
-const API_URL = import.meta.env.VITE_SERVER_URL;
+const API_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:4000';
 
 export const fetchLiveStats = async (): Promise<GameStats> => {
     console.log("Debug: VITE_SERVER_URL is:", import.meta.env.VITE_SERVER_URL);
