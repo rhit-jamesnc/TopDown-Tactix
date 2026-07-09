@@ -24,6 +24,10 @@
   border: 1px solid #374151;
 }
 
+.updates-content h2 {
+  margin-bottom: 15px;
+}
+
 .update-list {
   text-align: left;
   margin: 20px 0;
@@ -81,7 +85,7 @@
 }
 
 .switch-btn:hover { 
-  background: #167a37; /* Darker shade on hover */
+  background: #167a37;
 }
 
 .close-x {
@@ -94,4 +98,32 @@
   font-size: 1.8rem;
   cursor: pointer;
   line-height: 1;
+}
+
+.nav-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 8px;
+  background: #374151;
+  border: 1px solid #4b5563;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: #4b5563;
+  border-color: #1f9f48;
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
