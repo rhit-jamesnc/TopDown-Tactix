@@ -43,6 +43,7 @@
     "globals": "^17.6.0",
     "prettier": "^3.8.3",
     "socket.io-client": "^4.8.3",
+    "vite-plugin-static-copy": "^4.1.1",
     "vitest": "^4.1.8"
   },
   "dependencies": {

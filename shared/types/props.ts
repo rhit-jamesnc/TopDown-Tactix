@@ -154,3 +154,11 @@ export interface SmoothLineChartProps {
 export interface UpdatesModalProps {
   onClose: () => void;
 }
+
+export interface UpdateData {
+  title: string;
+  date: string;
+  version: string;
+  summary: string;
+  details: string;
+}
