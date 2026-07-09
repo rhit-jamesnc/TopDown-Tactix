@@ -4,31 +4,34 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 150;
+  backdrop-filter: blur(4px);
 }
 
 .updates-content {
   background: #1f2937;
-  padding: 40px;
-  border-radius: 10px;
+  padding: 30px;
+  border-radius: 12px;
   color: white;
   width: 90%;
   max-width: 500px;
   position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  border: 1px solid #374151;
 }
 
-.button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
+.update-list {
+  text-align: left;
+  margin: 20px 0;
+  padding-left: 20px;
 }
 
-.button-group button {
-  flex: 1;
+.update-list li {
+  margin-bottom: 10px;
 }
 
 .full-logs {
@@ -36,4 +39,47 @@
   margin: 20px 0;
   max-height: 300px;
   overflow-y: auto;
+  padding-right: 15px;
+}
+
+.full-logs::-webkit-scrollbar { width: 6px; }
+.full-logs::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+
+.full-logs h3 {
+  margin: 15px 0 5px 0;
+  color: #fbbf24;
+  font-size: 1.1rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #374151;
+}
+
+.button-group button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.switch-btn { background: #1f9f48; color: white; }
+.button-group button:hover { opacity: 0.8; }
+
+.close-x {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent !important;
+  border: none;
+  color: #9CA3AF !important;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
 }
