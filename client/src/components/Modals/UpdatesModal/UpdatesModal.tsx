@@ -11,33 +11,48 @@ export const UpdatesModal = ({ onClose }: UpdatesModalProps) => {
     const [isFading, setIsFading] = useState(false);
 
     useEffect(() => {
-      fetch(`/docs/updates/${UPDATE_FILES[currentIndex]}`)
-        .then(res => res.text())
-        .then(text => {
-          const lines = text.split('\n');
+      const fetchUpdate = async () => {
+        try {
+          const response = await fetch(`/docs/updates/${UPDATE_FILES[currentIndex]}?t=${Date.now()}`);
+          if (!response.ok) return;
+
+          const text = await response.text();
+          
+          if (text.trim().startsWith('<')) return;
+
+          const lines = text.split('\n').map(l => l.trim()).filter(l => l !== "");
           const parsedData: UpdateData = {
             title: lines[0],
             date: lines[1],
             version: lines[2],
             summary: lines[3],
-            details: lines.slice(4).join('\n')
+            details: lines.slice(4).join('\n\n')
           };
           setData(parsedData);
-        });
+        } catch (err) {
+          console.error("Error fetching update:", err);
+        }
+    };
+
+      fetchUpdate();
+
+      const interval = setInterval(fetchUpdate, 1000);
+
+      return () => clearInterval(interval);
     }, [currentIndex]);
 
     const transitionView = (newView: 'summary' | 'detailed', direction?: 'next' | 'prev') => {
-        setIsFading(true);
-        setTimeout(() => {
-            if (direction === 'next') {
-                setCurrentIndex(i => i + 1);
-            } else if (direction === 'prev') {
-                setCurrentIndex(i => i - 1);
-            }
-            
-            setView(newView);
-            setIsFading(false);
-        }, 300);
+      setIsFading(true);
+      setTimeout(() => {
+        if (direction === 'next') {
+          setCurrentIndex(i => i + 1);
+        } else if (direction === 'prev') {
+          setCurrentIndex(i => i - 1);
+        }
+        
+        setView(newView);
+        setIsFading(false);
+      }, 300);
     };
 
     if (!data) return null;
@@ -50,21 +65,21 @@ export const UpdatesModal = ({ onClose }: UpdatesModalProps) => {
         <div className={`modal-body ${isFading ? 'fade-out' : 'fade-in'}`}>
             {view === 'summary' ? (
             <>
-                <h2 className="header-standout">Recent Update: {data.title}</h2>
-                <p className="date-text">{data.date}</p>
-                <p><strong>{data.version} - {data.title}:</strong> {data.summary}</p>
-                <button className="switch-btn" onClick={() => transitionView('detailed')}>View Details</button>
+              <h2 className="header-standout">Recent Update: {data.title}</h2>
+              <p className="date-text">{data.date}</p>
+              <p><strong>{data.version} - {data.title}:</strong> {data.summary}</p>
+              <button className="switch-btn" onClick={() => transitionView('detailed')}>View Details</button>
             </>
             ) : (
             <>
-                <div className="detailed-view">
-                    <h2 className="header-standout">{data.version} - {data.title}</h2>
-                    <p className="date-text">{data.date}</p>
-                    <div className="full-logs">
-                        <p>{data.details}</p>
-                    </div>
-                    <button className="switch-btn" onClick={() => transitionView('summary')}>Back to Summary</button>
+              <div className="detailed-view">
+                <h2 className="header-standout">{data.version} - {data.title}</h2>
+                <p className="date-text">{data.date}</p>
+                <div className="full-logs">
+                  <p>{data.details}</p>
                 </div>
+                <button className="switch-btn" onClick={() => transitionView('summary')}>Back to Summary</button>
+              </div>
             </>
             )}
         </div>

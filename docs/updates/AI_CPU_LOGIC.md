@@ -1,4 +1,4 @@
-CPU Logic
+AI CPU Logic
 2026-06-15
 v1.2.0
 Implemented a robust AI engine for CPU difficulty lev
