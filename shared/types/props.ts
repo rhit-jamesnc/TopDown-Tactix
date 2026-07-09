@@ -150,3 +150,7 @@ export interface SmoothLineChartProps {
   data: number[];
   color?: string;
 }
+
+export interface UpdatesModalProps {
+  onClose: () => void;
+}

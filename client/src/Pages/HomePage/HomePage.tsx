@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InDevelopmentModal } from '../../components/Modals/InDevelopmentModal/InDevelopmentModal';
+import { UpdatesModal } from '../../components/Modals/UpdatesModal/UpdatesModal';
 import { SideMenu } from '../../components/Modals/SideMenuModal/SideMenuModal'
 import { HelpModal } from '../../components/Modals/HelpModal/HelpModal';
 import { DifficultySelection } from '../../components/Modals/DifficultySelection/DifficultySelection';
@@ -11,9 +12,10 @@ import './HomePage.css';
 import { FeedbackModal } from '../../components/Modals/FeedbackModal/FeedbackModal';
 
 export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePageProps) => {
+  const [showDevModal, setShowDevModal] = useState(true);
+  const [showUpdates, setShowUpdates] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [showSideMenu, setShowSideMenu] = useState(false);
-  const [showDevModal, setShowDevModal] = useState(true);
   const [showDifficulty, setShowDifficulty] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [feedback, setFeedback] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
@@ -33,6 +35,12 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
   
   return (
     <div className="home-screen">
+      {showDevModal && <InDevelopmentModal onClose={() => setShowDevModal(false)} />}
+
+      {showUpdates && (
+        <UpdatesModal onClose={() => setShowUpdates(false)} />
+      )}
+
       {showPasswordModal && (
         <AdminPasswordModal 
           onClose={() => setShowPasswordModal(false)} 
@@ -53,8 +61,6 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
             onBack={() => setShowDifficulty(false)} 
         />
       )}
-      
-      {showDevModal && <InDevelopmentModal onClose={() => setShowDevModal(false)} />}
 
       <button 
         className={`menu-trigger-btn ${showSideMenu ? 'pushed' : ''}`} 
