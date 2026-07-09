@@ -33,6 +33,24 @@
   margin-top: 10px;
 }
 
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s ease-in-out;
+  -webkit-transition: opacity 0.3s ease-in-out;
+  -moz-transition: opacity 0.3s ease-in-out;
+  -ms-transition: opacity 0.3s ease-in-out;
+  -o-transition: opacity 0.3s ease-in-out;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
 .update-list li {
   margin-bottom: 10px;
 }
@@ -81,14 +99,15 @@
 }
 
 .switch-btn { 
-  background: #1f9f48; 
-  color: white; 
+  width: 100%;
+  margin-top: auto;
+  background: #1f9f48;
+  color: white;
   padding: 12px;
   border: none;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
 .switch-btn:hover { 
@@ -131,7 +150,7 @@
 }
 
 .nav-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 

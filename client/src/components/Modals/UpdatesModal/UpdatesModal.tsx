@@ -22,63 +22,62 @@ const UPDATES_DATA = [
 export const UpdatesModal = ({ onClose }: UpdatesModalProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [view, setView] = useState<'summary' | 'detailed'>('summary');
+    const [isFading, setIsFading] = useState(false);
+
+    const transitionView = (newView: 'summary' | 'detailed', direction?: 'next' | 'prev') => {
+        setIsFading(true);
+        setTimeout(() => {
+            if (direction === 'next') {
+                setCurrentIndex(i => i + 1);
+            } else if (direction === 'prev') {
+                setCurrentIndex(i => i - 1);
+            }
+            
+            setView(newView);
+            setIsFading(false);
+        }, 300);
+    };
 
     const currentUpdate = UPDATES_DATA[currentIndex];
-
-    const handleNext = () => {
-        if (currentIndex < UPDATES_DATA.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            setView('summary');
-        }
-    };
-
-    const handleBack = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            setView('summary');
-        }
-    };
 
     return (
     <div className="updates-modal">
       <div className="updates-content">
         <button className="close-x" onClick={onClose}>&times;</button>
                 
-        {view === 'summary' ? (
-          <>
-            <h2 className="header-standout">Recent Update: {currentUpdate.title}</h2>
-            <p className="date-text">{currentUpdate.date}</p>
-            <p><strong>{currentUpdate.version} - {currentUpdate.title}:</strong> {currentUpdate.summary}</p>
-            <div className="button-group">
-              <button className="switch-btn" onClick={() => setView('detailed')}>View Details</button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="detailed-view">
-                <h2 className="header-standout">{currentUpdate.version} - {currentUpdate.title}</h2>
+        <div className={`modal-body ${isFading ? 'fade-out' : 'fade-in'}`}>
+            {view === 'summary' ? (
+            <>
+                <h2 className="header-standout">Recent Update: {currentUpdate.title}</h2>
                 <p className="date-text">{currentUpdate.date}</p>
-                <div className="full-logs">
-                    <p>{currentUpdate.details}</p>
+                <p><strong>{currentUpdate.version} - {currentUpdate.title}:</strong> {currentUpdate.summary}</p>
+                <button className="switch-btn" onClick={() => transitionView('detailed')}>View Details</button>
+            </>
+            ) : (
+            <>
+                <div className="detailed-view">
+                    <h2 className="header-standout">{currentUpdate.version} - {currentUpdate.title}</h2>
+                    <p className="date-text">{currentUpdate.date}</p>
+                    <div className="full-logs">
+                        <p>{currentUpdate.details}</p>
+                    </div>
+                    <button className="switch-btn" onClick={() => transitionView('summary')}>Back to Summary</button>
                 </div>
-                <div className="button-group">
-                    <button className="switch-btn" onClick={() => setView('summary')}>Back to Summary</button>
-                </div>
-            </div>
-          </>
-        )}
+            </>
+            )}
+        </div>
 
         <div className="nav-controls">
           <button 
             className="nav-btn" 
-            onClick={handleBack} 
+            onClick={() => transitionView('summary', 'prev')}
             disabled={currentIndex === 0}
           >
             &larr; Previous
           </button>
           <button 
             className="nav-btn" 
-            onClick={handleNext} 
+            onClick={() => transitionView('summary', 'next')}
             disabled={currentIndex === UPDATES_DATA.length - 1}
           >
             Next &rarr;
