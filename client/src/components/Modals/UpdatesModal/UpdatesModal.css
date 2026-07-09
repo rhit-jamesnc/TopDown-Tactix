@@ -69,8 +69,20 @@
   transition: opacity 0.2s;
 }
 
-.switch-btn { background: #1f9f48; color: white; }
-.button-group button:hover { opacity: 0.8; }
+.switch-btn { 
+  background: #1f9f48; 
+  color: white; 
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.switch-btn:hover { 
+  background: #167a37; /* Darker shade on hover */
+}
 
 .close-x {
   position: absolute;
