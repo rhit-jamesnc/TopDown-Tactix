@@ -4,16 +4,18 @@ import './UpdatesModal.css';
 
 const UPDATES_DATA = [
   {
-    version: "v1.2.0",
-    title: "CPU Logic",
-    summary: "Implemented a robust AI engine for CPU difficulty levels.",
-    details: "Implemented a robust AI engine allowing users to challenge the CPU with selectable difficulty levels ranging from Easy to Impossible. This required refactoring the turn-based state machine."
-  },
-  {
     version: "v1.1.5",
     title: "Admin Access",
+    date: "2026-07-9",
     summary: "Introduced secure multi-tier authentication.",
     details: "Introduced a multi-tier authentication system using sessionStorage to manage Owner and Admin access levels securely, preventing unauthorized access to the admin dashboard."
+  },
+  {
+    version: "v1.2.0",
+    title: "CPU Logic",
+    date: "2026-06-15",
+    summary: "Implemented a robust AI engine for CPU difficulty levels.",
+    details: "Implemented a robust AI engine allowing users to challenge the CPU with selectable difficulty levels ranging from Easy to Impossible. This required refactoring the turn-based state machine."
   }
 ];
 
@@ -41,23 +43,27 @@ export const UpdatesModal = ({ onClose }: UpdatesModalProps) => {
     <div className="updates-modal">
       <div className="updates-content">
         <button className="close-x" onClick={onClose}>&times;</button>
-        
-        <h2>{view === 'summary' ? "Recent Update" : currentUpdate.version}</h2>
-        
+                
         {view === 'summary' ? (
           <>
-            <p><strong>{currentUpdate.title}:</strong> {currentUpdate.summary}</p>
+            <h2 className="header-standout">Recent Update: {currentUpdate.title}</h2>
+            <p className="date-text">{currentUpdate.date}</p>
+            <p><strong>{currentUpdate.version} - {currentUpdate.title}:</strong> {currentUpdate.summary}</p>
             <div className="button-group">
               <button className="switch-btn" onClick={() => setView('detailed')}>View Details</button>
             </div>
           </>
         ) : (
           <>
-            <div className="full-logs">
-              <p>{currentUpdate.details}</p>
-            </div>
-            <div className="button-group">
-              <button className="switch-btn" onClick={() => setView('summary')}>Back</button>
+            <div className="detailed-view">
+                <h2 className="header-standout">{currentUpdate.version} - {currentUpdate.title}</h2>
+                <p className="date-text">{currentUpdate.date}</p>
+                <div className="full-logs">
+                    <p>{currentUpdate.details}</p>
+                </div>
+                <div className="button-group">
+                    <button className="switch-btn" onClick={() => setView('summary')}>Back to Summary</button>
+                </div>
             </div>
           </>
         )}
