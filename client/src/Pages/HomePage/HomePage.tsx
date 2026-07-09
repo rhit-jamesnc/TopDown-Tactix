@@ -71,7 +71,11 @@ export const HomePage = ({ onStartOffline, onStartOnline, onStartCpu }: HomePage
 
       <SideMenu 
         isOpen={showSideMenu} 
-        onOpenAdmin={() => setShowPasswordModal(true)} 
+        onOpenAdmin={() => setShowPasswordModal(true)}
+        onOpenUpdates={() => {
+            setShowUpdates(true);
+            setShowSideMenu(false);
+        }} 
       />
 
       <button className="help-btn" onClick={() => setShowHelp(true)}>
