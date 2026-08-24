@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { normalizePath } from 'vite';
+import path from 'node:path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,8 +11,8 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: '../docs',
-          dest: ''
+          src: normalizePath(path.resolve(__dirname, '../docs/**/*.md')),
+          dest: 'docs'
         }
       ]
     })
