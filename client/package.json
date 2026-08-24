@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b --verbose && vite build --debug",
-    "lint": "eslint .",
+    "build": "node -e \"const fs = require('fs'); fs.cpSync('../docs', 'public/docs', {recursive: true});\" && tsc -b --verbose && vite build --debug",    "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
   },

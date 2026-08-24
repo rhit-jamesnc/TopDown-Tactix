@@ -3,7 +3,11 @@ import { BugReportModal } from '../BugReportModal/BugReportModal';
 import type { SideMenuProps } from '../../../../../shared/types/props';
 import './SideMenuModal.css';
 
-export const SideMenu = ({ isOpen, onOpenAdmin }: SideMenuProps & { onOpenAdmin: () => void }) => {
+export const SideMenu = ({ 
+    isOpen, 
+    onOpenAdmin, 
+    onOpenUpdates 
+}: SideMenuProps & { onOpenAdmin: () => void, onOpenUpdates: () => void }) => {
     const [lastUpdated, setLastUpdated] = useState('Loading...');
     const [showBugModal, setShowBugModal] = useState(false);
 
@@ -17,30 +21,34 @@ export const SideMenu = ({ isOpen, onOpenAdmin }: SideMenuProps & { onOpenAdmin:
     return (
         <div className={`side-menu ${isOpen ? 'open' : ''}`}>
 
-        {showBugModal && 
-            <BugReportModal 
-                onClose={() => setShowBugModal(false)} 
-            />
-        }
+            {showBugModal && 
+                <BugReportModal 
+                    onClose={() => setShowBugModal(false)} 
+                />
+            }
 
-        <nav className="menu-items">
-            <button onClick={onOpenAdmin}>
-                Admin Board
-            </button>
+            <nav className="menu-items">
+                <button onClick={onOpenAdmin}>
+                    Admin Board
+                </button>
 
-            <button onClick={() => setShowBugModal(true)}>
-                Report a Bug
-            </button>
+                <button onClick={onOpenUpdates}>
+                    Recent Updates
+                </button>
 
-            <button onClick={() => window.open('https://github.com/rhit-jamesnc/TopDown-Tactix', '_blank')}>
-            GitHub Repo
-            </button>
-        </nav>
+                <button onClick={() => setShowBugModal(true)}>
+                    Report a Bug
+                </button>
 
-        <footer className="menu-footer">
-            <p>Created by: Noah James</p>
-            <p>Last Updated: {lastUpdated}</p>
-        </footer>
+                <button onClick={() => window.open('https://github.com/rhit-jamesnc/TopDown-Tactix', '_blank')}>
+                    GitHub Repo
+                </button>
+            </nav>
+
+            <footer className="menu-footer">
+                <p>Created by: Noah James</p>
+                <p>Last Updated: {lastUpdated}</p>
+            </footer>
         </div>
     );
 };
