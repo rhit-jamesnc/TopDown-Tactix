@@ -13,9 +13,8 @@ export const UpdatesModal = ({ onClose }: UpdatesModalProps) => {
     useEffect(() => {
       const fetchUpdate = async () => {
         try {
-          const response = await fetch(`/docs/updates/${UPDATE_FILES[currentIndex]}?t=${Date.now()}`);
+          const response = await fetch(`/docs/updates/${UPDATE_FILES[currentIndex]}?t=${Date.now()}`);          
           if (!response.ok) return;
-
           const text = await response.text();
           
           if (text.trim().startsWith('<')) return;
