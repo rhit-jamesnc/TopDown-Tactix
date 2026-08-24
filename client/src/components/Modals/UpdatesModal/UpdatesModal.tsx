@@ -35,10 +35,6 @@ export const UpdatesModal = ({ onClose }: UpdatesModalProps) => {
     };
 
       fetchUpdate();
-
-      const interval = setInterval(fetchUpdate, 1000);
-
-      return () => clearInterval(interval);
     }, [currentIndex]);
 
     const transitionView = (newView: 'summary' | 'detailed', direction?: 'next' | 'prev') => {
